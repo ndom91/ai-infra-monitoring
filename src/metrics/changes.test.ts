@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { changeFromPrior, changeOver, valueAtOrBefore } from "./changes";
+import { changeFromPrior, changeOver, resampleAt, valueAtOrBefore } from "./changes";
 
 const daily = [
   { periodEnd: "2026-01-01", value: 3 },
@@ -32,5 +32,18 @@ describe("changes", () => {
   it("compares with the prior reporting period", () => {
     expect(changeFromPrior(daily)?.delta).toBe(1.5);
     expect(changeFromPrior(daily.slice(0, 1))).toBeNull();
+  });
+});
+
+describe("resampleAt", () => {
+  it("takes the last value on or before each date and skips gaps", () => {
+    const pts = [
+      { periodEnd: "2026-03-30", value: 1 },
+      { periodEnd: "2026-03-31", value: 2 },
+      { periodEnd: "2026-05-01", value: 3 },
+    ];
+    expect(resampleAt(pts, ["2026-03-31", "2026-06-30", "2025-12-31"])).toEqual([
+      { periodEnd: "2026-03-31", value: 2 },
+    ]);
   });
 });

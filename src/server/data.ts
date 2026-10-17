@@ -16,7 +16,7 @@ import { buildView, groupBySeries, type ObsPoint, type SeriesView } from "./view
 
 export type { ObsPoint, SeriesView } from "./views";
 
-const SectionInput = v.object({
+export const SectionInput = v.object({
   indicators: v.array(v.picklist(INDICATOR_IDS)),
   range: v.picklist(RANGE_KEYS),
   // Load the full history (for TTM/YoY-derived metrics on quarterly data).
@@ -26,7 +26,7 @@ const SectionInput = v.object({
 // Extra history beyond the visible range so YoY comparisons always work.
 const CHANGE_LOOKBACK_DAYS = 400;
 
-async function loadSection(
+export async function loadSection(
   input: v.InferOutput<typeof SectionInput>,
   now: Date,
 ): Promise<{

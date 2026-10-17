@@ -55,3 +55,17 @@ export function changeFromPrior(points: Point[]): Change | null {
     pct: from.value === 0 ? null : (to.value - from.value) / Math.abs(from.value),
   };
 }
+
+// Samples a (usually daily) series at the dates of a lower-frequency series,
+// taking the last value on or before each date. Dates with no value within
+// `toleranceDays` are skipped rather than filled.
+export function resampleAt(points: Point[], dates: string[], toleranceDays = 10): Point[] {
+  const out: Point[] = [];
+  for (const date of dates) {
+    const p = valueAtOrBefore(points, date);
+    if (!p) continue;
+    if ((Date.parse(date) - Date.parse(p.periodEnd)) / DAY_MS > toleranceDays) continue;
+    out.push({ periodEnd: date, value: p.value });
+  }
+  return out;
+}
