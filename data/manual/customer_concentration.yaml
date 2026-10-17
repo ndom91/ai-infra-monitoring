@@ -1,0 +1,1222 @@
+# Customer concentration (% of revenue) and large disclosed customer contract
+# values for AI cloud / AI data-center companies, from SEC filings.
+# Percentages: one series per period length (_q quarter, _6m six months,
+# _9m nine months, _fy fiscal year). Never mix period lengths in one series.
+# Contract values: maximum / total contract value at announcement, not RPO.
+
+series:
+  # ---------------------------------------------------------------- CoreWeave
+  - id: customer_concentration.CRWV.microsoft_pct_fy
+    indicator: customer_concentration
+    label: CoreWeave revenue share from Microsoft (fiscal year)
+    entity: CoreWeave (CRWV)
+    source: CoreWeave S-1 and Form 10-K (SEC EDGAR)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001769628&type=10-K
+    unit: "%"
+    currency: null
+    cadence: annual
+    methodology: >
+      Share of CoreWeave total revenue for the fiscal year (calendar year) recognized from
+      Microsoft, as stated in the risk factors of the S-1 and the annual report, where the
+      filing names Microsoft as the largest customer. Rounded to whole percent as filed.
+    observations:
+      - period_start: 2023-01-01
+        period_end: 2023-12-31
+        value: 35
+        as_of: 2025-03-03
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000119312525044231/d899798ds1.htm
+        quote: "For the years ended December 31, 2023 and 2024, our largest customer was Microsoft, which accounted for 35% and 62% of our revenue, respectively."
+      - period_start: 2024-01-01
+        period_end: 2024-12-31
+        value: 62
+        as_of: 2025-03-03
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000119312525044231/d899798ds1.htm
+        quote: "For the years ended December 31, 2023 and 2024, our largest customer was Microsoft, which accounted for 35% and 62% of our revenue, respectively."
+      - period_start: 2025-01-01
+        period_end: 2025-12-31
+        value: 67
+        as_of: 2026-03-02
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000176962826000104/crwv-20251231.htm
+        quote: "We recognized an aggregate of approximately 67% of our revenue from our top customer, Microsoft, for the year ended December 31, 2025."
+
+  - id: customer_concentration.CRWV.largest_customer_pct_fy
+    indicator: customer_concentration
+    label: CoreWeave largest-customer share of revenue (fiscal year)
+    entity: CoreWeave (CRWV)
+    source: CoreWeave S-1 and Form 10-K (SEC EDGAR)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001769628&type=10-K
+    unit: "%"
+    currency: null
+    cadence: annual
+    methodology: >
+      Share of total revenue from the single largest customer for the calendar year, as
+      stated in the filing. The identity of the largest customer can change between years
+      (it was unnamed in 2022 and Microsoft in 2023-2025).
+    observations:
+      - period_start: 2022-01-01
+        period_end: 2022-12-31
+        value: 16
+        as_of: 2025-03-03
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000119312525044231/d899798ds1.htm
+        quote: "For the year ended December 31, 2022, our largest customer accounted for 16% of our revenue."
+      - period_start: 2023-01-01
+        period_end: 2023-12-31
+        value: 35
+        as_of: 2025-03-03
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000119312525044231/d899798ds1.htm
+        quote: "For the years ended December 31, 2023 and 2024, our largest customer was Microsoft, which accounted for 35% and 62% of our revenue, respectively."
+      - period_start: 2024-01-01
+        period_end: 2024-12-31
+        value: 62
+        as_of: 2025-03-03
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000119312525044231/d899798ds1.htm
+        quote: "For the years ended December 31, 2023 and 2024, our largest customer was Microsoft, which accounted for 35% and 62% of our revenue, respectively."
+      - period_start: 2025-01-01
+        period_end: 2025-12-31
+        value: 67
+        as_of: 2026-03-02
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000176962826000104/crwv-20251231.htm
+        quote: "We recognized an aggregate of approximately 67% of our revenue from our top customer, Microsoft, for the year ended December 31, 2025."
+
+  - id: customer_concentration.CRWV.second_largest_customer_pct_fy
+    indicator: customer_concentration
+    label: CoreWeave second-largest-customer share of revenue (fiscal year)
+    entity: CoreWeave (CRWV)
+    source: CoreWeave S-1, Significant Customers note (SEC EDGAR)
+    source_url: https://www.sec.gov/Archives/edgar/data/1769628/000119312525044231/d899798ds1.htm
+    unit: "%"
+    currency: null
+    cadence: annual
+    methodology: >
+      Second-highest share in the "Significant Customers" table (customers with 10% or more
+      of revenue) of the consolidated financial statements. Customers are anonymized as
+      Customer A, B, C...; letters are not stable across filings. Only years where a second
+      customer exceeded 10% are recorded (FY2025: no other customer reached 10%).
+    observations:
+      - period_start: 2023-01-01
+        period_end: 2023-12-31
+        value: 21
+        as_of: 2025-03-03
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000119312525044231/d899798ds1.htm
+        quote: "The following customers accounted for 10% or more of the Company’s revenue for the years ended December 31, 2022, 2023, and 2024: ... Customer B * 21 % * Customer C * 17 % 15 %"
+        note: Table row text; columns are 2022, 2023, 2024. Customer B (21%) was second-largest in 2023 after Customer A (35%).
+      - period_start: 2024-01-01
+        period_end: 2024-12-31
+        value: 15
+        as_of: 2025-03-03
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000119312525044231/d899798ds1.htm
+        quote: "The following customers accounted for 10% or more of the Company’s revenue for the years ended December 31, 2022, 2023, and 2024: ... Customer B * 21 % * Customer C * 17 % 15 %"
+        note: Table row text; columns are 2022, 2023, 2024. Customer C (15%) was second-largest in 2024 after Customer A (62%).
+
+  - id: customer_concentration.CRWV.top2_pct_fy
+    indicator: customer_concentration
+    label: CoreWeave top-2 customers share of revenue (fiscal year)
+    entity: CoreWeave (CRWV)
+    source: CoreWeave S-1 (SEC EDGAR)
+    source_url: https://www.sec.gov/Archives/edgar/data/1769628/000119312525044231/d899798ds1.htm
+    unit: "%"
+    currency: null
+    cadence: annual
+    methodology: Aggregate share of total revenue from the two largest customers, as stated in the filing.
+    observations:
+      - period_start: 2024-01-01
+        period_end: 2024-12-31
+        value: 77
+        as_of: 2025-03-03
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000119312525044231/d899798ds1.htm
+        quote: "We recognized an aggregate of approximately 77% of our revenue from our top two customers for the year ended December 31, 2024."
+
+  - id: customer_concentration.CRWV.top3_pct_fy
+    indicator: customer_concentration
+    label: CoreWeave top-3 customers share of revenue (fiscal year)
+    entity: CoreWeave (CRWV)
+    source: CoreWeave S-1 (SEC EDGAR)
+    source_url: https://www.sec.gov/Archives/edgar/data/1769628/000119312525044231/d899798ds1.htm
+    unit: "%"
+    currency: null
+    cadence: annual
+    methodology: Aggregate share of total revenue from the three largest customers, as stated in the filing.
+    observations:
+      - period_start: 2022-01-01
+        period_end: 2022-12-31
+        value: 41
+        as_of: 2025-03-03
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000119312525044231/d899798ds1.htm
+        quote: "We recognized an aggregate of approximately 41% and 73% of our revenue from our top three customers for the years ended December 31, 2022 and 2023, respectively."
+      - period_start: 2023-01-01
+        period_end: 2023-12-31
+        value: 73
+        as_of: 2025-03-03
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000119312525044231/d899798ds1.htm
+        quote: "We recognized an aggregate of approximately 41% and 73% of our revenue from our top three customers for the years ended December 31, 2022 and 2023, respectively."
+
+  - id: customer_concentration.CRWV.microsoft_pct_q
+    indicator: customer_concentration
+    label: CoreWeave revenue share from Microsoft (quarter)
+    entity: CoreWeave (CRWV)
+    source: CoreWeave Form 10-Q (SEC EDGAR)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001769628&type=10-Q
+    unit: "%"
+    currency: null
+    cadence: quarterly
+    methodology: >
+      Share of total revenue for the three-month quarter (not year-to-date) from Microsoft,
+      as stated in 10-Q risk factors that name Microsoft as the largest customer. The
+      prior-year quarter comes from the comparative in the following year's 10-Q. From Q1
+      2026 the filings no longer name the largest customer; see largest_customer_pct_q.
+    observations:
+      - period_start: 2024-01-01
+        period_end: 2024-03-31
+        value: 33
+        as_of: 2025-05-15
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000176962825000014/crwv-20250331.htm
+        quote: "We recognized an aggregate of approximately 72% and 33% of our revenue for the three months ended March 31, 2025 and 2024, from our largest customer, Microsoft."
+      - period_start: 2024-04-01
+        period_end: 2024-06-30
+        value: 59
+        as_of: 2025-08-13
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000176962825000041/crwv-20250630.htm
+        quote: "We recognized an aggregate of approximately 71% and 59% of our revenue for the three months ended June 30, 2025 and 2024, from our largest customer, Microsoft."
+      - period_start: 2024-07-01
+        period_end: 2024-09-30
+        value: 65
+        as_of: 2025-11-13
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000176962825000062/crwv-20250930.htm
+        quote: "We recognized an aggregate of approximately 67% and 65% of our revenue for the three months ended September 30, 2025 and 2024, from our largest customer, Microsoft."
+      - period_start: 2025-01-01
+        period_end: 2025-03-31
+        value: 72
+        as_of: 2025-05-15
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000176962825000014/crwv-20250331.htm
+        quote: "We recognized an aggregate of approximately 72% and 33% of our revenue for the three months ended March 31, 2025 and 2024, from our largest customer, Microsoft."
+      - period_start: 2025-04-01
+        period_end: 2025-06-30
+        value: 71
+        as_of: 2025-08-13
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000176962825000041/crwv-20250630.htm
+        quote: "We recognized an aggregate of approximately 71% and 59% of our revenue for the three months ended June 30, 2025 and 2024, from our largest customer, Microsoft."
+      - period_start: 2025-07-01
+        period_end: 2025-09-30
+        value: 67
+        as_of: 2025-11-13
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000176962825000062/crwv-20250930.htm
+        quote: "We recognized an aggregate of approximately 67% and 65% of our revenue for the three months ended September 30, 2025 and 2024, from our largest customer, Microsoft."
+
+  - id: customer_concentration.CRWV.largest_customer_pct_q
+    indicator: customer_concentration
+    label: CoreWeave largest-customer share of revenue (quarter)
+    entity: CoreWeave (CRWV)
+    source: CoreWeave Form 10-Q (SEC EDGAR)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001769628&type=10-Q
+    unit: "%"
+    currency: null
+    cadence: quarterly
+    methodology: >
+      Share of total revenue for the three-month quarter (not year-to-date) from the single
+      largest customer. 2024-Q3 2025 values are Microsoft (named in the filings). From Q1
+      2026 the filings do not name the customer; the 10-Qs list Microsoft, OpenAI, Meta and
+      Jane Street among significant customers. Q4 is not disclosed separately (annual
+      report only).
+    observations:
+      - period_start: 2024-01-01
+        period_end: 2024-03-31
+        value: 33
+        as_of: 2025-05-15
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000176962825000014/crwv-20250331.htm
+        quote: "We recognized an aggregate of approximately 72% and 33% of our revenue for the three months ended March 31, 2025 and 2024, from our largest customer, Microsoft."
+      - period_start: 2024-04-01
+        period_end: 2024-06-30
+        value: 59
+        as_of: 2025-08-13
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000176962825000041/crwv-20250630.htm
+        quote: "We recognized an aggregate of approximately 71% and 59% of our revenue for the three months ended June 30, 2025 and 2024, from our largest customer, Microsoft."
+      - period_start: 2024-07-01
+        period_end: 2024-09-30
+        value: 65
+        as_of: 2025-11-13
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000176962825000062/crwv-20250930.htm
+        quote: "We recognized an aggregate of approximately 67% and 65% of our revenue for the three months ended September 30, 2025 and 2024, from our largest customer, Microsoft."
+      - period_start: 2025-01-01
+        period_end: 2025-03-31
+        value: 72
+        as_of: 2025-05-15
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000176962825000014/crwv-20250331.htm
+        quote: "We recognized an aggregate of approximately 72% and 33% of our revenue for the three months ended March 31, 2025 and 2024, from our largest customer, Microsoft."
+      - period_start: 2025-04-01
+        period_end: 2025-06-30
+        value: 71
+        as_of: 2025-08-13
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000176962825000041/crwv-20250630.htm
+        quote: "We recognized an aggregate of approximately 71% and 59% of our revenue for the three months ended June 30, 2025 and 2024, from our largest customer, Microsoft."
+      - period_start: 2025-07-01
+        period_end: 2025-09-30
+        value: 67
+        as_of: 2025-11-13
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000176962825000062/crwv-20250930.htm
+        quote: "We recognized an aggregate of approximately 67% and 65% of our revenue for the three months ended September 30, 2025 and 2024, from our largest customer, Microsoft."
+      - period_start: 2026-01-01
+        period_end: 2026-03-31
+        value: 45
+        as_of: 2026-05-08
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000176962826000222/crwv-20260331.htm
+        quote: "The following customers accounted for 10% or more of the Company's revenue for the periods presented: Three Months Ended March 31, 2026 2025 Customer A 45 % 72 % Customer B 20 % *"
+        note: Table row text from the Significant Customers note; first column is Q1 2026.
+      - period_start: 2026-04-01
+        period_end: 2026-06-30
+        value: 36
+        as_of: 2026-08-12
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000176962826000366/crwv-20260630.htm
+        quote: "We recognized an aggregate of approximately 36%, 26%, and 10% of our revenue from our top three customers for the three months ended June 30, 2026, with no other customer representing 10% or more of our revenue for that period."
+
+  - id: customer_concentration.CRWV.second_largest_customer_pct_q
+    indicator: customer_concentration
+    label: CoreWeave second-largest-customer share of revenue (quarter)
+    entity: CoreWeave (CRWV)
+    source: CoreWeave Form 10-Q (SEC EDGAR)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001769628&type=10-Q
+    unit: "%"
+    currency: null
+    cadence: quarterly
+    methodology: >
+      Share of total revenue for the three-month quarter from the second-largest customer,
+      from the 10-Q Significant Customers table or risk-factor text. Only quarters where a
+      second customer reached 10% are recorded (Q1-Q3 2025: no other customer reached 10%).
+      Customer letters are not stable across filings.
+    observations:
+      - period_start: 2024-01-01
+        period_end: 2024-03-31
+        value: 32
+        as_of: 2025-05-15
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000176962825000014/crwv-20250331.htm
+        quote: "The following customers accounted for 10% or more of the Company’s revenue for the three months ended March 31, 2025 and 2024: ... Customer A 72 % 33 % Customer B * 18 % Customer C * 32 %"
+        note: Table row text; columns are Q1 2025, Q1 2024. In Q1 2024 Customer C (32%) was second after Customer A (33%).
+      - period_start: 2024-04-01
+        period_end: 2024-06-30
+        value: 20
+        as_of: 2025-08-13
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000176962825000041/crwv-20250630.htm
+        quote: "The following customers accounted for 10% or more of the Company’s revenue for the periods presented: ... Customer A 71 % 59 % 72 % 51 % Customer B * 20 % * 24 %"
+        note: Table row text; columns are Q2 2025, Q2 2024, 6M 2025, 6M 2024.
+      - period_start: 2024-07-01
+        period_end: 2024-09-30
+        value: 12
+        as_of: 2025-11-13
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000176962825000062/crwv-20250930.htm
+        quote: "The following customers accounted for 10% or more of the Company's revenue for the periods presented: ... Customer A 67 % 65 % 70 % 58 % Customer B * 12 % * 18 %"
+        note: Table row text; columns are Q3 2025, Q3 2024, 9M 2025, 9M 2024.
+      - period_start: 2026-01-01
+        period_end: 2026-03-31
+        value: 20
+        as_of: 2026-05-08
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000176962826000222/crwv-20260331.htm
+        quote: "The following customers accounted for 10% or more of the Company's revenue for the periods presented: Three Months Ended March 31, 2026 2025 Customer A 45 % 72 % Customer B 20 % *"
+        note: Table row text; first column is Q1 2026.
+      - period_start: 2026-04-01
+        period_end: 2026-06-30
+        value: 26
+        as_of: 2026-08-12
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000176962826000366/crwv-20260630.htm
+        quote: "We recognized an aggregate of approximately 36%, 26%, and 10% of our revenue from our top three customers for the three months ended June 30, 2026, with no other customer representing 10% or more of our revenue for that period."
+
+  - id: customer_concentration.CRWV.top2_pct_q
+    indicator: customer_concentration
+    label: CoreWeave top-2 customers share of revenue (quarter)
+    entity: CoreWeave (CRWV)
+    source: CoreWeave Form 10-Q (SEC EDGAR)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001769628&type=10-Q
+    unit: "%"
+    currency: null
+    cadence: quarterly
+    methodology: >
+      Aggregate share of revenue for the three-month quarter from the two largest customers,
+      as stated in the 10-Q. Q2 2026 is the sum of the two individually stated top shares.
+    observations:
+      - period_start: 2024-04-01
+        period_end: 2024-06-30
+        value: 79
+        as_of: 2025-08-13
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000176962825000041/crwv-20250630.htm
+        quote: "We recognized an aggregate of approximately 79% of our revenue from our top two customers for the three months ended June 30, 2024."
+      - period_start: 2024-07-01
+        period_end: 2024-09-30
+        value: 77
+        as_of: 2025-11-13
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000176962825000062/crwv-20250930.htm
+        quote: "We recognized an aggregate of approximately 77% of our revenue from our top two customers for the three months ended September 30, 2024."
+      - period_start: 2026-01-01
+        period_end: 2026-03-31
+        value: 65
+        as_of: 2026-05-08
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000176962826000222/crwv-20260331.htm
+        quote: "We recognized an aggregate of approximately 65% of our revenue from our top two customers for the three months ended March 31, 2026, with no other customer representing 10% or more of our revenue for that period."
+      - period_start: 2026-04-01
+        period_end: 2026-06-30
+        value: 62
+        kind: calculated
+        as_of: 2026-08-12
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000176962826000366/crwv-20260630.htm
+        quote: "We recognized an aggregate of approximately 36%, 26%, and 10% of our revenue from our top three customers for the three months ended June 30, 2026, with no other customer representing 10% or more of our revenue for that period."
+        note: 36% + 26% (largest and second-largest customer, each rounded as filed).
+
+  - id: customer_concentration.CRWV.top3_pct_q
+    indicator: customer_concentration
+    label: CoreWeave top-3 customers share of revenue (quarter)
+    entity: CoreWeave (CRWV)
+    source: CoreWeave Form 10-Q (SEC EDGAR)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001769628&type=10-Q
+    unit: "%"
+    currency: null
+    cadence: quarterly
+    methodology: >
+      Aggregate share of revenue for the three-month quarter from the three largest
+      customers, as stated in the 10-Q. Q2 2026 is the sum of the three individually stated
+      shares.
+    observations:
+      - period_start: 2024-01-01
+        period_end: 2024-03-31
+        value: 83
+        as_of: 2025-05-15
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000176962825000014/crwv-20250331.htm
+        quote: "We recognized an aggregate of approximately 83% of our revenue from our top three customers for the three months ended March 31, 2024."
+      - period_start: 2026-04-01
+        period_end: 2026-06-30
+        value: 72
+        kind: calculated
+        as_of: 2026-08-12
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000176962826000366/crwv-20260630.htm
+        quote: "We recognized an aggregate of approximately 36%, 26%, and 10% of our revenue from our top three customers for the three months ended June 30, 2026, with no other customer representing 10% or more of our revenue for that period."
+        note: 36% + 26% + 10% (each rounded as filed).
+
+  - id: customer_concentration.CRWV.largest_customer_pct_6m
+    indicator: customer_concentration
+    label: CoreWeave largest-customer share of revenue (six months year-to-date)
+    entity: CoreWeave (CRWV)
+    source: CoreWeave Form 10-Q, Significant Customers note (SEC EDGAR)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001769628&type=10-Q
+    unit: "%"
+    currency: null
+    cadence: annual
+    methodology: >
+      Share of revenue for the six months ended June 30 (year-to-date) from the largest
+      customer ("Customer A") in the second-quarter 10-Q table. Customer is not named in
+      the table.
+    observations:
+      - period_start: 2024-01-01
+        period_end: 2024-06-30
+        value: 51
+        as_of: 2025-08-13
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000176962825000041/crwv-20250630.htm
+        quote: "The following customers accounted for 10% or more of the Company’s revenue for the periods presented: ... Customer A 71 % 59 % 72 % 51 % Customer B * 20 % * 24 %"
+        note: Table row text; columns are Q2 2025, Q2 2024, 6M 2025, 6M 2024.
+      - period_start: 2025-01-01
+        period_end: 2025-06-30
+        value: 72
+        as_of: 2025-08-13
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000176962825000041/crwv-20250630.htm
+        quote: "The following customers accounted for 10% or more of the Company’s revenue for the periods presented: ... Customer A 71 % 59 % 72 % 51 % Customer B * 20 % * 24 %"
+        note: Table row text; columns are Q2 2025, Q2 2024, 6M 2025, 6M 2024.
+      - period_start: 2026-01-01
+        period_end: 2026-06-30
+        value: 40
+        as_of: 2026-08-12
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000176962826000366/crwv-20260630.htm
+        quote: "The following customers accounted for 10% or more of the Company's revenue for the periods presented: ... Customer A 36 % 71 % 40 % 72 % Customer B 26 % * 23 % *"
+        note: Table row text; columns are Q2 2026, Q2 2025, 6M 2026, 6M 2025.
+
+  - id: customer_concentration.CRWV.second_largest_customer_pct_6m
+    indicator: customer_concentration
+    label: CoreWeave second-largest-customer share of revenue (six months year-to-date)
+    entity: CoreWeave (CRWV)
+    source: CoreWeave Form 10-Q, Significant Customers note (SEC EDGAR)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001769628&type=10-Q
+    unit: "%"
+    currency: null
+    cadence: annual
+    methodology: >
+      Share of revenue for the six months ended June 30 from the second-largest customer in
+      the second-quarter 10-Q table. 6M 2025: no second customer reached 10%.
+    observations:
+      - period_start: 2024-01-01
+        period_end: 2024-06-30
+        value: 24
+        as_of: 2025-08-13
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000176962825000041/crwv-20250630.htm
+        quote: "The following customers accounted for 10% or more of the Company’s revenue for the periods presented: ... Customer A 71 % 59 % 72 % 51 % Customer B * 20 % * 24 %"
+        note: Table row text; columns are Q2 2025, Q2 2024, 6M 2025, 6M 2024.
+      - period_start: 2026-01-01
+        period_end: 2026-06-30
+        value: 23
+        as_of: 2026-08-12
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000176962826000366/crwv-20260630.htm
+        quote: "The following customers accounted for 10% or more of the Company's revenue for the periods presented: ... Customer A 36 % 71 % 40 % 72 % Customer B 26 % * 23 % *"
+        note: Table row text; columns are Q2 2026, Q2 2025, 6M 2026, 6M 2025.
+
+  - id: customer_concentration.CRWV.largest_customer_pct_9m
+    indicator: customer_concentration
+    label: CoreWeave largest-customer share of revenue (nine months year-to-date)
+    entity: CoreWeave (CRWV)
+    source: CoreWeave Form 10-Q, Significant Customers note (SEC EDGAR)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001769628&type=10-Q
+    unit: "%"
+    currency: null
+    cadence: annual
+    methodology: >
+      Share of revenue for the nine months ended September 30 (year-to-date) from the
+      largest customer ("Customer A") in the third-quarter 10-Q table. Not named in the
+      table.
+    observations:
+      - period_start: 2024-01-01
+        period_end: 2024-09-30
+        value: 58
+        as_of: 2025-11-13
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000176962825000062/crwv-20250930.htm
+        quote: "The following customers accounted for 10% or more of the Company's revenue for the periods presented: ... Customer A 67 % 65 % 70 % 58 % Customer B * 12 % * 18 %"
+        note: Table row text; columns are Q3 2025, Q3 2024, 9M 2025, 9M 2024.
+      - period_start: 2025-01-01
+        period_end: 2025-09-30
+        value: 70
+        as_of: 2025-11-13
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000176962825000062/crwv-20250930.htm
+        quote: "The following customers accounted for 10% or more of the Company's revenue for the periods presented: ... Customer A 67 % 65 % 70 % 58 % Customer B * 12 % * 18 %"
+        note: Table row text; columns are Q3 2025, Q3 2024, 9M 2025, 9M 2024.
+
+  - id: customer_concentration.CRWV.openai_contract_value
+    indicator: customer_concentration
+    label: CoreWeave contract value committed by OpenAI (per agreement)
+    entity: CoreWeave (CRWV)
+    source: CoreWeave 424B4, Form 10-Q and Form 8-K (SEC EDGAR)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001769628
+    unit: USD bn
+    currency: USD
+    cadence: irregular
+    methodology: >
+      Maximum amount OpenAI committed to pay ("up to") under each separate agreement or order
+      form, as disclosed. Each observation is a separate contract, not a running total.
+      These are maximum/total contract values, may include options, are subject to delivery
+      and availability requirements and termination rights, and are not guaranteed cash
+      flow. Not the XBRL RPO figure.
+    observations:
+      - period_start: 2025-03-11
+        period_end: 2025-03-11
+        value: 11.9
+        as_of: 2025-03-31
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000119312525067651/d899798d424b4.htm
+        quote: "As of March 11, 2025, subject to the satisfaction of delivery and availability of service requirements, OpenAI has committed to pay the Company up to approximately $11.9 billion through October 2030."
+        note: Master Services Agreement entered in March 2025; dated at the as-of date stated in the prospectus.
+      - period_start: 2025-05-14
+        period_end: 2025-05-14
+        value: 4.0
+        as_of: 2025-05-15
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000176962825000014/crwv-20250331.htm
+        quote: "As of May 14, 2025, subject to the satisfaction of delivery and availability of service requirements, OpenAI has committed to pay the Company up to $ 4.0 billion through April 2029 related to this agreement."
+        note: Additional agreement entered in May 2025 (subsequent-events note); dated at the as-of date stated in the filing.
+      - period_start: 2025-09-23
+        period_end: 2025-09-23
+        value: 6.5
+        as_of: 2025-09-25
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000119312525216497/d17274d8k.htm
+        quote: "Subject to any termination described below and satisfaction of delivery and availability of service requirements, OpenAI has committed to pay the Company up to approximately $6.5 billion through May 31, 2031 under the Order Form."
+
+  - id: customer_concentration.CRWV.meta_contract_value
+    indicator: customer_concentration
+    label: CoreWeave contract value committed by Meta (per order form)
+    entity: CoreWeave (CRWV)
+    source: CoreWeave Form 8-K (SEC EDGAR)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001769628&type=8-K
+    unit: USD bn
+    currency: USD
+    cadence: irregular
+    methodology: >
+      Amount Meta initially committed to pay under each order form, as disclosed in 8-Ks.
+      Each observation is a separate order form, not a running total. The March 2026 value
+      includes the exercise of an existing option under a previous order form. These are
+      maximum/total contract values, may include options, are subject to delivery,
+      availability and termination terms, and are not guaranteed cash flow.
+    observations:
+      - period_start: 2025-09-25
+        period_end: 2025-09-25
+        value: 14.2
+        as_of: 2025-09-30
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000176962825000050/crwv-20250925.htm
+        quote: "Subject to any termination described below and satisfaction of delivery and availability of service requirements, Meta has initially committed to pay the Company up to approximately $14.2 billion through December 14, 2031 under the Order Form, with the option to materially expand its commitment through 2032 for additional cloud computing capacity under the Order Form."
+      - period_start: 2026-03-31
+        period_end: 2026-03-31
+        value: 21
+        as_of: 2026-04-09
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000176962826000154/crwv-20260331.htm
+        quote: "Subject to any termination described below and satisfaction of delivery and availability of service requirements, Meta has initially committed to pay the Company approximately $21 billion, inclusive of (i) access to new computing capacity under the Order Form through December 20, 2032 and (ii) the exercise of an existing option to access additional computing capacity under a previous order form through April 10, 2032."
+
+  - id: customer_concentration.CRWV.nvidia_contract_value
+    indicator: customer_concentration
+    label: CoreWeave NVIDIA residual-capacity order form initial value
+    entity: CoreWeave (CRWV)
+    source: CoreWeave Form 8-K (SEC EDGAR)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001769628&type=8-K
+    unit: USD bn
+    currency: USD
+    cadence: irregular
+    methodology: >
+      Initial value of the September 2025 NVIDIA order form under which NVIDIA must buy
+      residual unsold CoreWeave capacity through April 2032. It is a capacity backstop, so
+      actual payments depend on how much capacity goes unsold. Maximum/total contract value,
+      may include options, not guaranteed cash flow.
+    observations:
+      - period_start: 2025-09-09
+        period_end: 2025-09-09
+        value: 6.3
+        as_of: 2025-09-15
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000176962825000047/crwv-20250909.htm
+        quote: "On September 9, 2025, CoreWeave, Inc. (the “Company”) and NVIDIA Corporation (“NVIDIA”) entered into a new order form (the “Order Form”) under the existing Master Services Agreement (“MSA”) dated as of April 10, 2023, which has an initial value of $6.3 billion, that establishes an arrangement with respect to the sale by the Company of reserved cloud computing capacity to its customers and provides NVIDIA access to any residual unsold cloud computing capacity."
+
+  - id: customer_concentration.CRWV.jane_street_contract_value
+    indicator: customer_concentration
+    label: CoreWeave contract value committed by Jane Street
+    entity: CoreWeave (CRWV)
+    source: CoreWeave Form 8-K Exhibit 99.1 press release (SEC EDGAR)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001769628&type=8-K
+    unit: USD bn
+    currency: USD
+    cadence: irregular
+    methodology: >
+      Approximate commitment announced by CoreWeave and Jane Street. Maximum/total contract
+      value, may include options, not guaranteed cash flow. Separate from Jane Street's $1
+      billion equity investment.
+    observations:
+      - period_start: 2026-04-15
+        period_end: 2026-04-15
+        value: 6
+        as_of: 2026-04-15
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000176962826000167/ex991.htm
+        quote: "LIVINGSTON, N.J. and NEW YORK — April 15, 2026 — CoreWeave, Inc. (Nasdaq: CRWV), the Essential Cloud for AI™, and Jane Street, a global technology-driven trading firm, today announced that Jane Street has committed approximately $6 billion to use CoreWeave’s AI cloud platform."
+
+  # ---------------------------------------------------------- Core Scientific
+  - id: customer_concentration.CORZ.coreweave_pct_q
+    indicator: customer_concentration
+    label: Core Scientific revenue share from CoreWeave (quarter)
+    entity: Core Scientific (CORZ)
+    source: Core Scientific Form 10-Q / 10-K (SEC EDGAR)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001839341&type=10-Q
+    unit: "%"
+    currency: null
+    cadence: quarterly
+    methodology: >
+      Share of Core Scientific total revenue for the three-month quarter from its single
+      Colocation-segment customer. Filings state that CoreWeave accounts for 100% of
+      Colocation segment revenue ("Our colocation revenue is currently derived entirely from
+      a single customer, CoreWeave"), so the Colocation customer is CoreWeave. Q3 and Q4
+      2025 are computed from segment revenue (Colocation revenue / total revenue).
+    observations:
+      - period_start: 2025-01-01
+        period_end: 2025-03-31
+        value: 11
+        as_of: 2026-05-06
+        source_url: https://www.sec.gov/Archives/edgar/data/1839341/000162828026031396/core-20260331.htm
+        quote: "For the three months ended March 31, 2026 and 2025, 67 % and 11 % , respectively, of the Company's total revenue was generated from one customer in the Colocation segment."
+      - period_start: 2025-04-01
+        period_end: 2025-06-30
+        value: 13
+        as_of: 2026-07-28
+        source_url: https://www.sec.gov/Archives/edgar/data/1839341/000183934126000014/core-20260630.htm
+        quote: "For the three months ended June 30, 2026 and 2025, 83 % and 13 %, respectively, of the Company’s total revenue was generated from one customer in the Colocation segment."
+      - period_start: 2025-07-01
+        period_end: 2025-09-30
+        value: 18.5
+        kind: calculated
+        as_of: 2025-10-24
+        source_url: https://www.sec.gov/Archives/edgar/data/1839341/000162828025046272/core-20250930.htm
+        quote: "Total Colocation revenue was $15.0 million for the three months ended September 30, 2025, compared to $10.3 million for the same period in the prior year."
+        note: "$15.0m Colocation revenue / $81.1m total revenue (same filing: \"Total revenue decreased by $14.3 million or 15%, to $81.1 million for the three months ended September 30, 2025\"). Colocation revenue was 100% from CoreWeave (Customer J, 100% of Colocation segment revenue in the same filing)."
+      - period_start: 2025-10-01
+        period_end: 2025-12-31
+        value: 39.3
+        kind: calculated
+        as_of: 2026-03-02
+        source_url: https://www.sec.gov/Archives/edgar/data/1839341/000162828026013305/core-20251231.htm
+        quote: "Revenue: Colocation revenue $ 65,424 $ 24,378 $ 41,046 Digital asset self-mining revenue 229,207 408,740 (179,533) Digital asset hosted mining revenue from customers 24,388 77,554 (53,166) Total revenue $ 319,019 $ 510,672 $ (191,653)"
+        note: "Q4 = FY2025 minus 9M 2025. Colocation: $65.424m - $34.1m = $31.3m; total: $319.0m - $239.3m = $79.7m; 31.3 / 79.7 = 39.3%. 9M 2025 inputs from the Q3 2025 10-Q (\"Total Colocation revenue was $34.1 million for the nine months ended September 30, 2025\"; total revenue $239.3 million). Colocation revenue was 100% from CoreWeave (Customer J)."
+      - period_start: 2026-01-01
+        period_end: 2026-03-31
+        value: 67
+        as_of: 2026-05-06
+        source_url: https://www.sec.gov/Archives/edgar/data/1839341/000162828026031396/core-20260331.htm
+        quote: "For the three months ended March 31, 2026 and 2025, 67 % and 11 % , respectively, of the Company's total revenue was generated from one customer in the Colocation segment."
+      - period_start: 2026-04-01
+        period_end: 2026-06-30
+        value: 83
+        as_of: 2026-07-28
+        source_url: https://www.sec.gov/Archives/edgar/data/1839341/000183934126000014/core-20260630.htm
+        quote: "For the three months ended June 30, 2026 and 2025, 83 % and 13 %, respectively, of the Company’s total revenue was generated from one customer in the Colocation segment."
+
+  - id: customer_concentration.CORZ.coreweave_pct_6m
+    indicator: customer_concentration
+    label: Core Scientific revenue share from CoreWeave (six months year-to-date)
+    entity: Core Scientific (CORZ)
+    source: Core Scientific Form 10-Q (SEC EDGAR)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001839341&type=10-Q
+    unit: "%"
+    currency: null
+    cadence: annual
+    methodology: >
+      Share of total revenue for the six months ended June 30 from the single Colocation
+      customer, which the filing names as CoreWeave.
+    observations:
+      - period_start: 2025-01-01
+        period_end: 2025-06-30
+        value: 12
+        as_of: 2026-07-28
+        source_url: https://www.sec.gov/Archives/edgar/data/1839341/000183934126000014/core-20260630.htm
+        quote: "For the six months ended June 30, 2026 and 2025, 77 % and 12 %, respectively, of the Company’s total revenue was generated from one customer in the Colocation segment."
+      - period_start: 2026-01-01
+        period_end: 2026-06-30
+        value: 77
+        as_of: 2026-07-28
+        source_url: https://www.sec.gov/Archives/edgar/data/1839341/000183934126000014/core-20260630.htm
+        quote: "For the six months ended June 30, 2026, CoreWeave represented approximately 77% of our total revenue."
+
+  - id: customer_concentration.CORZ.coreweave_pct_fy
+    indicator: customer_concentration
+    label: Core Scientific revenue share from CoreWeave (fiscal year)
+    entity: Core Scientific (CORZ)
+    source: Core Scientific Form 10-K (SEC EDGAR)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001839341&type=10-K
+    unit: "%"
+    currency: null
+    cadence: annual
+    methodology: >
+      Colocation revenue as a percentage of total revenue (stated in the 10-K revenue-mix
+      table), multiplied by CoreWeave's 100% share of Colocation segment revenue (Customer J
+      in the concentration table; the 10-K names CoreWeave as the only Colocation customer).
+    observations:
+      - period_start: 2024-01-01
+        period_end: 2024-12-31
+        value: 5
+        kind: calculated
+        as_of: 2026-03-02
+        source_url: https://www.sec.gov/Archives/edgar/data/1839341/000162828026013305/core-20251231.htm
+        quote: "Percentage of total revenue: Colocation revenue 20 % 5 % Digital asset self-mining revenue 72 % 80 % Digital asset hosted mining revenue from customers 8 % 15 %"
+        note: "Colocation was 5% of 2024 total revenue x 100% from CoreWeave (\"One customer, CoreWeave, currently accounts for 100% of our Colocation segment revenue.\"; Customer J 100% of Colocation revenue in 2025 and 2024)."
+      - period_start: 2025-01-01
+        period_end: 2025-12-31
+        value: 20
+        kind: calculated
+        as_of: 2026-03-02
+        source_url: https://www.sec.gov/Archives/edgar/data/1839341/000162828026013305/core-20251231.htm
+        quote: "Percentage of total revenue: Colocation revenue 20 % 5 % Digital asset self-mining revenue 72 % 80 % Digital asset hosted mining revenue from customers 8 % 15 %"
+        note: "Colocation was 20% of 2025 total revenue x 100% from CoreWeave (\"One customer, CoreWeave, currently accounts for 100% of our Colocation segment revenue.\")."
+
+  - id: customer_concentration.CORZ.coreweave_cumulative_contract_value
+    indicator: customer_concentration
+    label: Core Scientific total projected cumulative revenue under CoreWeave contracts
+    entity: Core Scientific (CORZ)
+    source: Core Scientific Form 8-K press releases (SEC EDGAR)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001839341&type=8-K
+    unit: USD bn
+    currency: USD
+    cadence: irregular
+    methodology: >
+      Running total of projected cumulative revenue over the 12-year terms of all CoreWeave
+      HPC hosting/colocation contracts, as stated in each announcement. Company definition:
+      total cumulative revenue before capex credits given to CoreWeave. These are
+      maximum/total contract values, may include options, and are not guaranteed cash flow.
+    observations:
+      - period_start: 2024-06-04
+        period_end: 2024-06-04
+        value: 3.5
+        as_of: 2024-06-04
+        source_url: https://www.sec.gov/Archives/edgar/data/1839341/000162828024026483/corzcoreweavehpc.htm
+        quote: "Once the approximately 200 MW of HPC infrastructure is operational, the project is estimated to generate total cumulative revenue for Core Scientific of over $3.5 billion during the initial 12-year terms of the contracts."
+        note: Stated as "over $3.5 billion".
+      - period_start: 2024-08-06
+        period_end: 2024-08-06
+        value: 6.7
+        as_of: 2024-08-06
+        source_url: https://www.sec.gov/Archives/edgar/data/1839341/000162828024034989/exhibit991-corescientifich.htm
+        quote: "The new contract with CoreWeave is expected to add approximately $2.0 billion in projected additional cumulative revenue over the hosting contract’s 12-year term to the more than $4.7 billion in projected cumulative revenue associated with previously announced contracts with CoreWeave, for a total of $6.7 billion."
+      - period_start: 2024-10-22
+        period_end: 2024-10-22
+        value: 8.7
+        as_of: 2024-10-23
+        source_url: https://www.sec.gov/Archives/edgar/data/1839341/000162828024043341/corescientifichpcoption3re.htm
+        quote: "The new contract with CoreWeave is expected to add approximately $2.0 billion in projected additional cumulative revenue over the hosting contract’s 12-year term to the $6.7 billion in projected cumulative revenue associated with previously announced contracts with CoreWeave, for a total of $8.7 billion."
+      - period_start: 2025-02-26
+        period_end: 2025-02-26
+        value: 10.2
+        as_of: 2025-02-27
+        source_url: https://www.sec.gov/Archives/edgar/data/1839341/000162828025008312/ex991-coreweavepressrelease.htm
+        quote: "Core Scientific and CoreWeave Announce $1.2 Billion Expansion at Denton, TX Site Expands Total Contracted HPC Infrastructure by CoreWeave to Approximately 590 Megawatts of Critical IT Load at Six Core Scientific Sites New Agreement Boosts Total Contracted Revenue to $10.2 Billion over 12-year Contract Terms"
+
+  # -------------------------------------------------------------------- Nebius
+  - id: customer_concentration.NBIS.largest_customer_pct_fy
+    indicator: customer_concentration
+    label: Nebius largest-customer share of revenue (fiscal year)
+    entity: Nebius Group (NBIS)
+    source: Nebius Group Form 20-F (SEC EDGAR)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001513845&type=20-F
+    unit: "%"
+    currency: null
+    cadence: annual
+    methodology: >
+      Largest share in the 20-F Significant Customers table (customers with 10% or more of
+      revenue, after deconsolidation of Toloka entities). Customers are not named. In 2023
+      no customer reached 10%.
+    observations:
+      - period_start: 2024-01-01
+        period_end: 2024-12-31
+        value: 27
+        as_of: 2026-04-30
+        source_url: https://www.sec.gov/Archives/edgar/data/1513845/000110465926052948/nbis-20251231x20f.htm
+        quote: "The following customers accounted for 10% or more of the Company’s revenue for the years ended December 31, 2023, 2024, and 2025 after deconsolidation of Toloka entities: ... Customer A * 27 % 25 % Customer B * * 15 % Customer C * 11 % *"
+        note: Table row text; columns are 2023, 2024, 2025.
+      - period_start: 2025-01-01
+        period_end: 2025-12-31
+        value: 25
+        as_of: 2026-04-30
+        source_url: https://www.sec.gov/Archives/edgar/data/1513845/000110465926052948/nbis-20251231x20f.htm
+        quote: "The following customers accounted for 10% or more of the Company’s revenue for the years ended December 31, 2023, 2024, and 2025 after deconsolidation of Toloka entities: ... Customer A * 27 % 25 % Customer B * * 15 % Customer C * 11 % *"
+        note: Table row text; columns are 2023, 2024, 2025.
+
+  - id: customer_concentration.NBIS.second_largest_customer_pct_fy
+    indicator: customer_concentration
+    label: Nebius second-largest-customer share of revenue (fiscal year)
+    entity: Nebius Group (NBIS)
+    source: Nebius Group Form 20-F (SEC EDGAR)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001513845&type=20-F
+    unit: "%"
+    currency: null
+    cadence: annual
+    methodology: Second-largest share in the 20-F Significant Customers table (after deconsolidation of Toloka entities). Customers are not named.
+    observations:
+      - period_start: 2024-01-01
+        period_end: 2024-12-31
+        value: 11
+        as_of: 2026-04-30
+        source_url: https://www.sec.gov/Archives/edgar/data/1513845/000110465926052948/nbis-20251231x20f.htm
+        quote: "The following customers accounted for 10% or more of the Company’s revenue for the years ended December 31, 2023, 2024, and 2025 after deconsolidation of Toloka entities: ... Customer A * 27 % 25 % Customer B * * 15 % Customer C * 11 % *"
+        note: Table row text; columns are 2023, 2024, 2025.
+      - period_start: 2025-01-01
+        period_end: 2025-12-31
+        value: 15
+        as_of: 2026-04-30
+        source_url: https://www.sec.gov/Archives/edgar/data/1513845/000110465926052948/nbis-20251231x20f.htm
+        quote: "The following customers accounted for 10% or more of the Company’s revenue for the years ended December 31, 2023, 2024, and 2025 after deconsolidation of Toloka entities: ... Customer A * 27 % 25 % Customer B * * 15 % Customer C * 11 % *"
+        note: Table row text; columns are 2023, 2024, 2025.
+
+  - id: customer_concentration.NBIS.largest_customer_pct_q
+    indicator: customer_concentration
+    label: Nebius largest-customer share of revenue (quarter)
+    entity: Nebius Group (NBIS)
+    source: Nebius Group Form 6-K interim financial statements (SEC EDGAR)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001513845&type=6-K
+    unit: "%"
+    currency: null
+    cadence: quarterly
+    methodology: >
+      Largest share of revenue for the three-month quarter in the Significant Customers table
+      of the interim financial statements furnished on Form 6-K. Customers are not named.
+      The Q1 2026 6-K does not include this table.
+    observations:
+      - period_start: 2025-04-01
+        period_end: 2025-06-30
+        value: 39
+        as_of: 2026-08-12
+        source_url: https://www.sec.gov/Archives/edgar/data/1513845/000110465926094844/nbis-20260812xex99d2.htm
+        quote: "The following customers accounted for 10% or more of the Company’s revenue for the three and six months ended June 30, 2025 and 2026: ... Customer A 39% * 34% * Customer B 15% * 13% * Customer C * 24% * 26%"
+        note: Table row text; columns are Q2 2025, Q2 2026, 6M 2025, 6M 2026.
+      - period_start: 2026-04-01
+        period_end: 2026-06-30
+        value: 24
+        as_of: 2026-08-12
+        source_url: https://www.sec.gov/Archives/edgar/data/1513845/000110465926094844/nbis-20260812xex99d2.htm
+        quote: "The following customers accounted for 10% or more of the Company’s revenue for the three and six months ended June 30, 2025 and 2026: ... Customer A 39% * 34% * Customer B 15% * 13% * Customer C * 24% * 26%"
+        note: Table row text; columns are Q2 2025, Q2 2026, 6M 2025, 6M 2026.
+
+  - id: customer_concentration.NBIS.largest_customer_pct_6m
+    indicator: customer_concentration
+    label: Nebius largest-customer share of revenue (six months year-to-date)
+    entity: Nebius Group (NBIS)
+    source: Nebius Group Form 6-K interim financial statements (SEC EDGAR)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001513845&type=6-K
+    unit: "%"
+    currency: null
+    cadence: annual
+    methodology: Largest share of revenue for the six months ended June 30 in the Significant Customers table of the interim financial statements. Customers are not named.
+    observations:
+      - period_start: 2025-01-01
+        period_end: 2025-06-30
+        value: 34
+        as_of: 2026-08-12
+        source_url: https://www.sec.gov/Archives/edgar/data/1513845/000110465926094844/nbis-20260812xex99d2.htm
+        quote: "The following customers accounted for 10% or more of the Company’s revenue for the three and six months ended June 30, 2025 and 2026: ... Customer A 39% * 34% * Customer B 15% * 13% * Customer C * 24% * 26%"
+        note: Table row text; columns are Q2 2025, Q2 2026, 6M 2025, 6M 2026.
+      - period_start: 2026-01-01
+        period_end: 2026-06-30
+        value: 26
+        as_of: 2026-08-12
+        source_url: https://www.sec.gov/Archives/edgar/data/1513845/000110465926094844/nbis-20260812xex99d2.htm
+        quote: "The following customers accounted for 10% or more of the Company’s revenue for the three and six months ended June 30, 2025 and 2026: ... Customer A 39% * 34% * Customer B 15% * 13% * Customer C * 24% * 26%"
+        note: Table row text; columns are Q2 2025, Q2 2026, 6M 2025, 6M 2026.
+
+  - id: customer_concentration.NBIS.microsoft_contract_value
+    indicator: customer_concentration
+    label: Nebius total contract value of Microsoft GPU agreement (base)
+    entity: Nebius Group (NBIS)
+    source: Nebius Group Form 6-K (SEC EDGAR)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001513845&type=6-K
+    unit: USD bn
+    currency: USD
+    cadence: irregular
+    methodology: >
+      Total contract value through 2031 of the September 2025 Microsoft dedicated-GPU
+      agreement, excluding optional additional services (see
+      microsoft_contract_value_incl_options). Subject to deployment and availability, with
+      Microsoft termination rights for delays. Maximum/total contract value, not guaranteed
+      cash flow.
+    observations:
+      - period_start: 2025-09-08
+        period_end: 2025-09-08
+        value: 17.4
+        as_of: 2025-09-08
+        source_url: https://www.sec.gov/Archives/edgar/data/1513845/000110465925088312/tm2525580d1_6k.htm
+        quote: "Subject to the satisfaction of the deployment and availability of the GPU Services, the total contract value is about $17.4 billion through 2031."
+        note: The 6-K dates the agreement September 8, 2025; the FY2025 20-F says "Effective as of September 7, 2025".
+
+  - id: customer_concentration.NBIS.microsoft_contract_value_incl_options
+    indicator: customer_concentration
+    label: Nebius total contract value of Microsoft GPU agreement including additional services
+    entity: Nebius Group (NBIS)
+    source: Nebius Group Form 6-K (SEC EDGAR)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001513845&type=6-K
+    unit: USD bn
+    currency: USD
+    cadence: irregular
+    methodology: >
+      Total contract value if Microsoft acquires the additional services/capacity allowed
+      under the agreement. Includes optional capacity; maximum contract value, not
+      guaranteed cash flow.
+    observations:
+      - period_start: 2025-09-08
+        period_end: 2025-09-08
+        value: 19.4
+        as_of: 2025-09-08
+        source_url: https://www.sec.gov/Archives/edgar/data/1513845/000110465925088312/tm2525580d1_6k.htm
+        quote: "Microsoft may also acquire additional services and/or capacity under the Agreement, which would increase the total contract value to about $19.4 billion."
+
+  - id: customer_concentration.NBIS.meta_contract_value
+    indicator: customer_concentration
+    label: Nebius contract value of Meta agreements (per agreement)
+    entity: Nebius Group (NBIS)
+    source: Nebius Group Form 20-F (SEC EDGAR)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001513845&type=20-F
+    unit: USD bn
+    currency: USD
+    cadence: irregular
+    methodology: >
+      Contract value of each Meta agreement as disclosed in the FY2025 20-F. Each
+      observation is a separate agreement. The November 2025 figure is contracted
+      consideration under the initial order (excludes recurring storage/compute fees). The
+      March 2026 figure is "up to" and includes an order under which Meta buys only capacity
+      Nebius does not sell to others ($12 billion is dedicated-capacity orders). Maximum/total
+      contract values, may include options, not guaranteed cash flow.
+    observations:
+      - period_start: 2025-11-01
+        period_end: 2025-11-01
+        value: 2.8807
+        as_of: 2026-04-30
+        source_url: https://www.sec.gov/Archives/edgar/data/1513845/000110465926052948/nbis-20251231x20f.htm
+        quote: "The total contracted consideration under the initial order is approximately $ 2,880.7 ."
+        note: Financial statements are in millions of U.S. dollars; $2,880.7 million converted to $2.8807 billion.
+      - period_start: 2026-03-13
+        period_end: 2026-03-13
+        value: 27
+        as_of: 2026-04-30
+        source_url: https://www.sec.gov/Archives/edgar/data/1513845/000110465926052948/nbis-20251231x20f.htm
+        quote: "The Agreement and the initial Orders thereunder have a total contract value of up to approximately $27 billion."
+
+  # ---------------------------------------------------------------------- IREN
+  - id: customer_concentration.IREN.microsoft_contract_value
+    indicator: customer_concentration
+    label: IREN total contract value of Microsoft GPU services agreement
+    entity: IREN (IREN)
+    source: IREN Form 10-Q (SEC EDGAR)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001878848&type=10-Q
+    unit: USD bn
+    currency: USD
+    cadence: irregular
+    methodology: >
+      Total contract value of the November 2025 Microsoft dedicated-GPU agreement (Childress,
+      Texas; ~5-year average term), 20% prepaid per tranche. Maximum/total contract value,
+      not guaranteed cash flow.
+    observations:
+      - period_start: 2025-11-02
+        period_end: 2025-11-02
+        value: 9.7
+        as_of: 2025-11-06
+        source_url: https://www.sec.gov/Archives/edgar/data/1878848/000187884825000081/iren-20250930.htm
+        quote: "On November 2, 2025, the Group entered into an agreement with Microsoft Corporation to provide dedicated GPU services in tranches at data center facilities located in Childress, Texas, over an average term of five years . The total contract value is approximately $ 9.7 billion over the term of the agreement, with 20 % of the contract value to be paid prior to the applicable delivery date of each tranche."
+
+  - id: customer_concentration.IREN.nvidia_contract_value
+    indicator: customer_concentration
+    label: IREN total contract value of NVIDIA cloud services agreement
+    entity: IREN (IREN)
+    source: IREN Form 10-Q (SEC EDGAR)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001878848&type=10-Q
+    unit: USD bn
+    currency: USD
+    cadence: irregular
+    methodology: Total contract value of the May 2026 five-year NVIDIA dedicated-GPU agreement. Maximum/total contract value, not guaranteed cash flow.
+    observations:
+      - period_start: 2026-05-07
+        period_end: 2026-05-07
+        value: 3.4
+        as_of: 2026-05-08
+        source_url: https://www.sec.gov/Archives/edgar/data/1878848/000187884826000026/iren-20260331.htm
+        quote: "On May 7, 2026, the Group entered into an agreement with NVIDIA Corporation (\"NVIDIA\") to provide dedicated GPU services in tranches at data center facilities located in Childress, Texas, over a five year term. The total contract value is approximately $ 3.4 billion over the term of the agreement."
+
+  - id: customer_concentration.IREN.ai_developers_aggregate_contract_value
+    indicator: customer_concentration
+    label: IREN aggregate contract value of July 2026 AI developer contracts (Prometheus, Perplexity, Together AI and others)
+    entity: IREN (IREN)
+    source: IREN Form 8-K Exhibit 99.1 press release (SEC EDGAR)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001878848&type=8-K
+    unit: USD bn
+    currency: USD
+    cadence: irregular
+    methodology: >
+      Aggregate total contract value of several multi-year cloud services contracts announced
+      together (not one counterparty). Maximum/total contract value, not guaranteed cash flow.
+    observations:
+      - period_start: 2026-07-20
+        period_end: 2026-07-20
+        value: 2.8
+        as_of: 2026-07-20
+        source_url: https://www.sec.gov/Archives/edgar/data/1878848/000114036126028871/ef20078253_ex99-1.htm
+        quote: "IREN Signs $2.8bn in New Customer Contracts with Leading AI Developers, Raises 2026 ARR Target to over $4bn"
+        note: The FY2026 10-K describes these as "multi-year cloud services contracts with leading AI developers including Prometheus, Perplexity and Together AI, representing approximately $2.8 billion in aggregate total contract value."
+
+  # ----------------------------------------------------------- Applied Digital
+  - id: customer_concentration.APLD.largest_customer_pct_fy
+    indicator: customer_concentration
+    label: Applied Digital largest-customer share of total revenue (fiscal year ending May 31)
+    entity: Applied Digital (APLD)
+    source: Applied Digital Form 10-K for fiscal 2026 (SEC EDGAR)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001144879&type=10-K
+    unit: "%"
+    currency: null
+    cadence: annual
+    methodology: >
+      Largest share in the FY2026 10-K table of total revenue concentration by major
+      customer. All three years come from that one filing so they share one revenue basis.
+      Earlier filings used a different continuing-operations basis (the FY2025 10-K showed
+      93% for FY2025), so they are not mixed in. Customers are not named; the largest
+      customer in FY2026 (Customer A, HPC Hosting segment) differs from FY2024-FY2025
+      (Customer B, Data Center Hosting / crypto-mining hosting).
+    observations:
+      - period_start: 2023-06-01
+        period_end: 2024-05-31
+        value: 62
+        as_of: 2026-07-29
+        source_url: https://www.sec.gov/Archives/edgar/data/1144879/000114487926000048/apld-20260531.htm
+        quote: "Below is a summary of the Company’s total revenue concentration by major customer for the fiscal years ended May 31, 2026, 2025, and 2024: May 31, 2026 May 31, 2025 May 31, 2024 Customer A 59 % — % — % Customer B 25 % 59 % 62 % Customer C 12 % 28 % — % Customer D — % — % 12 %"
+      - period_start: 2024-06-01
+        period_end: 2025-05-31
+        value: 59
+        as_of: 2026-07-29
+        source_url: https://www.sec.gov/Archives/edgar/data/1144879/000114487926000048/apld-20260531.htm
+        quote: "Below is a summary of the Company’s total revenue concentration by major customer for the fiscal years ended May 31, 2026, 2025, and 2024: May 31, 2026 May 31, 2025 May 31, 2024 Customer A 59 % — % — % Customer B 25 % 59 % 62 % Customer C 12 % 28 % — % Customer D — % — % 12 %"
+      - period_start: 2025-06-01
+        period_end: 2026-05-31
+        value: 59
+        as_of: 2026-07-29
+        source_url: https://www.sec.gov/Archives/edgar/data/1144879/000114487926000048/apld-20260531.htm
+        quote: "During fiscal year 2026, this business segment was comprised of one customer accounting for 59% of our total revenue from continuing operations."
+
+  - id: customer_concentration.APLD.largest_customer_pct_q
+    indicator: customer_concentration
+    label: Applied Digital largest-customer share of revenue (fiscal quarter)
+    entity: Applied Digital (APLD)
+    source: Applied Digital Form 10-Q for Q1 fiscal 2027 (SEC EDGAR)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001144879&type=10-Q
+    unit: "%"
+    currency: null
+    cadence: quarterly
+    methodology: >
+      Largest share of revenue for the three-month fiscal quarter in the 10-Q table of
+      revenue concentration by major customers. Both values come from the Q1 FY2027 10-Q so
+      they share one revenue basis; earlier 10-Qs used a different basis (the Q1 FY2026
+      10-Q originally showed 59% for the same quarter). Customers are not named.
+    observations:
+      - period_start: 2025-06-01
+        period_end: 2025-08-31
+        value: 47
+        as_of: 2026-10-07
+        source_url: https://www.sec.gov/Archives/edgar/data/1144879/000114487926000059/apld-20260831.htm
+        quote: "Below is a summary of the Company’s revenue concentration by major customers for the three months ended August 31, 2026 and August 31, 2025, respectively. Three Months Ended August 31, 2026 August 31, 2025 Customer A 56 % 32 % Customer B 21 % — % Customer C 11 % 47 % Customer D — % 21 %"
+      - period_start: 2026-06-01
+        period_end: 2026-08-31
+        value: 56
+        as_of: 2026-10-07
+        source_url: https://www.sec.gov/Archives/edgar/data/1144879/000114487926000059/apld-20260831.htm
+        quote: "Below is a summary of the Company’s revenue concentration by major customers for the three months ended August 31, 2026 and August 31, 2025, respectively. Three Months Ended August 31, 2026 August 31, 2025 Customer A 56 % 32 % Customer B 21 % — % Customer C 11 % 47 % Customer D — % 21 %"
+
+  - id: customer_concentration.APLD.coreweave_contract_value
+    indicator: customer_concentration
+    label: Applied Digital total contracted revenue from CoreWeave leases (Polaris Forge 1)
+    entity: Applied Digital (APLD)
+    source: Applied Digital Form 10-K for fiscal 2026 (SEC EDGAR)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001144879&type=10-K
+    unit: USD bn
+    currency: USD
+    cadence: irregular
+    methodology: >
+      Total contracted revenue over the initial ~15-year lease terms for CoreWeave's 400 MW at
+      Polaris Forge 1, from the 10-K contracted lease portfolio table. Dated at the portfolio
+      date (May 31, 2026), not the signing dates. Maximum/total contract value, excludes
+      renewal options, not guaranteed cash flow.
+    observations:
+      - period_start: 2026-05-31
+        period_end: 2026-05-31
+        value: 11.0
+        as_of: 2026-07-29
+        source_url: https://www.sec.gov/Archives/edgar/data/1144879/000114487926000048/apld-20260531.htm
+        quote: "The following table summarizes our contracted HPC lease portfolio as of May 31, 2026: Campus | Anchor Tenant | Contracted Critical IT Load | Lease Term | Total Contracted Revenue (1) | Expected Delivery (2) | Polaris Forge 1 | CoreWeave | 400 MW | 15 years | ~$11.0B | 2H25–1H27"
+
+  # ------------------------------------------------------------ Cipher Mining
+  - id: customer_concentration.CIFR.fluidstack_contract_value
+    indicator: customer_concentration
+    label: Cipher contracted revenue of Fluidstack (Google-backstopped) leases at Barber Lake (per agreement)
+    entity: Cipher Mining / Cipher Digital (CIFR)
+    source: Cipher Form 8-K Exhibit 99.1 press releases (SEC EDGAR)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001819989&type=8-K
+    unit: USD bn
+    currency: USD
+    cadence: irregular
+    methodology: >
+      Contracted revenue over the initial 10-year term of each Fluidstack agreement, as
+      announced. Each observation is a separate agreement, not a running total. Excludes the
+      two five-year extension options. Google backstops part of Fluidstack's lease
+      obligations. Maximum/total contract value, not guaranteed cash flow.
+    observations:
+      - period_start: 2025-09-25
+        period_end: 2025-09-25
+        value: 3
+        as_of: 2025-09-25
+        source_url: https://www.sec.gov/Archives/edgar/data/1819989/000095010325012168/dp234624_ex9901.htm
+        quote: "The agreement represents approximately $3 billion in contracted revenue over the initial 10-year term and includes two five-year extension options."
+      - period_start: 2025-11-20
+        period_end: 2025-11-20
+        value: 0.83
+        as_of: 2025-11-20
+        source_url: https://www.sec.gov/Archives/edgar/data/1819989/000095010325015073/dp237633_ex9901.htm
+        quote: "The agreement represents approximately $830 million in contracted revenue over the initial 10-year term and includes two five-year extension options."
+
+  - id: customer_concentration.CIFR.aws_contract_value
+    indicator: customer_concentration
+    label: Cipher estimated contract value of Amazon Web Services lease (Black Pearl)
+    entity: Cipher Mining / Cipher Digital (CIFR)
+    source: Cipher Form 8-K business update presentation (SEC EDGAR)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001819989&type=8-K
+    unit: USD bn
+    currency: USD
+    cadence: irregular
+    methodology: Estimated contract value of the 15-year, 300 MW gross AWS lease, as shown in Cipher's business update presentation. Maximum/total contract value, not guaranteed cash flow.
+    observations:
+      - period_start: 2025-11-03
+        period_end: 2025-11-03
+        value: 5.5
+        as_of: 2025-11-03
+        source_url: https://www.sec.gov/Archives/edgar/data/1819989/000181998925000110/ciphermining_businessupd.htm
+        quote: "Amazon Web Services, Inc. 300 MW Gross Capacity ~$5.5Bn Estimated Contract Value 15 Years Base Lease Term Aug. 2026 Lease Start Date"
+        note: The 10-K says the AWS lease was entered in October 2025; dated at the presentation date.
+
+  # ------------------------------------------------------------------ TeraWulf
+  - id: customer_concentration.WULF.fluidstack_contract_value
+    indicator: customer_concentration
+    label: TeraWulf contracted revenue of Fluidstack (Google-backstopped) agreements (per agreement)
+    entity: TeraWulf (WULF)
+    source: TeraWulf Form 8-K Exhibit 99.1 press releases (SEC EDGAR)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001083301&type=8-K
+    unit: USD bn
+    currency: USD
+    cadence: irregular
+    methodology: >
+      Contracted revenue of each Fluidstack agreement, as announced. Each observation is a
+      separate agreement. August 2025: Lake Mariner, initial 10-year terms, excluding
+      extension options. October 2025: Abernathy joint-venture 25-year lease (revenue to the
+      JV, in which TeraWulf held 51%; TeraWulf sold its stake to a Fluidstack-led group on
+      July 6, 2026). Maximum/total contract values, not guaranteed cash flow.
+    observations:
+      - period_start: 2025-08-14
+        period_end: 2025-08-14
+        value: 3.7
+        as_of: 2025-08-14
+        source_url: https://www.sec.gov/Archives/edgar/data/1083301/000110465925078084/tm2523008d2_ex99-1.htm
+        quote: "The agreements represent approximately $3.7 billion in contracted revenue over the initial 10-year terms and include two five-year extension options which, if exercised, would bring the total contract revenue to approximately $8.7 billion."
+      - period_start: 2025-10-28
+        period_end: 2025-10-28
+        value: 9.5
+        as_of: 2025-10-28
+        source_url: https://www.sec.gov/Archives/edgar/data/1083301/000110465925102858/tm2529509d1_ex99-1.htm
+        quote: "The 25-year hosting commitment represents approximately $9.5 billion in contracted revenue to the joint venture."
+
+  - id: customer_concentration.WULF.anthropic_contract_value
+    indicator: customer_concentration
+    label: TeraWulf contracted revenue of Anthropic lease (Justified Data campus)
+    entity: TeraWulf (WULF)
+    source: TeraWulf Form 8-K Exhibit 99.1 press release (SEC EDGAR)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001083301&type=8-K
+    unit: USD bn
+    currency: USD
+    cadence: irregular
+    methodology: Expected contracted lease revenue over the initial (20-year) term of the Anthropic lease, as announced. Maximum/total contract value, not guaranteed cash flow.
+    observations:
+      - period_start: 2026-07-06
+        period_end: 2026-07-06
+        value: 19
+        as_of: 2026-07-06
+        source_url: https://www.sec.gov/Archives/edgar/data/1083301/000110465926080583/tm2619468d1_ex99-1.htm
+        quote: "The lease is expected to generate approximately $19 billion of contracted revenue over the initial lease term."
+
+  # --------------------------------------------------------------------- Hut 8
+  - id: customer_concentration.HUT.fluidstack_contract_value
+    indicator: customer_concentration
+    label: Hut 8 base-term contract value of Fluidstack lease at River Bend (Anthropic partnership, Google backstop)
+    entity: Hut 8 (HUT)
+    source: Hut 8 Form 8-K Exhibit 99.1 press release (SEC EDGAR)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001964789&type=8-K
+    unit: USD bn
+    currency: USD
+    cadence: irregular
+    methodology: >
+      Total contract value over the 15-year base term of the 245 MW River Bend lease with
+      Fluidstack, part of a partnership with Anthropic and Fluidstack; Google backstops the
+      base-term lease payments. Excludes renewal options (up to $17.7 billion). Maximum/total
+      contract value, not guaranteed cash flow.
+    observations:
+      - period_start: 2025-12-17
+        period_end: 2025-12-17
+        value: 7.0
+        as_of: 2025-12-17
+        source_url: https://www.sec.gov/Archives/edgar/data/1964789/000110465925122052/hut-20251217xex99d1.htm
+        quote: "Hut 8 Signs 15-Year, 245 MW AI Data Center Lease at River Bend Campus with Total Contract Value of $7.0 Billion ​ 15-year 245 MW IT lease valued at $7.0 billion over the base term and up to $17.7 billion if all renewal options are exercised"
+
+  - id: customer_concentration.HUT.beacon_point_tenant_contract_value
+    indicator: customer_concentration
+    label: Hut 8 base-term contract value of Beacon Point leases with an unnamed high-investment-grade technology company (per lease)
+    entity: Hut 8 (HUT)
+    source: Hut 8 Form 8-K Exhibit 99.1 press release (SEC EDGAR)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001964789&type=8-K
+    unit: USD bn
+    currency: USD
+    cadence: irregular
+    methodology: >
+      Base-term (15-year) contract value of each Beacon Point lease with the same unnamed
+      high-investment-grade technology tenant. Only Phase 2 is recorded: the Phase 1 lease
+      ($9.8 billion) was disclosed in the Q1 2026 10-Q without a signing date. Excludes
+      renewal options. Maximum/total contract value, not guaranteed cash flow.
+    observations:
+      - period_start: 2026-07-20
+        period_end: 2026-07-20
+        value: 9.8
+        as_of: 2026-07-20
+        source_url: https://www.sec.gov/Archives/edgar/data/1964789/000110465926084862/tm2620835d1_ex99-1.htm
+        quote: "(Nasdaq, TSX: HUT) (“Hut 8” or the “Company”), an energy infrastructure platform integrating power, digital infrastructure, and compute at scale to fuel next-generation, energy-intensive technologies, today announced the commercialization of the second phase of its one-gigawatt Beacon Point data center campus in Nueces County, Texas through a second 15-year, $9.8 billion lease (the “Agreement”) for 352 megawatts (MW) of IT capacity (the “Transaction”)."

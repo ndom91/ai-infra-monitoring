@@ -13,7 +13,8 @@
 		"test": "vitest run",
 		"db:generate": "drizzle-kit generate",
 		"db:migrate": "tsx --env-file-if-exists=.env scripts/migrate.ts",
-		"collect": "tsx --env-file-if-exists=.env scripts/collect.ts"
+		"collect": "tsx --env-file-if-exists=.env scripts/collect.ts",
+		"check:manual": "tsx scripts/check-manual.ts"
 	},
 	"dependencies": {
 		"@libsql/client": "^0.18.0",

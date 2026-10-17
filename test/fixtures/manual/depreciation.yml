@@ -1,0 +1,18 @@
+series:
+  - id: test.useful_life
+    indicator: depreciation
+    label: Test server useful life
+    source: Test 10-K
+    source_url: https://www.sec.gov/
+    unit: years
+    cadence: irregular
+    methodology: Useful life of servers as disclosed.
+    observations:
+      - period_start: 2025-01-01
+        period_end: 2025-01-01
+        value: 5.5
+        kind: calculated
+        as_of: 2025-01-29
+        source_url: https://www.sec.gov/test
+        quote: "we extended the useful lives to five and a half years"
+        note: Spelled-out number converted to 5.5.

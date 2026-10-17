@@ -7872,8 +7872,13 @@
 		"construction": [
 			{
 				"date": "2025-06-30",
-				"value": 5994.47,
-				"source": "CBRE H1 2026 year-over-year comparison; derived from 24.8% growth"
+				"value": 5242.5,
+				"source": "CBRE H1 2025"
+			},
+			{
+				"date": "2025-12-31",
+				"value": 5994.4,
+				"source": "CBRE H2 2025"
 			},
 			{
 				"date": "2026-06-30",
@@ -7915,7 +7920,7 @@
 			{
 				"date": "2025-01-01",
 				"value": 5.5,
-				"source": "Meta FY2024 earnings release; selected servers/network equipment",
+				"source": "Meta Q4 2024 earnings release (2025-01-29); certain servers/network assets, effective January 1, 2025",
 				"entity": "Meta"
 			}
 		]

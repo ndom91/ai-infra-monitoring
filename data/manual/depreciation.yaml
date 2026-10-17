@@ -1,0 +1,407 @@
+# Server / network equipment useful-life assumptions, step series.
+# Each observation is one disclosed change (period = effective date, as_of = filing date),
+# plus one baseline per series so the step chart has a starting point.
+series:
+  # ---------------------------------------------------------------- Amazon
+  - id: depreciation.AMZN.server_useful_life
+    indicator: depreciation
+    label: Amazon estimated useful life of servers
+    entity: Amazon
+    source: Amazon.com, Inc. SEC filings (10-K)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001018724&type=10-K
+    unit: years
+    cadence: irregular
+    methodology: >
+      Straight-line depreciation life for servers as stated in Amazon's 10-K accounting
+      policy and "Use of Estimates" notes. period_start = period_end = effective date of
+      the change; as_of = filing date of the first filing found that states the new life.
+      The 2025-01-01 step to 5 years applies only to "a subset" of servers and networking
+      equipment; the remaining servers stay at 6 years (FY2025 10-K table shows
+      "Five to six years").
+    observations:
+      - period_start: 2019-01-01
+        period_end: 2019-01-01
+        value: 3
+        as_of: 2020-01-31
+        source_url: https://www.sec.gov/Archives/edgar/data/1018724/000101872420000004/amzn-20191231x10k.htm
+        quote: "Depreciation and amortization is recorded on a straight-line basis over the estimated useful lives of the assets (generally the lesser of 40 years or the remaining life of the underlying building, three years for our servers, five years for networking equipment, ten years for heavy equipment, and three to seven years for other fulfillment equipment)."
+        note: Baseline as disclosed in the FY2019 10-K accounting policy (servers).
+      - period_start: 2020-01-01
+        period_end: 2020-01-01
+        value: 4
+        as_of: 2020-01-31
+        source_url: https://www.sec.gov/Archives/edgar/data/1018724/000101872420000004/amzn-20191231x10k.htm
+        quote: "For example, in Q4 2019 we completed a useful life study for our servers and are increasing the useful life from three years to four years for servers in January 2020, which, based on servers that are included in \"Property and equipment, net\" as of December 31, 2019, will have an anticipated impact to our 2020 operating income of $2.3 billion."
+        note: Servers. Impact +$2.3B 2020 operating income. Q4 2019 earnings release (8-K, 2020-01-30) also cites ~$800M lower depreciation in Q1 2020 guidance but does not state the new life.
+      - period_start: 2022-01-01
+        period_end: 2022-01-01
+        value: 5
+        as_of: 2022-02-04
+        source_url: https://www.sec.gov/Archives/edgar/data/1018724/000101872422000005/amzn-20211231.htm
+        quote: "For example, in Q4 2021 we completed a useful life study for our servers and networking equipment and are increasing the useful lives from four years to five years for servers and from five years to six years for networking equipment in January 2022, which, based on servers and networking equipment that are included in \"Property and equipment, net\" as of December 31, 2021, will have an anticipated impact to our 2022 operating income of $3.1 billion."
+        note: Servers 4 -> 5 years (networking 5 -> 6 in the same change). Impact +$3.1B 2022 operating income (servers and networking combined).
+      - period_start: 2024-01-01
+        period_end: 2024-01-01
+        value: 6
+        as_of: 2024-02-02
+        source_url: https://www.sec.gov/Archives/edgar/data/1018724/000101872424000008/amzn-20231231.htm
+        quote: "For example, in Q4 2023 we completed a useful life study for our servers and are increasing the useful life from five years to six years in January 2024, which, based on servers that are included in \"Property and equipment, net\" as of December 31, 2023, will have an anticipated impact to our 2024 operating income of $3.1 billion."
+        note: Servers 5 -> 6 years. Impact +$3.1B 2024 operating income. Q4 2023 earnings release (8-K, 2024-02-01) cites ~$0.9B lower depreciation in Q1 2024 guidance.
+      - period_start: 2025-01-01
+        period_end: 2025-01-01
+        value: 5
+        as_of: 2025-02-07
+        source_url: https://www.sec.gov/Archives/edgar/data/1018724/000101872425000004/amzn-20241231.htm
+        quote: "We completed our most recent servers and networking equipment useful life study in Q4 2024, and are changing the useful lives of a subset of our servers and networking equipment, effective January 1, 2025, from six years to five years."
+        note: >-
+          SUBSET ONLY: a subset of servers and networking equipment shortened 6 -> 5 years;
+          other servers remain at 6 years. Same page: anticipated decrease in 2025 operating
+          income of approximately $0.7 billion; changes primarily impact AWS. FY2025 10-K
+          (2026-02-06) attributes the change to "the increased pace of technology development,
+          particularly in the area of artificial intelligence and machine learning."
+
+  - id: depreciation.AMZN.network_useful_life
+    indicator: depreciation
+    label: Amazon estimated useful life of networking equipment
+    entity: Amazon
+    source: Amazon.com, Inc. SEC filings (10-K)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001018724&type=10-K
+    unit: years
+    cadence: irregular
+    methodology: >
+      Straight-line depreciation life for networking equipment per Amazon's 10-K. The
+      2025-01-01 step to 5 years applies only to a subset of servers and networking
+      equipment.
+    observations:
+      - period_start: 2019-01-01
+        period_end: 2019-01-01
+        value: 5
+        as_of: 2020-01-31
+        source_url: https://www.sec.gov/Archives/edgar/data/1018724/000101872420000004/amzn-20191231x10k.htm
+        quote: "Depreciation and amortization is recorded on a straight-line basis over the estimated useful lives of the assets (generally the lesser of 40 years or the remaining life of the underlying building, three years for our servers, five years for networking equipment, ten years for heavy equipment, and three to seven years for other fulfillment equipment)."
+        note: Baseline as disclosed in the FY2019 10-K accounting policy (networking equipment).
+      - period_start: 2022-01-01
+        period_end: 2022-01-01
+        value: 6
+        as_of: 2022-02-04
+        source_url: https://www.sec.gov/Archives/edgar/data/1018724/000101872422000005/amzn-20211231.htm
+        quote: "For example, in Q4 2021 we completed a useful life study for our servers and networking equipment and are increasing the useful lives from four years to five years for servers and from five years to six years for networking equipment in January 2022, which, based on servers and networking equipment that are included in \"Property and equipment, net\" as of December 31, 2021, will have an anticipated impact to our 2022 operating income of $3.1 billion."
+        note: Networking equipment 5 -> 6 years. Impact +$3.1B 2022 operating income (servers and networking combined).
+      - period_start: 2025-01-01
+        period_end: 2025-01-01
+        value: 5
+        as_of: 2025-02-07
+        source_url: https://www.sec.gov/Archives/edgar/data/1018724/000101872425000004/amzn-20241231.htm
+        quote: "We completed our most recent servers and networking equipment useful life study in Q4 2024, and are changing the useful lives of a subset of our servers and networking equipment, effective January 1, 2025, from six years to five years."
+        note: SUBSET ONLY; other networking equipment remains at 6 years. Same page states an anticipated ~$0.7 billion decrease in 2025 operating income (servers and networking combined).
+
+  # ---------------------------------------------------------------- Meta
+  - id: depreciation.META.server_useful_life
+    indicator: depreciation
+    label: Meta estimated useful life of servers and network assets
+    entity: Meta Platforms
+    source: Meta Platforms, Inc. SEC filings (10-K, 10-Q, 8-K earnings releases)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001326801&type=10-K
+    unit: years
+    cadence: irregular
+    methodology: >
+      Meta discloses a single combined category, "servers and network assets"; there is no
+      separate network series. Changes apply to "a majority" (2022) or "most"/"certain"
+      (2025) of the category, not to all assets. period = effective date as stated.
+    observations:
+      - period_start: 2021-12-31
+        period_end: 2021-12-31
+        value: 4
+        as_of: 2022-02-03
+        source_url: https://www.sec.gov/Archives/edgar/data/1326801/000132680122000018/fb-20211231.htm
+        quote: "In connection with our periodic reviews of the estimated useful lives of property and equipment, we extended the estimated average useful lives of selected cohorts of servers and network assets from three years to four years in prior years as well as in 2021 as a result of longer refresh cycles in our data centers."
+        note: >-
+          Baseline as disclosed in the FY2021 10-K; same page's useful-life table lists
+          "Servers and network assets Four years" as of 2021-12-31. Dated at fiscal year-end
+          rather than year start because cohorts were still moving 3 -> 4 years during 2021.
+      - period_start: 2022-04-01
+        period_end: 2022-04-01
+        value: 4.5
+        as_of: 2022-07-28
+        source_url: https://www.sec.gov/Archives/edgar/data/1326801/000132680122000082/meta-20220630.htm
+        quote: "In connection with our periodic reviews of the estimated useful lives of property and equipment, we extended the estimated average useful lives of a majority of the servers and network assets from four years to 4.5 years, effective the second quarter of 2022, as a result of expected longer refresh cycles in our data centers."
+        note: Majority of servers and network assets. Same page - Q2 2022 impact - $252M lower depreciation, +$206M net income, +$0.08 diluted EPS. Effective date is the start of Q2 2022.
+      - period_start: 2022-10-01
+        period_end: 2022-10-01
+        value: 5
+        as_of: 2023-02-02
+        source_url: https://www.sec.gov/Archives/edgar/data/1326801/000132680123000013/meta-20221231.htm
+        quote: "In connection with our periodic reviews of the estimated useful lives of property and equipment, we extended the estimated average useful lives of a majority of the servers and network assets from four years to 4.5 years, effective the second quarter of 2022, and further extended the useful lives to five years effective the fourth quarter of 2022."
+        note: Majority of servers and network assets. Same page - combined FY2022 impact of both 2022 changes - $860M lower depreciation, +$693M net income, +$0.26 diluted EPS. Effective date is the start of Q4 2022.
+      - period_start: 2025-01-01
+        period_end: 2025-01-01
+        value: 5.5
+        as_of: 2025-01-29
+        source_url: https://www.sec.gov/Archives/edgar/data/1326801/000132680125000014/meta-12312024xexhibit991.htm
+        quote: "In January 2025, we completed an assessment of the useful lives of certain servers and network assets, which resulted in an increase in their estimated useful life to 5.5 years, effective beginning fiscal year 2025."
+        note: >-
+          Certain/most servers and network assets. Q4 2024 earnings release. Q1 2025 10-Q
+          (2025-05-01) confirms "effective January 1, 2025" and states Q1 2025 impact of
+          $826M lower depreciation, +$695M net income, +$0.27 diluted EPS. FY2025 10-K table
+          shows "Five to 5.5 years".
+
+  # ---------------------------------------------------------------- Alphabet
+  - id: depreciation.GOOGL.server_useful_life
+    indicator: depreciation
+    label: Alphabet estimated useful life of servers
+    entity: Alphabet
+    source: Alphabet Inc. SEC filings (10-K, 10-Q, 8-K earnings releases)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001652044&type=10-K
+    unit: years
+    cadence: irregular
+    methodology: >
+      Server depreciation life per Alphabet filings. Changes were effective at the start of
+      the fiscal year (calendar year). Network equipment is tracked separately because
+      Alphabet discloses a different life for "certain network equipment".
+    observations:
+      - period_start: 2020-01-01
+        period_end: 2020-01-01
+        value: 3
+        as_of: 2021-02-03
+        source_url: https://www.sec.gov/Archives/edgar/data/1652044/000165204421000010/goog-20201231.htm
+        quote: "We depreciate information technology assets generally over periods of three to five years (specifically, three years for servers and three to five years for network equipment)."
+        note: Baseline as disclosed in the FY2020 10-K accounting policy (servers).
+      - period_start: 2021-01-01
+        period_end: 2021-01-01
+        value: 4
+        as_of: 2021-02-02
+        source_url: https://www.sec.gov/Archives/edgar/data/1652044/000165204421000006/googexhibit991q420.htm
+        quote: "In January 2021, we completed an assessment of the useful lives of our servers and network equipment and determined we should adjust the estimated useful life of our servers from three years to four years and the estimated useful life of certain network equipment from three years to five years."
+        note: Q4 2020 earnings release. Same page - "effective beginning fiscal year 2021"; operating results favorably impacted by ~$2.1B for full-year 2021 (assets in service at 2020-12-31, servers and network combined).
+      - period_start: 2023-01-01
+        period_end: 2023-01-01
+        value: 6
+        as_of: 2023-02-02
+        source_url: https://www.sec.gov/Archives/edgar/data/1652044/000165204423000013/googexhibit991q42022.htm
+        quote: "In January 2023, we completed an assessment of the useful lives of our servers and network equipment, resulting in a change in the estimated useful life of our servers and certain network equipment to six years, which we expect to result in a reduction of depreciation of approximately $3.4 billion for the full fiscal year 2023 for assets in service as of December 31, 2022"
+        note: Servers 4 -> 6 years (FY2022 10-K, 2023-02-03, states "from four years to six years" and "effective beginning in fiscal year 2023"). Q1 2023 10-Q reports $988M lower Q1 depreciation, +$770M net income, +$0.06 diluted EPS. FY2025 10-K still states six years.
+
+  - id: depreciation.GOOGL.network_useful_life
+    indicator: depreciation
+    label: Alphabet estimated useful life of certain network equipment
+    entity: Alphabet
+    source: Alphabet Inc. SEC filings (8-K earnings releases)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001652044&type=10-K
+    unit: years
+    cadence: irregular
+    methodology: >
+      Applies to "certain network equipment" only. No point baseline is recorded because the
+      FY2020 10-K states a range ("three to five years for network equipment"); the 2021
+      change was "from three years to five years" for the affected subset.
+    observations:
+      - period_start: 2021-01-01
+        period_end: 2021-01-01
+        value: 5
+        as_of: 2021-02-02
+        source_url: https://www.sec.gov/Archives/edgar/data/1652044/000165204421000006/googexhibit991q420.htm
+        quote: "In January 2021, we completed an assessment of the useful lives of our servers and network equipment and determined we should adjust the estimated useful life of our servers from three years to four years and the estimated useful life of certain network equipment from three years to five years."
+        note: Certain network equipment 3 -> 5 years, effective beginning fiscal year 2021. ~$2.1B favorable 2021 operating impact (servers and network combined, same page).
+      - period_start: 2023-01-01
+        period_end: 2023-01-01
+        value: 6
+        as_of: 2023-02-02
+        source_url: https://www.sec.gov/Archives/edgar/data/1652044/000165204423000013/googexhibit991q42022.htm
+        quote: "In January 2023, we completed an assessment of the useful lives of our servers and network equipment, resulting in a change in the estimated useful life of our servers and certain network equipment to six years, which we expect to result in a reduction of depreciation of approximately $3.4 billion for the full fiscal year 2023 for assets in service as of December 31, 2022"
+        note: Certain network equipment 5 -> 6 years (per FY2022 10-K). $3.4B is the combined server + network estimate.
+
+  # ---------------------------------------------------------------- Microsoft
+  - id: depreciation.MSFT.server_useful_life
+    indicator: depreciation
+    label: Microsoft estimated useful life of server equipment
+    entity: Microsoft
+    source: Microsoft Corporation SEC filings (10-K)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0000789019&type=10-K
+    unit: years
+    cadence: irregular
+    methodology: >
+      Microsoft's fiscal year starts July 1. Both changes were "effective beginning fiscal
+      year" 2021 and 2023, i.e. 2020-07-01 and 2022-07-01. The baseline is dated the last
+      day before the first change because the pre-change 10-K policy only gives a range
+      ("computer equipment, two to three years").
+    observations:
+      - period_start: 2020-06-30
+        period_end: 2020-06-30
+        value: 3
+        as_of: 2020-07-30
+        source_url: https://www.sec.gov/Archives/edgar/data/789019/000156459020034944/msft-10k_20200630.htm
+        quote: "In July 2020, we completed an assessment of the useful lives of our server and network equipment and determined we should increase the estimated useful life of server equipment from three years to four years and increase the estimated useful life of network equipment from two years to four years."
+        note: Baseline as disclosed in the FY2020 10-K (the pre-change server life, "from three years").
+      - period_start: 2020-07-01
+        period_end: 2020-07-01
+        value: 4
+        as_of: 2020-07-30
+        source_url: https://www.sec.gov/Archives/edgar/data/789019/000156459020034944/msft-10k_20200630.htm
+        quote: "In July 2020, we completed an assessment of the useful lives of our server and network equipment and determined we should increase the estimated useful life of server equipment from three years to four years and increase the estimated useful life of network equipment from two years to four years."
+        note: Server equipment 3 -> 4 years, effective beginning fiscal year 2021. Same page - estimated +$2.7B FY2021 operating income (server and network combined).
+      - period_start: 2022-07-01
+        period_end: 2022-07-01
+        value: 6
+        as_of: 2022-07-28
+        source_url: https://www.sec.gov/Archives/edgar/data/789019/000156459022026876/msft-10k_20220630.htm
+        quote: "Due to investments in software that increased efficiencies in how we operate our server and network equipment, as well as advances in technology, we determined we should increase the estimated useful lives of both server and network equipment from four years to six years."
+        note: Server equipment 4 -> 6 years, effective beginning fiscal year 2023. Same page - estimated +$3.7B FY2023 operating income. FY2026 10-K policy shows "servers and network equipment, two to six years".
+
+  - id: depreciation.MSFT.network_useful_life
+    indicator: depreciation
+    label: Microsoft estimated useful life of network equipment
+    entity: Microsoft
+    source: Microsoft Corporation SEC filings (10-K)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0000789019&type=10-K
+    unit: years
+    cadence: irregular
+    methodology: >
+      Network equipment life per Microsoft 10-K change-in-estimate notes. Fiscal year starts
+      July 1. Baseline dated the day before the first change.
+    observations:
+      - period_start: 2020-06-30
+        period_end: 2020-06-30
+        value: 2
+        as_of: 2020-07-30
+        source_url: https://www.sec.gov/Archives/edgar/data/789019/000156459020034944/msft-10k_20200630.htm
+        quote: "In July 2020, we completed an assessment of the useful lives of our server and network equipment and determined we should increase the estimated useful life of server equipment from three years to four years and increase the estimated useful life of network equipment from two years to four years."
+        note: Baseline as disclosed in the FY2020 10-K (the pre-change network life, "from two years").
+      - period_start: 2020-07-01
+        period_end: 2020-07-01
+        value: 4
+        as_of: 2020-07-30
+        source_url: https://www.sec.gov/Archives/edgar/data/789019/000156459020034944/msft-10k_20200630.htm
+        quote: "In July 2020, we completed an assessment of the useful lives of our server and network equipment and determined we should increase the estimated useful life of server equipment from three years to four years and increase the estimated useful life of network equipment from two years to four years."
+        note: Network equipment 2 -> 4 years, effective beginning fiscal year 2021. Estimated +$2.7B FY2021 operating income (combined, same page).
+      - period_start: 2022-07-01
+        period_end: 2022-07-01
+        value: 6
+        as_of: 2022-07-28
+        source_url: https://www.sec.gov/Archives/edgar/data/789019/000156459022026876/msft-10k_20220630.htm
+        quote: "Due to investments in software that increased efficiencies in how we operate our server and network equipment, as well as advances in technology, we determined we should increase the estimated useful lives of both server and network equipment from four years to six years."
+        note: Network equipment 4 -> 6 years, effective beginning fiscal year 2023. Estimated +$3.7B FY2023 operating income (combined, same page).
+
+  # ---------------------------------------------------------------- Oracle
+  - id: depreciation.ORCL.server_useful_life
+    indicator: depreciation
+    label: Oracle estimated useful life of servers (and networking equipment from FY2025)
+    entity: Oracle
+    source: Oracle Corporation SEC filings (10-Q, 10-K)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001341439&type=10-K
+    unit: years
+    cadence: irregular
+    methodology: >
+      Oracle's fiscal year starts June 1. Changes were effective at the beginning of fiscal
+      2023 (2022-06-01) and fiscal 2025 (2024-06-01). The FY2023 change covers servers; the
+      FY2025 change covers "servers and networking equipment". The 10-K property table only
+      gives a range ("Computer, network, machinery and equipment 1 - 5/6 years"), so the
+      baseline is the pre-change life stated in the FY2023 Q1 10-Q, dated the day before.
+    observations:
+      - period_start: 2022-05-31
+        period_end: 2022-05-31
+        value: 4
+        as_of: 2022-09-13
+        source_url: https://www.sec.gov/Archives/edgar/data/1341439/000156459022031545/orcl-10q_20220831.htm
+        quote: "During the first quarter of fiscal 2023, we completed an assessment of the useful lives of our servers and increased the estimate of the useful lives from four years to five years effective at the beginning of fiscal 2023."
+        note: Baseline as disclosed in the Q1 FY2023 10-Q (pre-change server life, "from four years").
+      - period_start: 2022-06-01
+        period_end: 2022-06-01
+        value: 5
+        as_of: 2022-09-13
+        source_url: https://www.sec.gov/Archives/edgar/data/1341439/000156459022031545/orcl-10q_20220831.htm
+        quote: "During the first quarter of fiscal 2023, we completed an assessment of the useful lives of our servers and increased the estimate of the useful lives from four years to five years effective at the beginning of fiscal 2023."
+        note: Servers 4 -> 5 years. Same page - decreased total operating expenses by $131M in Q1 FY2023.
+      - period_start: 2024-06-01
+        period_end: 2024-06-01
+        value: 6
+        as_of: 2024-09-10
+        source_url: https://www.sec.gov/Archives/edgar/data/1341439/000095017024104905/orcl-20240831.htm
+        quote: "During the first quarter of fiscal 2025, we completed an assessment of the useful lives of our servers and networking equipment and increased the estimate of the useful lives from five years to six years, effective at the beginning of fiscal 2025."
+        note: Servers and networking equipment 5 -> 6 years. Same page - Q1 FY2025 impact $197M lower operating expenses, +$157M net income, +$0.06 EPS. FY2026 10-K and Q1 FY2027 10-Q still state six years.
+
+  # ---------------------------------------------------------------- CoreWeave
+  - id: depreciation.CRWV.server_useful_life
+    indicator: depreciation
+    label: CoreWeave estimated useful life of technology (computing) equipment
+    entity: CoreWeave
+    source: CoreWeave, Inc. SEC filings (S-1, 10-K)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001769628
+    unit: years
+    cadence: irregular
+    methodology: >
+      CoreWeave's "computing equipment utilized in data centers" (balance-sheet line
+      "Technology equipment", i.e. GPU servers). The change was first publicly disclosed in
+      the S-1 (2025-03-03), long after its effective date. Baseline is the pre-change life,
+      dated the day before the change.
+    observations:
+      - period_start: 2022-12-31
+        period_end: 2022-12-31
+        value: 5
+        as_of: 2025-03-03
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000119312525044231/d899798ds1.htm
+        quote: "Effective January 1, 2023, the Company changed its estimate of the useful life for its computing equipment utilized in data centers from five to six years, reflecting continuous advancements in hardware performance, software optimization, and data center design improvements."
+        note: Baseline as disclosed in the S-1 (pre-change life, "from five").
+      - period_start: 2023-01-01
+        period_end: 2023-01-01
+        value: 6
+        as_of: 2025-03-03
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000119312525044231/d899798ds1.htm
+        quote: "Effective January 1, 2023, the Company changed its estimate of the useful life for its computing equipment utilized in data centers from five to six years, reflecting continuous advancements in hardware performance, software optimization, and data center design improvements."
+        note: Same page - FY2023 effect was a $20M reduction in total expenses and a $2.08 per-share increase. FY2025 10-K (2026-03-02) still lists "Technology equipment 6 years".
+
+  # ---------------------------------------------------------------- Nebius
+  - id: depreciation.NBIS.server_useful_life
+    indicator: depreciation
+    label: Nebius estimated useful life of server and network equipment
+    entity: Nebius Group
+    source: Nebius Group N.V. SEC filings (20-F, 6-K)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001513845
+    unit: years
+    cadence: irregular
+    methodology: >
+      Combined "server and network equipment" category. Baseline is the FY2025 20-F policy
+      (4.0 years), dated at FY2025 start. The 20-F (filed 2026-04-30) first disclosed the
+      4 -> 5 extension ("Management is considering the application of this change ...
+      prospectively beginning January 1, 2026"); the Q1 2026 interim report (6-K,
+      2026-05-20) confirms it was applied from 2026-01-01.
+    observations:
+      - period_start: 2025-01-01
+        period_end: 2025-01-01
+        value: 4
+        as_of: 2026-04-30
+        source_url: https://www.sec.gov/Archives/edgar/data/1513845/000110465926052948/nbis-20251231x20f.htm
+        quote: "In January 2026, the Company completed an assessment of the useful lives of servers and network equipment based on updated information and usage patterns obtained subsequent to year-end and concluded that the estimated useful lives of such assets should be extended from four to five years."
+        note: Baseline as disclosed in the FY2025 20-F; the same page's policy table lists "Server and network equipment 4.0 years".
+      - period_start: 2026-01-01
+        period_end: 2026-01-01
+        value: 5
+        as_of: 2026-04-30
+        source_url: https://www.sec.gov/Archives/edgar/data/1513845/000110465926052948/nbis-20251231x20f.htm
+        quote: "In January 2026, the Company completed an assessment of the useful lives of servers and network equipment based on updated information and usage patterns obtained subsequent to year-end and concluded that the estimated useful lives of such assets should be extended from four to five years."
+        note: >-
+          Same page - expected to reduce FY2026 depreciation by approximately $167.6 million.
+          Q1 2026 6-K (https://www.sec.gov/Archives/edgar/data/1513845/000110465926064092/nbis-20260331xex99d2.htm)
+          confirms "applied this change in accounting estimate prospectively beginning
+          January 1, 2026" with Q1 2026 impact of $43.1 lower depreciation and $41.6 higher
+          net income (USD millions per that report's units).
+
+  # ---------------------------------------------------------------- IREN
+  - id: depreciation.IREN.hpc_hardware_useful_life
+    indicator: depreciation
+    label: IREN estimated useful life of HPC (GPU) hardware
+    entity: IREN
+    source: IREN Limited SEC filings (20-F, 10-K)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001878848
+    unit: years
+    cadence: irregular
+    methodology: >
+      IREN's "HPC hardware" (GPUs for AI cloud services). Fiscal year starts July 1. HPC
+      hardware first appears in FY2024 at 5 years; FY2025 and FY2026 10-Ks still list
+      5 years, so no change has been disclosed. Bitcoin mining hardware is excluded.
+    observations:
+      - period_start: 2023-07-01
+        period_end: 2023-07-01
+        value: 5
+        as_of: 2024-08-28
+        source_url: https://www.sec.gov/Archives/edgar/data/1878848/000162828024038677/iren-20240630.htm
+        quote: "Our buildings are currently depreciated over 20 years, mining hardware is depreciated over 2-4 years, HPC hardware is depreciated over 5 years, and plant and equipment is depreciated over 3-10 years depending on the expected life of the underlying asset."
+        note: Baseline as disclosed in the FY2024 20-F (first year with HPC hardware). Unchanged in FY2026 10-K (2026-08-27).
