@@ -1,0 +1,260 @@
+{
+	"cik": 1513845,
+	"entityName": "NEBIUS GROUP N.V.",
+	"facts": {
+		"us-gaap": {
+			"NetCashProvidedByUsedInOperatingActivities": {
+				"label": "Net Cash Provided by (Used in) Operating Activities",
+				"description": "Amount of cash inflow (outflow) from operating activities, including discontinued operations. Operating activity cash flows include transactions, adjustments, and changes in value not defined as investing or financing activities.",
+				"units": {
+					"RUB": [
+						{
+							"start": "2022-01-01",
+							"end": "2022-12-31",
+							"val": 41688000000,
+							"accn": "0001558370-23-006319",
+							"fy": 2022,
+							"fp": "FY",
+							"form": "20-F",
+							"filed": "2023-04-20"
+						},
+						{
+							"start": "2022-01-01",
+							"end": "2022-12-31",
+							"val": 41688000000,
+							"accn": "0001558370-24-005891",
+							"fy": 2023,
+							"fp": "FY",
+							"form": "20-F",
+							"filed": "2024-04-26",
+							"frame": "CY2022"
+						},
+						{
+							"start": "2023-01-01",
+							"end": "2023-12-31",
+							"val": 70282000000,
+							"accn": "0001558370-24-005891",
+							"fy": 2023,
+							"fp": "FY",
+							"form": "20-F",
+							"filed": "2024-04-26",
+							"frame": "CY2023"
+						}
+					],
+					"USD": [
+						{
+							"start": "2022-01-01",
+							"end": "2022-12-31",
+							"val": 592800000,
+							"accn": "0001558370-23-006319",
+							"fy": 2022,
+							"fp": "FY",
+							"form": "20-F",
+							"filed": "2023-04-20"
+						},
+						{
+							"start": "2022-01-01",
+							"end": "2022-12-31",
+							"val": 697000000,
+							"accn": "0001558370-25-005991",
+							"fy": 2024,
+							"fp": "FY",
+							"form": "20-F",
+							"filed": "2025-04-30",
+							"frame": "CY2022"
+						},
+						{
+							"start": "2023-01-01",
+							"end": "2023-12-31",
+							"val": 783400000,
+							"accn": "0001558370-24-005891",
+							"fy": 2023,
+							"fp": "FY",
+							"form": "20-F",
+							"filed": "2024-04-26"
+						},
+						{
+							"start": "2023-01-01",
+							"end": "2023-12-31",
+							"val": 829800000,
+							"accn": "0001558370-25-005991",
+							"fy": 2024,
+							"fp": "FY",
+							"form": "20-F",
+							"filed": "2025-04-30"
+						},
+						{
+							"start": "2023-01-01",
+							"end": "2023-12-31",
+							"val": 829800000,
+							"accn": "0001104659-26-052948",
+							"fy": 2025,
+							"fp": "FY",
+							"form": "20-F",
+							"filed": "2026-04-30",
+							"frame": "CY2023"
+						},
+						{
+							"start": "2024-01-01",
+							"end": "2024-12-31",
+							"val": 245600000,
+							"accn": "0001558370-25-005991",
+							"fy": 2024,
+							"fp": "FY",
+							"form": "20-F",
+							"filed": "2025-04-30"
+						},
+						{
+							"start": "2024-01-01",
+							"end": "2024-12-31",
+							"val": 245600000,
+							"accn": "0001104659-26-052948",
+							"fy": 2025,
+							"fp": "FY",
+							"form": "20-F",
+							"filed": "2026-04-30",
+							"frame": "CY2024"
+						},
+						{
+							"start": "2025-01-01",
+							"end": "2025-12-31",
+							"val": 384800000,
+							"accn": "0001104659-26-052948",
+							"fy": 2025,
+							"fp": "FY",
+							"form": "20-F",
+							"filed": "2026-04-30",
+							"frame": "CY2025"
+						}
+					]
+				}
+			},
+			"PaymentsToAcquirePropertyPlantAndEquipment": {
+				"label": "Payments to Acquire Property, Plant, and Equipment",
+				"description": "The cash outflow associated with the acquisition of long-lived, physical assets that are used in the normal conduct of business to produce goods and services and not intended for resale; includes cash outflows to pay for construction of self-constructed assets.",
+				"units": {
+					"RUB": [
+						{
+							"start": "2022-01-01",
+							"end": "2022-12-31",
+							"val": 50544000000,
+							"accn": "0001558370-23-006319",
+							"fy": 2022,
+							"fp": "FY",
+							"form": "20-F",
+							"filed": "2023-04-20"
+						},
+						{
+							"start": "2022-01-01",
+							"end": "2022-12-31",
+							"val": 50544000000,
+							"accn": "0001558370-24-005891",
+							"fy": 2023,
+							"fp": "FY",
+							"form": "20-F",
+							"filed": "2024-04-26",
+							"frame": "CY2022"
+						},
+						{
+							"start": "2023-01-01",
+							"end": "2023-12-31",
+							"val": 90641000000,
+							"accn": "0001558370-24-005891",
+							"fy": 2023,
+							"fp": "FY",
+							"form": "20-F",
+							"filed": "2024-04-26",
+							"frame": "CY2023"
+						}
+					],
+					"USD": [
+						{
+							"start": "2022-01-01",
+							"end": "2022-12-31",
+							"val": 718600000,
+							"accn": "0001558370-23-006319",
+							"fy": 2022,
+							"fp": "FY",
+							"form": "20-F",
+							"filed": "2023-04-20"
+						},
+						{
+							"start": "2022-01-01",
+							"end": "2022-12-31",
+							"val": 14600000,
+							"accn": "0001558370-25-005991",
+							"fy": 2024,
+							"fp": "FY",
+							"form": "20-F",
+							"filed": "2025-04-30",
+							"frame": "CY2022"
+						},
+						{
+							"start": "2023-01-01",
+							"end": "2023-12-31",
+							"val": 1010600000,
+							"accn": "0001558370-24-005891",
+							"fy": 2023,
+							"fp": "FY",
+							"form": "20-F",
+							"filed": "2024-04-26"
+						},
+						{
+							"start": "2023-01-01",
+							"end": "2023-12-31",
+							"val": 83400000,
+							"accn": "0001558370-25-005991",
+							"fy": 2024,
+							"fp": "FY",
+							"form": "20-F",
+							"filed": "2025-04-30"
+						},
+						{
+							"start": "2023-01-01",
+							"end": "2023-12-31",
+							"val": 82900000,
+							"accn": "0001104659-26-052948",
+							"fy": 2025,
+							"fp": "FY",
+							"form": "20-F",
+							"filed": "2026-04-30",
+							"frame": "CY2023"
+						},
+						{
+							"start": "2024-01-01",
+							"end": "2024-12-31",
+							"val": 807700000,
+							"accn": "0001558370-25-005991",
+							"fy": 2024,
+							"fp": "FY",
+							"form": "20-F",
+							"filed": "2025-04-30"
+						},
+						{
+							"start": "2024-01-01",
+							"end": "2024-12-31",
+							"val": 807500000,
+							"accn": "0001104659-26-052948",
+							"fy": 2025,
+							"fp": "FY",
+							"form": "20-F",
+							"filed": "2026-04-30",
+							"frame": "CY2024"
+						},
+						{
+							"start": "2025-01-01",
+							"end": "2025-12-31",
+							"val": 4066000000,
+							"accn": "0001104659-26-052948",
+							"fy": 2025,
+							"fp": "FY",
+							"form": "20-F",
+							"filed": "2026-04-30",
+							"frame": "CY2025"
+						}
+					]
+				}
+			}
+		}
+	}
+}
