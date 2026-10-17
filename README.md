@@ -1,38 +1,78 @@
 # AI Infrastructure Risk Monitor
 
-Dashboard of leading/lagging indicators for an AI-infrastructure capital cycle.
-Values are never synthesized: a card stays empty until verified observations exist.
+A research dashboard for one question: is the AI infrastructure build-out
+creating unsustainable overcapacity, leverage, and credit risk? It tracks nine
+indicators across GPU economics, credit, physical supply, and company
+fundamentals, with source-level provenance and freshness on every series.
 
-Stack: TanStack Start (React, Vite 8), TypeScript 7 (native Go `tsc`), Biome, pnpm, Chart.js.
+**Rules it follows:** values are never invented or interpolated. Derived
+figures are labeled "calculated". Stale data is never shown as current.
+Sources whose terms forbid automated collection are not used.
 
-## Commands
+Stack: TanStack Start (React, Vite 8, Nitro), TypeScript 7, Drizzle + libSQL
+(Turso), valibot, Chart.js, Vitest, Biome, pnpm.
+
+## Setup
 
 ```bash
 pnpm install
-pnpm dev            # http://localhost:3000
-pnpm data:refresh   # pull latest FRED credit spreads into data/observations.json
-pnpm typecheck
-pnpm lint           # pnpm format to auto-fix
-pnpm build && pnpm start
+cp .env.example .env     # fill in, or leave TURSO_* empty for a local file DB
+pnpm db:migrate
+pnpm collect all --backfill   # first run: pulls all available history
+pnpm dev                      # http://localhost:3000
 ```
 
-## Layout
+| Variable | Purpose |
+|---|---|
+| `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN` | Turso database. Empty = `data/local.db`. |
+| `SEC_USER_AGENT` | SEC requires a contact in the User-Agent, e.g. `"AIInfraMonitor you@example.com"`. |
 
-- `data/observations.json`: all series. Read on every request, so edits show on reload.
-- `src/lib/indicators.ts`: card definitions (title, unit, source, caveat) and window helpers.
-- `src/lib/observations.ts`: server function that reads the data file.
-- `src/routes/index.tsx`: dashboard. The time window lives in the URL (`?window=90|365|0`).
-- `scripts/refresh-data.ts`: FRED importer. Uses Node built-ins only.
-- `.github/workflows/refresh.yml`: runs the importer on weekdays and commits the result.
+## Operating
 
-## Adding observations
+```bash
+pnpm collect <fred|sec|azure|aws|manual|all> [--backfill] [--no-alerts]
+pnpm alerts [--backtest]     # re-evaluate alert rules (backtest replays history)
+pnpm db:backup [dir]         # export all tables as gzipped NDJSON
+pnpm db:restore <dir>        # load a backup into an empty database
+```
 
-Append `{ "date": "YYYY-MM-DD", "value": number, "source": "URL or citation" }` to the matching
-`series` array. Keep each series to one consistent cohort, issuer, and definition.
-To add a new card, add a series key to the data file and an entry to `INDICATORS`.
+- Collectors are idempotent: re-running writes nothing unless a value changed.
+  A changed value is stored as a new vintage; history is never overwritten.
+- `pnpm collect` exits 1 on a partial or transient failure and 2 on a
+  permanent one. Failures appear on the **Coverage** page with their message.
+- Hand-curated data (broker reports, useful-life changes, concentration) lives
+  in `data/manual/*.yaml`, one cited quote per value. See `data/manual/README.md`.
+- Alert thresholds live in `data/alerts.config.yaml`.
 
-Automated: FRED `BAMLH0A0HYM2` (HY OAS) and `BAMLH0A3HYC` (CCC OAS).
-Seeded: CBRE H1 2026 vacancy, preleasing, construction; Meta FY2024 asset useful life.
-Empty by design: GPU rental, GPU resale, capex/OCF, customer concentration, backlog conversion.
+## Checks
 
-This is a research dashboard, not investment advice.
+```bash
+pnpm typecheck && pnpm lint && pnpm test
+pnpm build && pnpm check:bundle   # fails if server-only code reaches the browser
+```
+
+## Deployment
+
+1. **Database:** create a Turso database, then run `pnpm db:migrate` and
+   `pnpm collect all --backfill` with its credentials in `.env`.
+2. **Collection:** push to GitHub and add the repository secrets
+   `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN`, and `SEC_USER_AGENT`. Workflows:
+   - `collect-fred.yml`: weekdays
+   - `collect-sec.yml`: daily (data changes only after filings)
+   - `collect-prices.yml`: weekly
+   - `backup.yml`: weekly DB export, kept 90 days as an artifact
+   - `ci.yml`: build, bundle check, typecheck, lint, tests
+3. **Frontend:** import the repo in Vercel, add `TURSO_DATABASE_URL` and
+   `TURSO_AUTH_TOKEN`, and deploy. Nitro selects the Vercel preset automatically.
+   **Keep the deployment private** (e.g. Vercel Deployment Protection):
+   Microsoft's API terms forbid redistributing Azure price data.
+
+Locally, `pnpm build && pnpm start` runs the production server.
+
+## Docs
+
+- [Architecture](docs/architecture.md): layers, collectors, error handling, freshness.
+- [Data model](docs/data-model.md): tables, vintages, derived metrics.
+- [Coverage](docs/coverage.md): what each indicator can and cannot show, and why.
+
+Research dashboard, not investment advice.
