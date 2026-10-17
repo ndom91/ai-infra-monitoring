@@ -1,0 +1,302 @@
+:root {
+	color-scheme: dark;
+	--bg: #0e1113;
+	--panel: #181c1e;
+	--panel2: #202628;
+	--line: #313a3d;
+	--muted: #91a0a4;
+	--text: #e8eeee;
+	--teal: #b5e1cd;
+	--orange: #f5c69c;
+	--mono: ui-monospace, monospace;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+body {
+	margin: 0;
+	background: var(--bg);
+	color: var(--text);
+	font:
+		14px / 1.55 ui-sans-serif,
+		system-ui,
+		-apple-system,
+		BlinkMacSystemFont,
+		"Segoe UI",
+		sans-serif;
+}
+
+a {
+	color: var(--teal);
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+p {
+	margin: 5px 0;
+	color: var(--muted);
+}
+
+h1 {
+	font-size: 33px;
+	letter-spacing: -1.25px;
+	line-height: 1.1;
+	margin: 9px 0 10px;
+	font-weight: 650;
+}
+
+h2 {
+	font-size: 16px;
+	margin: 0;
+	letter-spacing: -0.25px;
+}
+
+.wrap {
+	max-width: 1450px;
+	padding: 32px 34px 70px;
+	margin: auto;
+}
+
+header {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 20px;
+	border-bottom: 1px solid var(--line);
+	padding-bottom: 26px;
+}
+
+.accent {
+	color: var(--teal);
+}
+
+.kicker {
+	font: 11px var(--mono);
+	letter-spacing: 2px;
+	color: var(--teal);
+	text-transform: uppercase;
+}
+
+.stamp {
+	font: 12px var(--mono);
+	color: var(--muted);
+	text-align: right;
+}
+
+.overview {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 12px;
+	margin: 22px 0 32px;
+}
+
+.stat,
+.card {
+	background: var(--panel);
+	border: 1px solid var(--line);
+	border-radius: 11px;
+}
+
+.stat {
+	padding: 17px;
+}
+
+.stat strong {
+	display: block;
+	font-size: 28px;
+	font-weight: 630;
+	margin-top: 3px;
+	letter-spacing: -0.8px;
+	font-variant-numeric: tabular-nums;
+}
+
+.stat small {
+	color: var(--muted);
+}
+
+.sectiontitle {
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+	margin: 0 0 14px;
+}
+
+.sectiontitle span {
+	color: var(--muted);
+	font-size: 12px;
+}
+
+.status {
+	font-size: 12px;
+	margin: 0 0 15px;
+}
+
+.toolbar {
+	display: flex;
+	gap: 8px;
+	margin: 12px 0 18px;
+}
+
+.toolbar-btn {
+	border: 1px solid var(--line);
+	background: var(--panel2);
+	color: var(--text);
+	border-radius: 5px;
+	padding: 6px 12px;
+}
+
+.toolbar-btn:hover {
+	text-decoration: none;
+	border-color: var(--muted);
+}
+
+.toolbar-btn[aria-pressed="true"] {
+	border-color: var(--teal);
+	color: var(--teal);
+}
+
+.cards {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 16px;
+}
+
+.card {
+	padding: 20px;
+	min-width: 0;
+}
+
+.cardhead {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 12px;
+}
+
+.meta {
+	font-size: 12px;
+	color: var(--muted);
+	margin-top: 5px;
+}
+
+.latest {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-top: 15px;
+}
+
+.detail {
+	font: 12px var(--mono);
+	color: var(--teal);
+}
+
+.pill {
+	border: 1px solid #446759;
+	background: #233a34;
+	border-radius: 20px;
+	color: var(--teal);
+	padding: 3px 9px;
+	white-space: nowrap;
+	font: 11px var(--mono);
+}
+
+.pill.mixed {
+	background: #3c3329;
+	color: var(--orange);
+	border-color: #75604a;
+}
+
+.pill.lag {
+	background: #293239;
+	color: #c0cbd1;
+	border-color: #465861;
+}
+
+.chartbox {
+	height: 190px;
+	margin: 17px 0 12px;
+	position: relative;
+}
+
+.no-data {
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+	border: 1px dashed #435052;
+	border-radius: 7px;
+	gap: 7px;
+	color: var(--muted);
+	font-size: 13px;
+	text-align: center;
+	padding: 20px;
+}
+
+.no-data b {
+	color: var(--text);
+	font-weight: 500;
+}
+
+.foot {
+	border-top: 1px solid var(--line);
+	padding-top: 11px;
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-end;
+	gap: 10px;
+}
+
+.foot p {
+	font-size: 12px;
+	max-width: 430px;
+}
+
+.foot a {
+	white-space: nowrap;
+	font-size: 12px;
+}
+
+.notes {
+	border-top: 1px solid var(--line);
+	margin-top: 30px;
+	padding-top: 25px;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 32px;
+}
+
+.notes h2 {
+	margin-bottom: 9px;
+}
+
+.notes p {
+	font-size: 13px;
+	line-height: 1.7;
+}
+
+@media (max-width: 850px) {
+	.wrap {
+		padding: 22px 16px;
+	}
+	.cards,
+	.notes {
+		grid-template-columns: 1fr;
+	}
+	.overview {
+		grid-template-columns: repeat(2, 1fr);
+	}
+	header {
+		display: block;
+	}
+	.stamp {
+		text-align: left;
+		margin-top: 15px;
+	}
+}
