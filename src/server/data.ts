@@ -1,9 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import * as v from "valibot";
-import { type Freshness, freshness } from "~/domain/freshness";
 import { RANGE_KEYS, rangeStart } from "~/domain/ranges";
-import { type Cadence, INDICATOR_IDS } from "~/domain/types";
-import { type Change, changeFromPrior, changeOver } from "~/metrics/changes";
+import { INDICATOR_IDS } from "~/domain/types";
 import { getDb } from "~/storage/db";
 import {
   allSeries,
@@ -11,91 +9,89 @@ import {
   latestObservations,
   recentAlerts,
   recentRuns,
-  type SeriesRow,
   seriesForIndicators,
 } from "~/storage/queries";
+import { deriveCompanySeries, TICKERS } from "./derived";
+import { buildView, groupBySeries, type ObsPoint, type SeriesView } from "./views";
 
-export type ObsPoint = {
-  id: number;
-  periodStart: string;
-  periodEnd: string;
-  value: number;
-  kind: string;
-  asOf: string | null;
-  sourceUrl: string | null;
-  note: string | null;
-};
-
-export type SeriesView = Omit<SeriesRow, "updatedAt"> & {
-  points: ObsPoint[];
-  latest: ObsPoint | null;
-  freshness: Freshness;
-  changes: {
-    m3: Change | null;
-    m6: Change | null;
-    y1: Change | null;
-    prior: Change | null;
-  };
-};
+export type { ObsPoint, SeriesView } from "./views";
 
 const SectionInput = v.object({
   indicators: v.array(v.picklist(INDICATOR_IDS)),
   range: v.picklist(RANGE_KEYS),
+  // Load the full history (for TTM/YoY-derived metrics on quarterly data).
+  fullHistory: v.optional(v.boolean(), false),
 });
 
 // Extra history beyond the visible range so YoY comparisons always work.
 const CHANGE_LOOKBACK_DAYS = 400;
 
+async function loadSection(
+  input: v.InferOutput<typeof SectionInput>,
+  now: Date,
+): Promise<{
+  series: SeriesView[];
+  raw: Map<string, ObsPoint[]>;
+  runStatus: Map<string, "running" | "ok" | "partial" | "failed">;
+  visibleFrom?: string;
+}> {
+  const db = getDb();
+  const visibleFrom = rangeStart(input.range, now);
+  const lookback = new Date(now.getTime() - CHANGE_LOOKBACK_DAYS * 86_400_000)
+    .toISOString()
+    .slice(0, 10);
+  const loadFrom =
+    input.fullHistory || !visibleFrom ? undefined : visibleFrom < lookback ? visibleFrom : lookback;
+
+  const [defs, runs] = await Promise.all([seriesForIndicators(db, input.indicators), lastRuns(db)]);
+  const rows = await latestObservations(
+    db,
+    defs.map((d) => d.id),
+    loadFrom,
+  );
+  const raw = groupBySeries(rows.map(({ collectedAt: _, ...r }) => r));
+  const runStatus = new Map(runs.map((r) => [r.collector, r.status]));
+  const series = defs.map(({ updatedAt: _, ...def }) =>
+    buildView(def, raw.get(def.id) ?? [], {
+      now,
+      visibleFrom,
+      lastRunStatus: runStatus.get(def.collector),
+    }),
+  );
+  return { series, raw, runStatus, visibleFrom };
+}
+
 export const getSectionData = createServerFn({ method: "GET" })
   .validator(SectionInput)
   .handler(async ({ data }) => {
-    const db = getDb();
     const now = new Date();
-    const visibleFrom = rangeStart(data.range, now);
-    const lookback = new Date(now.getTime() - CHANGE_LOOKBACK_DAYS * 86_400_000)
-      .toISOString()
-      .slice(0, 10);
-    const loadFrom = visibleFrom && visibleFrom < lookback ? visibleFrom : visibleFrom && lookback;
+    const { series, visibleFrom } = await loadSection(data, now);
+    return { series, now: now.toISOString(), visibleFrom };
+  });
 
-    const [defs, runs] = await Promise.all([
-      seriesForIndicators(db, data.indicators),
-      lastRuns(db),
-    ]);
-    const rows = await latestObservations(
-      db,
-      defs.map((d) => d.id),
-      loadFrom ?? undefined,
+export const getFundamentalsData = createServerFn({ method: "GET" })
+  .validator(v.object({ range: v.picklist(RANGE_KEYS) }))
+  .handler(async ({ data }) => {
+    const now = new Date();
+    const { series, raw, runStatus, visibleFrom } = await loadSection(
+      {
+        indicators: [
+          "capex_cashflow",
+          "contract_conversion",
+          "customer_concentration",
+          "depreciation",
+        ],
+        range: data.range,
+        fullHistory: true,
+      },
+      now,
     );
-    const bySeries = new Map<string, ObsPoint[]>();
-    for (const { seriesId, collectedAt: _, ...p } of rows) {
-      const list = bySeries.get(seriesId) ?? [];
-      list.push(p);
-      bySeries.set(seriesId, list);
-    }
-    const runStatus = new Map(runs.map((r) => [r.collector, r.status]));
-
-    const series: SeriesView[] = defs.map(({ updatedAt: _, ...def }) => {
-      const all = bySeries.get(def.id) ?? [];
-      const latest = all.at(-1) ?? null;
-      return {
-        ...def,
-        points: visibleFrom ? all.filter((p) => p.periodEnd >= visibleFrom) : all,
-        latest,
-        freshness: freshness({
-          cadence: def.cadence as Cadence,
-          latestPeriodEnd: latest?.periodEnd,
-          lastRunStatus: runStatus.get(def.collector),
-          now,
-        }),
-        changes: {
-          m3: changeOver(all, 91),
-          m6: changeOver(all, 182),
-          y1: changeOver(all, 365),
-          prior: changeFromPrior(all),
-        },
-      };
-    });
-    return { series, runs, now: now.toISOString(), visibleFrom };
+    const derived = TICKERS.flatMap((ticker) =>
+      deriveCompanySeries(ticker, (concept) => raw.get(`sec.${ticker}.${concept}`) ?? []),
+    ).map((d) =>
+      buildView(d.def, d.points, { now, visibleFrom, lastRunStatus: runStatus.get("sec") }),
+    );
+    return { series: [...series, ...derived], now: now.toISOString(), visibleFrom };
   });
 
 export const getStatusData = createServerFn({ method: "GET" }).handler(async () => {

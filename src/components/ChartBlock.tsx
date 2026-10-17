@@ -2,6 +2,8 @@ import type { SeriesView } from "~/server/data";
 import { SeriesStats } from "./SeriesStats";
 import { TimeChart } from "./TimeChart";
 
+const LOW_FREQUENCY = new Set(["quarterly", "semiannual", "annual", "irregular"]);
+
 type Props = {
   title: string;
   subtitle?: string;
@@ -35,6 +37,7 @@ export function ChartBlock({
           unit={series[0]?.unit ?? ""}
           stepped={stepped}
           rebase={rebase || units.size > 1}
+          minUnit={series.every((s) => LOW_FREQUENCY.has(s.cadence)) ? "month" : "day"}
           lines={withData.map((s) => ({ label: labelOf(s), points: s.points }))}
         />
       ) : (

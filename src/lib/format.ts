@@ -6,10 +6,11 @@ const compact = new Intl.NumberFormat("en-US", {
 });
 
 export function formatValue(value: number, unit: string) {
-  if (unit === "USD") return `$${compact.format(value)}`;
+  if (unit === "USD") return `${value < 0 ? "−" : ""}$${compact.format(Math.abs(value))}`;
   if (unit === "USD/GPU-hr") return `$${value.toFixed(2)}/hr`;
   if (unit === "%") return `${value.toFixed(2)}%`;
   if (unit === "count") return Math.round(value).toLocaleString("en-US");
+  if (unit === "×") return `${value.toFixed(2)}×`;
   const n = Math.abs(value) >= 1000 ? compact.format(value) : `${+value.toFixed(2)}`;
   return `${n} ${unit}`;
 }
@@ -21,6 +22,7 @@ export function formatDelta(change: Change, unit: string, bps = false) {
   if (unit === "%") {
     return bps ? `${sign}${Math.round(abs * 100)} bps` : `${sign}${abs.toFixed(2)} pp`;
   }
+  if (unit === "×") return `${sign}${abs.toFixed(2)}×`;
   if (change.pct == null) return `${sign}${formatValue(abs, unit)}`;
   return `${sign}${Math.abs(change.pct * 100).toFixed(1)}%`;
 }

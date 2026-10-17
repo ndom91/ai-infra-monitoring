@@ -1,5 +1,6 @@
-// Usage: pnpm collect <name...|all> [--backfill]
+// Usage: pnpm collect <name...|all> [--backfill] [--no-alerts]
 // Exit codes: 0 ok, 1 partial or transient failure, 2 permanent failure.
+import { runAlerts } from "~/alerts/run";
 import { COLLECTORS } from "~/collectors/registry";
 import { runCollector } from "~/collectors/runner";
 import { openDb } from "~/storage/db";
@@ -11,7 +12,7 @@ const names = args.filter((a) => !a.startsWith("--"));
 
 if (names.length === 0) {
   console.error(
-    `usage: pnpm collect <${COLLECTORS.map((c) => c.name).join("|")}|all> [--backfill]`,
+    `usage: pnpm collect <${COLLECTORS.map((c) => c.name).join("|")}|all> [--backfill] [--no-alerts]`,
   );
   process.exit(2);
 }
@@ -40,5 +41,16 @@ for (const collector of selected) {
     exitCode = Math.max(exitCode, 1);
   }
 }
+
+// Alerts run on whatever landed, even after a partial collection.
+if (!args.includes("--no-alerts")) {
+  try {
+    await runAlerts(db);
+  } catch (err) {
+    console.error("[alerts] FAILED:", err);
+    exitCode = Math.max(exitCode, 2);
+  }
+}
+
 client.close();
 process.exit(exitCode);

@@ -1,0 +1,59 @@
+# Alert rules. Thresholds are in the series' own unit (FRED spreads are in %,
+# so 0.75 = 75 bps) unless `relative: true`, where they are fractions.
+# `series` may end in * to match every series with that prefix.
+# These are monitoring thresholds, not validated predictive signals.
+rules:
+  - id: hy_oas_widening
+    type: change
+    series: fred.BAMLH0A0HYM2
+    window_days: 91
+    threshold: 0.75
+    direction: up
+    severity: warning
+    description: High-yield spreads widened by 75 bps or more in about 3 months.
+
+  - id: hy_oas_sharp_widening
+    type: change
+    series: fred.BAMLH0A0HYM2
+    window_days: 91
+    threshold: 1.5
+    direction: up
+    severity: critical
+    description: High-yield spreads widened by 150 bps or more in about 3 months.
+
+  - id: ccc_oas_widening
+    type: change
+    series: fred.BAMLH0A3HYC
+    window_days: 91
+    threshold: 2.0
+    direction: up
+    severity: warning
+    description: CCC spreads widened by 200 bps or more in about 3 months. The weakest borrowers lose access to credit first.
+
+  - id: bbb_oas_widening
+    type: change
+    series: fred.BAMLC0A4CBBB
+    window_days: 91
+    threshold: 0.4
+    direction: up
+    severity: info
+    description: BBB spreads widened by 40 bps or more in about 3 months. Stress is reaching investment grade.
+
+  - id: hy_oas_elevated
+    type: level
+    series: fred.BAMLH0A0HYM2
+    above: 5.0
+    severity: info
+    cooldown_days: 90
+    description: High-yield spreads are above 5%, roughly their long-run average. Financing for leveraged borrowers is no longer cheap.
+
+  - id: multi_indicator_deterioration
+    type: breadth
+    rules:
+      - hy_oas_widening
+      - ccc_oas_widening
+      - bbb_oas_widening
+    min_rules: 2
+    window_days: 60
+    severity: critical
+    description: Several independent credit warnings fired in the same window.
