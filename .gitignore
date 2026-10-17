@@ -7,3 +7,7 @@ src/routeTree.gen.ts
 .DS_Store
 ai-*.zip
 instructions.md
+.env
+.env.*
+!.env.example
+data/*.db*
