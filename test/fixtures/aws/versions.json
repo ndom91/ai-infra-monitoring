@@ -1,0 +1,27 @@
+{
+  "formatVersion": "v1.0",
+  "offerCode": "AmazonEC2",
+  "currentVersion": "20261015191316",
+  "versions": {
+    "20180607191619": {
+      "versionEffectiveBeginDate": "2018-05-01T00:00:00Z",
+      "versionEffectiveEndDate": "2018-06-01T00:00:00Z",
+      "offerVersionUrl": "/offers/v1.0/aws/AmazonEC2/20180607191619/index.json"
+    },
+    "20201104195536": {
+      "versionEffectiveBeginDate": "2020-10-01T00:00:00Z",
+      "versionEffectiveEndDate": "2020-11-01T00:00:00Z",
+      "offerVersionUrl": "/offers/v1.0/aws/AmazonEC2/20201104195536/index.json"
+    },
+    "20230905140324": {
+      "versionEffectiveBeginDate": "2023-08-01T00:00:00Z",
+      "versionEffectiveEndDate": "2023-09-01T00:00:00Z",
+      "offerVersionUrl": "/offers/v1.0/aws/AmazonEC2/20230905140324/index.json"
+    },
+    "20261015191316": {
+      "versionEffectiveBeginDate": "2026-10-01T00:00:00Z",
+      "versionEffectiveEndDate": "",
+      "offerVersionUrl": "/offers/v1.0/aws/AmazonEC2/20261015191316/index.json"
+    }
+  }
+}
