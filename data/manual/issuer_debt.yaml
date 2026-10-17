@@ -1,0 +1,958 @@
+# Issue terms of neocloud / AI-infrastructure debt: note coupons at issuance and
+# term-loan SOFR margins at signing. These are contract terms, not market prices.
+# Sources: SEC EDGAR 8-K / 6-K filings and issuer investor-relations releases.
+# The three methodology texts are YAML anchors (&m_note, &m_conv, &m_sofr) defined at first use.
+
+series:
+  # ---------------------------------------------------------------- CoreWeave notes
+  - id: issuer_debt.CRWV.notes_2030_9_25.coupon
+    indicator: credit
+    label: CoreWeave 9.250% senior notes due 2030, coupon at issue
+    entity: CoreWeave, Inc.
+    source: CoreWeave press release (SEC Form 8-K Exhibit 99.1)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001769628&type=8-K
+    unit: "%"
+    currency: null
+    cadence: irregular
+    methodology: &m_note >-
+      Coupon (stated annual interest rate, %) of the note at issuance, as stated in the issuer's
+      pricing or closing announcement / Form 8-K or 6-K. These are issue terms (coupon at
+      issuance), NOT trading yields or spreads; they do not move with market prices and are not
+      updated after issue. One observation per note series, dated at the issue (closing) date;
+      as_of is the date of the cited document. Add-on issuances of the same series keep the same
+      coupon and are described in the note rather than recorded again. When the issue price is not
+      par, the yield at issue differs from the coupon (issue price is given in the note).
+    observations:
+      - period_start: 2025-05-27
+        period_end: 2025-05-27
+        value: 9.25
+        as_of: 2025-05-21
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000176962825000019/coreweave-pressreleasepric.htm
+        quote: "priced a private offering of $2,000 million aggregate principal amount of 9.250% senior notes due 2030"
+        note: >-
+          Priced 2025-05-21, closed 2025-05-27 (8-K filed 2025-05-28). Principal $2,000m (upsized
+          from $1,500m), issued at par, senior unsecured, maturity 2030-06-01, guaranteed by
+          CoreWeave Cash Management LLC. Use of proceeds: general corporate purposes including
+          repayment of outstanding indebtedness. Ratings at launch (2025-05-19, for the proposed
+          $1.5bn notes): Moody's B1 (CFR Ba3), S&P B (issuer B+), Fitch BB- (IDR BB-, RR4).
+          Secondary source for ratings: Investing.com articles of 2025-05-19 citing each agency
+          (https://www.investing.com/news/stock-market-news/coreweave-gets-ba3-cfr-from-moodys-15bn-senior-unsecured-notes-rated-b1-93CH-4053767,
+          https://www.investing.com/news/stock-market-news/coreweave-receives-b-issuer-credit-rating-at-sp-15-billion-debt-rated-b-93CH-4053492,
+          https://www.investing.com/news/stock-market-news/fitch-awards-firsttime-bb-rating-to-coreweave-15-billion-senior-notes-included-93CH-4053125).
+
+  - id: issuer_debt.CRWV.notes_2031_9_00.coupon
+    indicator: credit
+    label: CoreWeave 9.000% senior notes due 2031, coupon at issue
+    entity: CoreWeave, Inc.
+    source: CoreWeave press release (SEC Form 8-K Exhibit 99.1)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001769628&type=8-K
+    unit: "%"
+    currency: null
+    cadence: irregular
+    methodology: *m_note
+    observations:
+      - period_start: 2025-07-25
+        period_end: 2025-07-25
+        value: 9.0
+        as_of: 2025-07-22
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000176962825000030/coreweave-pressreleasepric.htm
+        quote: "priced a private offering of $1,750 million aggregate principal amount of 9.000% senior notes due 2031"
+        note: >-
+          Priced 2025-07-22, closed 2025-07-25 (8-K filed 2025-07-28). Principal $1,750m (upsized
+          by $250m), issued at par, senior unsecured, maturity 2031-02-01. Use of proceeds: general
+          corporate purposes including repayment of outstanding indebtedness. Rating at issue not
+          verified from a fetched page.
+
+  - id: issuer_debt.CRWV.conv_2031_1_75.coupon
+    indicator: credit
+    label: CoreWeave 1.75% convertible senior notes due 2031, coupon at issue
+    entity: CoreWeave, Inc.
+    source: CoreWeave press release (SEC Form 8-K Exhibit 99.2)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001769628&type=8-K
+    unit: "%"
+    currency: null
+    cadence: irregular
+    methodology: &m_conv >-
+      Coupon (stated annual cash interest rate, %) of the convertible note at issuance, as stated
+      in the issuer's pricing or closing announcement / Form 8-K or 6-K. These are issue terms
+      (coupon at issuance), NOT trading yields or spreads; they do not move with market prices.
+      Convertible coupons are low because holders also receive an equity conversion option, so
+      they are not comparable to straight-debt coupons. One observation per series, dated at the
+      issue (closing) date; as_of is the date of the cited document.
+    observations:
+      - period_start: 2025-12-11
+        period_end: 2025-12-11
+        value: 1.75
+        as_of: 2025-12-09
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000176962825000105/exhibit992pressrelease.htm
+        quote: "announced today the pricing of its private offering of $2.25 billion aggregate principal amount of its 1.75% convertible senior notes due 2031"
+        note: >-
+          Priced 2025-12-09, settled 2025-12-11. The 8-K of 2025-12-11 reports $2,587.5m issued
+          including the full $337.5m option. Maturity 2031-12-01. Initial conversion price about
+          $107.80 per share (about 25% premium). Senior unsecured. Proceeds: capped calls (about
+          $340m) and general corporate purposes.
+
+  - id: issuer_debt.CRWV.notes_2031_9_75.coupon
+    indicator: credit
+    label: CoreWeave 9.750% senior notes due 2031, coupon at issue
+    entity: CoreWeave, Inc.
+    source: CoreWeave Form 8-K
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001769628&type=8-K
+    unit: "%"
+    currency: null
+    cadence: irregular
+    methodology: *m_note
+    observations:
+      - period_start: 2026-04-14
+        period_end: 2026-04-14
+        value: 9.75
+        as_of: 2026-04-14
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000176962826000164/crwv-20260409.htm
+        quote: "The Senior Notes will mature on October 1, 2031 and bear interest at a rate of 9.750% per annum"
+        note: >-
+          Priced 2026-04-09, closed 2026-04-14. Principal $1,750m (upsized by $500m), issued at par
+          (pricing release:
+          https://investors.coreweave.com/news/news-details/2026/CoreWeave-Announces-Upsize-and-Pricing-of-1750-Million-of-Senior-Notes/default.aspx),
+          senior unsecured, maturity 2031-10-01. Use of proceeds: general corporate purposes
+          including repayment of outstanding indebtedness. Add-on: $1,000m more of the same series
+          priced 2026-04-16 at 102.000% and closed 2026-04-21
+          (https://www.sec.gov/Archives/edgar/data/1769628/000176962826000183/ex992.htm). The
+          closing 8-K (crwv-20260409.htm) misprints the original principal as "$1,750,000".
+          Rating at issue not verified.
+
+  - id: issuer_debt.CRWV.conv_2032_1_75.coupon
+    indicator: credit
+    label: CoreWeave 1.75% convertible senior notes due 2032, coupon at issue
+    entity: CoreWeave, Inc.
+    source: CoreWeave Form 8-K
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001769628&type=8-K
+    unit: "%"
+    currency: null
+    cadence: irregular
+    methodology: *m_conv
+    observations:
+      - period_start: 2026-04-14
+        period_end: 2026-04-14
+        value: 1.75
+        as_of: 2026-04-14
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000176962826000164/crwv-20260409.htm
+        quote: "completed its previously announced private offering of $4,000,000,000 aggregate principal amount of its 1.75% Convertible Senior Notes due 2032"
+        note: >-
+          Priced 2026-04-09, closed 2026-04-14. Principal $4,000m including the full $500m option.
+          Maturity 2032-10-01. Initial conversion price about $119.60 per share (about 30.0%
+          premium). Senior unsecured. Net proceeds $3,940.0m, partly used for capped calls.
+
+  - id: issuer_debt.CRWV.notes_2032_9_625.coupon
+    indicator: credit
+    label: CoreWeave 9.625% USD senior notes due 2032, coupon at issue
+    entity: CoreWeave, Inc.
+    source: CoreWeave Form 8-K
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001769628&type=8-K
+    unit: "%"
+    currency: null
+    cadence: irregular
+    methodology: *m_note
+    observations:
+      - period_start: 2026-06-18
+        period_end: 2026-06-18
+        value: 9.625
+        as_of: 2026-06-18
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000176962826000291/crwv-20260618.htm
+        quote: "The USD Notes will bear interest at a rate of 9.625% per annum, and the EUR Notes will bear interest at a rate of 8.500% per annum"
+        note: >-
+          Closed 2026-06-18 (priced about 2026-06-11; the pricing release on Business Wire returned
+          HTTP 403). Principal $1,250m, senior unsecured, maturity 2032-07-15. Launched as part of a
+          $3.5bn USD/EUR offering for general corporate purposes including repayment of
+          outstanding indebtedness (launch release, 8-K Exhibit 99.1 of 2026-06-11). Issue price
+          and rating not verified.
+
+  - id: issuer_debt.CRWV.notes_2032_eur_8_50.coupon
+    indicator: credit
+    label: CoreWeave 8.500% EUR senior notes due 2032, coupon at issue
+    entity: CoreWeave, Inc.
+    source: CoreWeave Form 8-K
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001769628&type=8-K
+    unit: "%"
+    currency: null
+    cadence: irregular
+    methodology: *m_note
+    observations:
+      - period_start: 2026-06-18
+        period_end: 2026-06-18
+        value: 8.5
+        as_of: 2026-06-18
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000176962826000291/crwv-20260618.htm
+        quote: "The USD Notes will bear interest at a rate of 9.625% per annum, and the EUR Notes will bear interest at a rate of 8.500% per annum"
+        note: >-
+          Euro-denominated (coupon on EUR principal; not comparable 1:1 with USD coupons because of
+          the EUR rate base). Closed 2026-06-18. Principal EUR 2,000m, senior unsecured, maturity
+          2032-07-15. Issue price and rating not verified.
+
+  - id: issuer_debt.CRWV.conv_2033_2_875.coupon
+    indicator: credit
+    label: CoreWeave 2.875% convertible senior notes due 2033, coupon at issue
+    entity: CoreWeave, Inc.
+    source: CoreWeave press release (SEC Form 8-K Exhibit 99.1)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001769628&type=8-K
+    unit: "%"
+    currency: null
+    cadence: irregular
+    methodology: *m_conv
+    observations:
+      - period_start: 2026-09-22
+        period_end: 2026-09-22
+        value: 2.875
+        as_of: 2026-09-18
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000176962826000432/ex991pricing.htm
+        quote: "announced today the pricing of its private offering of $3.7 billion aggregate principal amount of its 2.875% convertible senior notes due 2033"
+        note: >-
+          Priced 2026-09-18 (upsized from $3.0bn), closed 2026-09-22. The closing 8-K reports $4.2bn
+          issued including the full $500m option. Maturity 2033-04-01. Initial conversion price
+          about $97.85 per share (about 22.50% premium). Senior unsecured. Net proceeds $4,137.0m,
+          partly used for capped calls, remainder for general corporate purposes.
+
+  # ---------------------------------------------------------------- CoreWeave loan facilities
+  - id: issuer_debt.CRWV.revolver.sofr_spread
+    indicator: credit
+    label: CoreWeave revolving credit facility, margin over term SOFR
+    entity: CoreWeave, Inc.
+    source: CoreWeave Form 8-K Exhibit 10.1 (Amendment No. 3 to Revolving Credit and Guaranty Agreement)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001769628&type=8-K
+    unit: "%"
+    currency: null
+    cadence: irregular
+    methodology: &m_sofr >-
+      Applicable margin, in percentage points, over SOFR for SOFR-based loans under the facility,
+      as stated in the Form 8-K or prospectus describing the credit agreement at signing or
+      amendment (e.g. "SOFR plus 4.00%" -> 4.0). These are contract terms at signing, NOT market
+      spreads, and they are not updated for later amendments unless separately recorded. The SOFR
+      variant (term SOFR vs daily compounded SOFR) differs by facility; see note. Facilities whose
+      margin is a grid or range (e.g. the original DDTL 2.0) are not recorded.
+    observations:
+      - period_start: 2025-05-02
+        period_end: 2025-05-02
+        value: 1.75
+        as_of: 2025-05-06
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000176962825000003/coreweavercf-amendmentno.htm
+        quote: "Term Benchmark Loans and RFR Loans Base Rate Loans 1.75% 0.75%"
+        note: >-
+          Quote is the "Applicable Rate" table in the conformed credit agreement attached to
+          Amendment No. 3 (2025-05-02), which raised the facility to $1.5bn and extended maturity
+          to 2028-05-02. The IPO prospectus (424B4, 2025-03-31) states the same 1.75% margin over
+          term SOFR for term benchmark loans. The November 2025 amendment (facility raised to
+          $2.5bn, maturity November 2029, per the FY2025 10-K) was not filed on 8-K; its margin is
+          not verified. Undrawn fee 0.25% per annum (10-K).
+
+  - id: issuer_debt.CRWV.ddtl_1_0.sofr_spread
+    indicator: credit
+    label: CoreWeave DDTL 1.0 facility, margin over term SOFR
+    entity: CoreWeave Compute Acquisition Co. II, LLC (CoreWeave)
+    source: CoreWeave IPO prospectus (Form 424B4)
+    source_url: https://www.sec.gov/Archives/edgar/data/1769628/000119312525067651/d899798d424b4.htm
+    unit: "%"
+    currency: null
+    cadence: irregular
+    methodology: *m_sofr
+    observations:
+      - period_start: 2023-07-30
+        period_end: 2023-07-30
+        value: 9.6196
+        as_of: 2025-03-31
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000119312525067651/d899798d424b4.htm
+        quote: "for term SOFR loans, an applicable margin of 9.6196% plus the term SOFR (subject to a 0.00% floor) for a three month interest period"
+        note: >-
+          Facility entered 2023-07-30, up to $2.3bn, secured by the borrower subsidiary's assets
+          and guaranteed by CoreWeave. Margin as described in the prospectus "as amended"; the
+          prospectus also reports an actual average rate of 14.11% at 2024-12-31. Margin over
+          term SOFR (3-month).
+
+  - id: issuer_debt.CRWV.ddtl_2_1.sofr_spread
+    indicator: credit
+    label: CoreWeave DDTL 2.1 tranche (DDTL 2.0 Fifth Amendment), margin over term SOFR
+    entity: CoreWeave Compute Acquisition Co. IV, LLC (CoreWeave)
+    source: CoreWeave Form 8-K
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001769628&type=8-K
+    unit: "%"
+    currency: null
+    cadence: irregular
+    methodology: *m_sofr
+    observations:
+      - period_start: 2025-09-29
+        period_end: 2025-09-29
+        value: 4.25
+        as_of: 2025-10-02
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000119312525227562/d910811d8k.htm
+        quote: "for term SOFR loans, 4.25% plus the term SOFR for a three-month interest period"
+        note: >-
+          Incremental $3.0bn delayed-draw tranche added to the DDTL 2.0 credit agreement on
+          2025-09-29 (the 10-K calls it the DDTL 2.1 Facility). Draws available to March 2026; each
+          draw matures five years after drawing. Upfront fee 1.50% on funded amounts. The original
+          DDTL 2.0 margins (6.00-6.50% for investment-grade, 13.00% for non-investment-grade
+          contracts) are a grid and are not recorded.
+
+  - id: issuer_debt.CRWV.ddtl_3_0.sofr_spread
+    indicator: credit
+    label: CoreWeave DDTL 3.0 facility, margin over daily compounded SOFR
+    entity: CoreWeave Compute Acquisition Co. V / VII, LLC (CoreWeave)
+    source: CoreWeave Form 8-K
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001769628&type=8-K
+    unit: "%"
+    currency: null
+    cadence: irregular
+    methodology: *m_sofr
+    observations:
+      - period_start: 2025-07-28
+        period_end: 2025-07-28
+        value: 4.0
+        as_of: 2025-07-31
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000176962825000033/crwv-20250728.htm
+        quote: "for SOFR loans, 4.00% plus the daily compounded SOFR"
+        note: >-
+          $2.6bn delayed draw term loan entered 2025-07-28 (MUFG agent) to finance capex for a
+          customer contract. Draws until July 2026; maturity 2030-08-21. Undrawn fee 0.50%.
+          Secured by CCAC VII assets and equity; CCAC VII obligations guaranteed by CoreWeave.
+          Amended 2025-12-31 (covenant changes only per 8-K of 2026-01-02).
+
+  - id: issuer_debt.CRWV.ddtl_4_0.sofr_spread
+    indicator: credit
+    label: CoreWeave DDTL 4.0 facility, margin over daily compounded SOFR
+    entity: CoreWeave Compute Acquisition Co. VIII, LLC (CoreWeave)
+    source: CoreWeave Form 8-K
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001769628&type=8-K
+    unit: "%"
+    currency: null
+    cadence: irregular
+    methodology: *m_sofr
+    observations:
+      - period_start: 2026-03-30
+        period_end: 2026-03-30
+        value: 2.25
+        as_of: 2026-03-31
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000176962826000129/crwv-20260330.htm
+        quote: "for SOFR loans, daily compounded SOFR (subject to a 0.00% floor) plus an applicable margin of 2.25% per annum"
+        note: >-
+          $8.5bn delayed draw term loan entered 2026-03-30 (MUFG agent) to finance capex for a
+          customer contract. Draws until June 2027; maturity 2032-03-31. A fixed-rate option is
+          priced at 2.00% over a blended Treasury rate. Parent guarantee is limited recourse
+          ("bad acts") only; secured by CCAC VIII assets and equity. Undrawn fee 0.50%.
+
+  - id: issuer_debt.CRWV.ddtl_5_0.sofr_spread
+    indicator: credit
+    label: CoreWeave DDTL 5.0 facility, margin over daily compounded SOFR
+    entity: CoreWeave Financing DDTL V, LLC (CoreWeave)
+    source: CoreWeave Form 8-K
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001769628&type=8-K
+    unit: "%"
+    currency: null
+    cadence: irregular
+    methodology: *m_sofr
+    observations:
+      - period_start: 2026-05-15
+        period_end: 2026-05-15
+        value: 4.5
+        as_of: 2026-05-18
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000176962826000236/crwv-20260515.htm
+        quote: "for SOFR loans, daily compounded SOFR (subject to a 0.00% floor) plus an applicable margin of 4.50% per annum"
+        note: >-
+          $3.1bn delayed draw term loan entered 2026-05-15 (Morgan Stanley agent) for customer
+          contract capex. Draws until September 2026; maturity 2031-11-15. Unconditionally
+          guaranteed by CoreWeave; secured by borrower assets and equity. Undrawn fee 0.50%.
+
+  - id: issuer_debt.CRWV.ddtl_5_5.sofr_spread
+    indicator: credit
+    label: CoreWeave DDTL 5.5 facility, margin over term SOFR
+    entity: CoreWeave Financing DDTL V-V, LLC (CoreWeave)
+    source: CoreWeave Form 8-K
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001769628&type=8-K
+    unit: "%"
+    currency: null
+    cadence: irregular
+    methodology: *m_sofr
+    observations:
+      - period_start: 2026-08-07
+        period_end: 2026-08-07
+        value: 5.5
+        as_of: 2026-08-10
+        source_url: https://www.sec.gov/Archives/edgar/data/1769628/000176962826000357/crwv-20260807.htm
+        quote: "for SOFR loans, Term SOFR (subject to a 0.00% floor) plus an applicable margin of 5.50% per annum"
+        note: >-
+          $2.6bn delayed draw term loan entered 2026-08-07 (JPMorgan agent) for customer contract
+          capex. Draws until December 2026; maturity 2031-09-01. Unconditionally guaranteed by
+          CoreWeave; secured by borrower assets and equity. Undrawn fee 0.50%.
+
+  # ---------------------------------------------------------------- TeraWulf
+  - id: issuer_debt.WULF.wulf_compute_notes_2030_7_75.coupon
+    indicator: credit
+    label: WULF Compute (TeraWulf) 7.750% senior secured notes due 2030, coupon at issue
+    entity: WULF Compute LLC (TeraWulf Inc.)
+    source: TeraWulf Form 8-K
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001083301&type=8-K
+    unit: "%"
+    currency: null
+    cadence: irregular
+    methodology: *m_note
+    observations:
+      - period_start: 2025-10-23
+        period_end: 2025-10-23
+        value: 7.75
+        as_of: 2025-10-23
+        source_url: https://www.sec.gov/Archives/edgar/data/1083301/000110465925101866/tm2529300d1_8k.htm
+        quote: "completed its previously announced private offering of 7.750% Senior Secured Notes due 2030"
+        note: >-
+          Priced 2025-10-16, closed 2025-10-23. Principal $3.2bn at 100%, maturity 2030-10-15. Funds
+          part of the Lake Mariner (Barker, NY) data center expansion. Secured by first-priority
+          liens incl. a Fluidstack lockbox account and, before completion, a pledge by Google LLC
+          of its TeraWulf warrants (pricing release:
+          https://www.sec.gov/Archives/edgar/data/1083301/000110465925100142/tm2528904d1_ex99-1.htm).
+          TeraWulf gives completion guarantees. Rating not verified.
+
+  - id: issuer_debt.WULF.flash_compute_notes_2030_7_25.coupon
+    indicator: credit
+    label: Flash Compute (TeraWulf/Fluidstack JV) 7.250% senior secured notes due 2030, coupon at issue
+    entity: Flash Compute LLC (TeraWulf 50.1% / Fluidstack 49.9% JV)
+    source: TeraWulf Form 8-K
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001083301&type=8-K
+    unit: "%"
+    currency: null
+    cadence: irregular
+    methodology: *m_note
+    observations:
+      - period_start: 2025-12-29
+        period_end: 2025-12-29
+        value: 7.25
+        as_of: 2025-12-29
+        source_url: https://www.sec.gov/Archives/edgar/data/1083301/000110465925124839/tm2534384d1_8k.htm
+        quote: "announced the completion of the previously announced private offering by Flash Compute LLC (“Flash Compute”) of 7.250% Senior Secured Notes due 2030"
+        note: >-
+          Completion announced 2025-12-29 (purchase agreement 2025-12-18). Principal $1.3bn at 100%,
+          maturity 2030-12-31. Funds part of the Abernathy, Texas HPC campus. A Google backstop or
+          warrant pledge for this issue was not found in the closing 8-K and is not verified.
+
+  - id: issuer_debt.WULF.conv_2031_1_00.coupon
+    indicator: credit
+    label: TeraWulf 1.00% convertible senior notes due 2031, coupon at issue
+    entity: TeraWulf Inc.
+    source: TeraWulf press release (SEC Form 8-K Exhibit 99.1)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001083301&type=8-K
+    unit: "%"
+    currency: null
+    cadence: irregular
+    methodology: *m_conv
+    observations:
+      - period_start: 2025-08-20
+        period_end: 2025-08-20
+        value: 1.0
+        as_of: 2025-08-18
+        source_url: https://www.sec.gov/Archives/edgar/data/1083301/000110465925079960/tm2523651d4_ex99-1.htm
+        quote: "today announced the upsize and pricing of its offering of $850 million aggregate principal amount of 1.00% Convertible Senior Notes due 2031"
+        note: >-
+          Priced 2025-08-18 with a 32.50% conversion premium; $850m issued 2025-08-20 and the full
+          $150m option issued 2025-08-22 (8-K of 2025-08-22), $1.0bn total.
+
+  - id: issuer_debt.WULF.conv_2032_0_00.coupon
+    indicator: credit
+    label: TeraWulf 0.00% convertible senior notes due 2032, coupon at issue
+    entity: TeraWulf Inc.
+    source: TeraWulf Form 8-K
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001083301&type=8-K
+    unit: "%"
+    currency: null
+    cadence: irregular
+    methodology: *m_conv
+    observations:
+      - period_start: 2025-10-31
+        period_end: 2025-10-31
+        value: 0.0
+        as_of: 2025-10-31
+        source_url: https://www.sec.gov/Archives/edgar/data/1083301/000110465925104928/tm2529894d1_8k.htm
+        quote: "completed its previously announced private offering of 0.00% Convertible Senior Notes due 2032"
+        note: >-
+          Priced 2025-10-29 ($900m, 37.5% conversion premium), closed 2025-10-31 with $1.025bn
+          aggregate principal sold.
+
+  # ---------------------------------------------------------------- Cipher Mining / Cipher Digital
+  - id: issuer_debt.CIFR.cipher_compute_notes_2030_7_125.coupon
+    indicator: credit
+    label: Cipher Compute 7.125% senior secured notes due 2030, coupon at issue
+    entity: Cipher Compute LLC (Cipher Mining Inc.)
+    source: Cipher Mining Form 8-K
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001819989&type=8-K
+    unit: "%"
+    currency: null
+    cadence: irregular
+    methodology: *m_note
+    observations:
+      - period_start: 2025-11-13
+        period_end: 2025-11-13
+        value: 7.125
+        as_of: 2025-11-13
+        source_url: https://www.sec.gov/Archives/edgar/data/1819989/000095010325014692/dp237330_8k.htm
+        quote: "completed its previously announced private offering of 7.125% Senior Secured Notes due 2030"
+        note: >-
+          Priced 2025-11-05, closed 2025-11-13. Principal $1.4bn at 100%, maturity 2030-11-15. Funds
+          part of the Barber Lake HPC data center (Colorado City, Texas). Security includes, before
+          completion, a pledge by Google LLC of its Cipher warrants (pricing release:
+          https://www.sec.gov/Archives/edgar/data/1819989/000095010325014401/dp237015_ex9901.htm).
+          Add-on of $333m of the same series priced 2025-11-20 at 100.250%, closed 2025-11-24
+          (https://www.sec.gov/Archives/edgar/data/1819989/000095010325015181/dp237816_8k.htm).
+          Rating not verified.
+
+  - id: issuer_debt.CIFR.black_pearl_notes_2031_6_125.coupon
+    indicator: credit
+    label: Black Pearl Compute (Cipher) 6.125% senior secured notes due 2031, coupon at issue
+    entity: Black Pearl Compute LLC (Cipher Mining Inc.)
+    source: Cipher Mining Form 8-K
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001819989&type=8-K
+    unit: "%"
+    currency: null
+    cadence: irregular
+    methodology: *m_note
+    observations:
+      - period_start: 2026-02-11
+        period_end: 2026-02-11
+        value: 6.125
+        as_of: 2026-02-11
+        source_url: https://www.sec.gov/Archives/edgar/data/1819989/000095010326001966/dp241421_8k.htm
+        quote: "completed its previously announced private offering of 6.125% Senior Secured Notes due 2031"
+        note: >-
+          Priced 2026-02-04, closed 2026-02-11. Principal $2.0bn at 100%, maturity 2031-02-15.
+          Funds the Black Pearl HPC facility (Wink, Texas), reimburses about $232.5m of Cipher
+          equity, and funds debt service reserves. No Google pledge is mentioned in the closing
+          8-K. Rating not verified.
+
+  - id: issuer_debt.CIFR.stingray_notes_2031_6_00.coupon
+    indicator: credit
+    label: Stingray Compute (Cipher) 6.000% senior secured notes due 2031, coupon at issue
+    entity: Stingray Compute LLC (Cipher Digital Inc.)
+    source: Cipher Digital Form 8-K
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001819989&type=8-K
+    unit: "%"
+    currency: null
+    cadence: irregular
+    methodology: *m_note
+    observations:
+      - period_start: 2026-06-15
+        period_end: 2026-06-15
+        value: 6.0
+        as_of: 2026-06-15
+        source_url: https://www.sec.gov/Archives/edgar/data/1819989/000095010326008994/dp248453_8k.htm
+        quote: "completed its previously announced private offering of 6.000% Senior Secured Notes due 2031"
+        note: >-
+          Priced 2026-06-08, closed 2026-06-15. Principal $810.0m at 99.750%, maturity 2031-06-15.
+          Funds the Stingray data center, reimburses about $61.5m of company equity, and funds
+          debt service reserves. Rating not verified.
+
+  - id: issuer_debt.CIFR.conv_2030_1_75.coupon
+    indicator: credit
+    label: Cipher Mining 1.75% convertible senior notes due 2030, coupon at issue
+    entity: Cipher Mining Inc.
+    source: Cipher Mining Form 8-K
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001819989&type=8-K
+    unit: "%"
+    currency: null
+    cadence: irregular
+    methodology: *m_conv
+    observations:
+      - period_start: 2025-05-22
+        period_end: 2025-05-22
+        value: 1.75
+        as_of: 2025-05-22
+        source_url: https://www.sec.gov/Archives/edgar/data/1819989/000119312525125152/d86394d8k.htm
+        quote: "On May 22, 2025, the Company issued $172,500,000 principal amount of its 1.75% Convertible Senior Notes due 2030"
+        note: Underwritten offering ($150m base plus option); about $165.9m was exchanged for shares on 2026-10-16.
+
+  - id: issuer_debt.CIFR.conv_2031_0_00.coupon
+    indicator: credit
+    label: Cipher Mining 0.00% convertible senior notes due 2031, coupon at issue
+    entity: Cipher Mining Inc.
+    source: Cipher Mining Form 8-K
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001819989&type=8-K
+    unit: "%"
+    currency: null
+    cadence: irregular
+    methodology: *m_conv
+    observations:
+      - period_start: 2025-09-30
+        period_end: 2025-09-30
+        value: 0.0
+        as_of: 2025-10-01
+        source_url: https://www.sec.gov/Archives/edgar/data/1819989/000119312525225645/d52925d8k.htm
+        quote: "issued $1,300,000,000 aggregate principal amount of its 0.00% Convertible Senior Notes due 2031"
+        note: Priced 2025-09-25 ($1.1bn), issued 2025-09-30 at $1.3bn including the full $200m option.
+
+  - id: issuer_debt.CIFR.conv_2032_0_00.coupon
+    indicator: credit
+    label: Cipher Digital 0.00% convertible senior notes due 2032, coupon at issue
+    entity: Cipher Digital Inc. (formerly Cipher Mining Inc.)
+    source: Cipher Digital Form 8-K
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001819989&type=8-K
+    unit: "%"
+    currency: null
+    cadence: irregular
+    methodology: *m_conv
+    observations:
+      - period_start: 2026-10-16
+        period_end: 2026-10-16
+        value: 0.0
+        as_of: 2026-10-16
+        source_url: https://www.sec.gov/Archives/edgar/data/1819989/000119312526424297/d313847d8k.htm
+        quote: "issued $850.0 million aggregate principal amount of its 0.00% Convertible Senior Notes due 2032"
+        note: Priced 2026-10-13, issued 2026-10-16; initial purchasers hold a 13-day option for up to $150m more.
+
+  # ---------------------------------------------------------------- Applied Digital
+  - id: issuer_debt.APLD.computeco_notes_2030_9_25.coupon
+    indicator: credit
+    label: APLD ComputeCo 9.250% senior secured notes due 2030 (Polaris Forge 1), coupon at issue
+    entity: APLD ComputeCo LLC (Applied Digital Corporation)
+    source: Applied Digital Form 8-K
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001144879&type=8-K
+    unit: "%"
+    currency: null
+    cadence: irregular
+    methodology: *m_note
+    observations:
+      - period_start: 2025-11-20
+        period_end: 2025-11-20
+        value: 9.25
+        as_of: 2025-11-14
+        source_url: https://www.sec.gov/Archives/edgar/data/1144879/000149315225022506/form8-k.htm
+        quote: "priced its offering of $2.35 billion aggregate principal amount of 9.250% senior secured notes due 2030"
+        note: >-
+          Priced 2025-11-13 at an issue price of 97%, closed 2025-11-20 (closing 8-K:
+          https://www.sec.gov/Archives/edgar/data/1144879/000149315225024479/form8-k.htm).
+          Maturity 2030-12-15. Funds ELN-02 (100 MW) and ELN-03 (150 MW) at the Polaris Forge 1
+          campus in Ellendale, North Dakota, and repays an existing credit agreement. Rating not
+          verified.
+
+  - id: issuer_debt.APLD.computeco2_notes_2031_6_75.coupon
+    indicator: credit
+    label: APLD ComputeCo 2 6.750% senior secured notes due 2031 (Polaris Forge 2), coupon at issue
+    entity: APLD ComputeCo 2 LLC (Applied Digital Corporation)
+    source: Applied Digital Form 8-K
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001144879&type=8-K
+    unit: "%"
+    currency: null
+    cadence: irregular
+    methodology: *m_note
+    observations:
+      - period_start: 2026-03-10
+        period_end: 2026-03-10
+        value: 6.75
+        as_of: 2026-03-04
+        source_url: https://www.sec.gov/Archives/edgar/data/1144879/000149315226008772/form8-k.htm
+        quote: "priced its offering of $2.15 billion aggregate principal amount of 6.750% senior secured notes due 2031"
+        note: >-
+          Priced 2026-03-04 at an issue price of 98%, closed 2026-03-10 (closing 8-K:
+          https://www.sec.gov/Archives/edgar/data/1144879/000149315226009538/form8-k.htm).
+          Maturity 2031-03-15. Funds 200 MW at Polaris Forge 2 (Harwood, North Dakota), leased to
+          Oracle. Rating not verified.
+
+  - id: issuer_debt.APLD.computeco3_notes_2031_7_00.coupon
+    indicator: credit
+    label: APLD ComputeCo 3 7.000% senior secured notes due 2031 (Polaris Forge 1 ELN-04), coupon at issue
+    entity: APLD ComputeCo 3 LLC (Applied Digital Corporation)
+    source: Applied Digital Form 8-K
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001144879&type=8-K
+    unit: "%"
+    currency: null
+    cadence: irregular
+    methodology: *m_note
+    observations:
+      - period_start: 2026-06-16
+        period_end: 2026-06-16
+        value: 7.0
+        as_of: 2026-06-09
+        source_url: https://www.sec.gov/Archives/edgar/data/1144879/000149315226027979/form8-k.htm
+        quote: "priced its offering of $1.59 billion aggregate principal amount of 7.000% senior secured notes due 2031"
+        note: >-
+          Priced 2026-06-09 at an issue price of 100%, closed 2026-06-16 (closing 8-K:
+          https://www.sec.gov/Archives/edgar/data/1144879/000149315226028899/form8-k.htm).
+          Maturity 2031-06-15. Funds ELN-04 (150 MW) at Polaris Forge 1 and repays a Goldman Sachs
+          credit agreement. Rating not verified.
+
+  # ---------------------------------------------------------------- Core Scientific
+  - id: issuer_debt.CORZ.finance_i_notes_2031_7_75.coupon
+    indicator: credit
+    label: Core Scientific Finance I 7.750% senior secured notes due 2031, coupon at issue
+    entity: Core Scientific Finance I LLC (Core Scientific, Inc.)
+    source: Core Scientific Form 8-K
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001839341&type=8-K
+    unit: "%"
+    currency: null
+    cadence: irregular
+    methodology: *m_note
+    observations:
+      - period_start: 2026-05-06
+        period_end: 2026-05-06
+        value: 7.75
+        as_of: 2026-05-06
+        source_url: https://www.sec.gov/Archives/edgar/data/1839341/000119312526208905/d47435d8k.htm
+        quote: "completed its previously announced private offering (the “Offering”) of $3.3 billion aggregate principal amount of its 7.750% Senior Secured Notes due 2031"
+        note: >-
+          Priced 2026-04-22 (pricing release attached as Exhibit 99.1), closed 2026-05-06. Issue
+          price 99.250%, maturity 2031-05-15. Proceeds fund a debt service reserve and a
+          distribution to Core Scientific, which repays its 364-day delayed draw term loans.
+          Rating not verified.
+
+  # ---------------------------------------------------------------- IREN
+  - id: issuer_debt.IREN.conv_2029_3_50.coupon
+    indicator: credit
+    label: IREN 3.50% convertible senior notes due 2029, coupon at issue
+    entity: IREN Limited
+    source: IREN Form 6-K
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001878848
+    unit: "%"
+    currency: null
+    cadence: irregular
+    methodology: *m_conv
+    observations:
+      - period_start: 2025-06-13
+        period_end: 2025-06-13
+        value: 3.5
+        as_of: 2025-06-13
+        source_url: https://www.sec.gov/Archives/edgar/data/1878848/000114036125022454/ef20050570_6k.htm
+        quote: "issued $550 million principal amount of its 3.50% Convertible Senior Notes due 2029"
+        note: Priced at $500m (upsized), closed 2025-06-13 at $550m. Maturity 2029-12-15.
+
+  - id: issuer_debt.IREN.conv_2031_0_00.coupon
+    indicator: credit
+    label: IREN 0.00% convertible senior notes due 2031, coupon at issue
+    entity: IREN Limited
+    source: IREN Form 8-K
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001878848
+    unit: "%"
+    currency: null
+    cadence: irregular
+    methodology: *m_conv
+    observations:
+      - period_start: 2025-10-14
+        period_end: 2025-10-14
+        value: 0.0
+        as_of: 2025-10-14
+        source_url: https://www.sec.gov/Archives/edgar/data/1878848/000114036125038083/ef20056955_8k.htm
+        quote: "issued $1.0 billion principal amount of its 0.00% Convertible Senior Notes due 2031"
+        note: Priced at $875m, closed 2025-10-14 at $1.0bn. Maturity 2031-07-01.
+
+  - id: issuer_debt.IREN.conv_2032_0_25.coupon
+    indicator: credit
+    label: IREN 0.25% convertible senior notes due 2032, coupon at issue
+    entity: IREN Limited
+    source: IREN Form 8-K
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001878848
+    unit: "%"
+    currency: null
+    cadence: irregular
+    methodology: *m_conv
+    observations:
+      - period_start: 2025-12-08
+        period_end: 2025-12-08
+        value: 0.25
+        as_of: 2025-12-08
+        source_url: https://www.sec.gov/Archives/edgar/data/1878848/000114036125044888/ef20060782_8k.htm
+        quote: "issued $1.15 billion aggregate principal amount of its 0.25% convertible senior notes due 2032"
+        note: Closed 2025-12-08 alongside the 1.00% notes due June 2033. Principal $1.15bn, maturity 2032-06-01.
+
+  - id: issuer_debt.IREN.conv_2033jun_1_00.coupon
+    indicator: credit
+    label: IREN 1.00% convertible senior notes due June 2033, coupon at issue
+    entity: IREN Limited
+    source: IREN Form 8-K
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001878848
+    unit: "%"
+    currency: null
+    cadence: irregular
+    methodology: *m_conv
+    observations:
+      - period_start: 2025-12-08
+        period_end: 2025-12-08
+        value: 1.0
+        as_of: 2025-12-08
+        source_url: https://www.sec.gov/Archives/edgar/data/1878848/000114036125044888/ef20060782_8k.htm
+        quote: "$1.15 billion aggregate principal amount of its 1.00% convertible senior notes due 2033"
+        note: Closed 2025-12-08. Principal $1.15bn, maturity 2033-06-01. Distinct from the 1.00% notes due December 2033 issued 2026-05-14.
+
+  - id: issuer_debt.IREN.conv_2033dec_1_00.coupon
+    indicator: credit
+    label: IREN 1.00% convertible senior notes due December 2033, coupon at issue
+    entity: IREN Limited
+    source: IREN Form 8-K
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001878848
+    unit: "%"
+    currency: null
+    cadence: irregular
+    methodology: *m_conv
+    observations:
+      - period_start: 2026-05-14
+        period_end: 2026-05-14
+        value: 1.0
+        as_of: 2026-05-14
+        source_url: https://www.sec.gov/Archives/edgar/data/1878848/000114036126021285/ef20073507_8k.htm
+        quote: "issued $3.0 billion principal amount of its 1.00% Convertible Senior Notes due 2033"
+        note: Priced at $2.6bn, closed 2026-05-14 at $3.0bn. Maturity 2033-12-01.
+
+  # ---------------------------------------------------------------- Nebius
+  - id: issuer_debt.NBIS.conv_2029_2_00.coupon
+    indicator: credit
+    label: Nebius 2.00% convertible notes due 2029, coupon at issue
+    entity: Nebius Group N.V.
+    source: Nebius Form 6-K
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001513845
+    unit: "%"
+    currency: null
+    cadence: irregular
+    methodology: *m_conv
+    observations:
+      - period_start: 2025-06-05
+        period_end: 2025-06-05
+        value: 2.0
+        as_of: 2025-06-05
+        source_url: https://www.sec.gov/Archives/edgar/data/1513845/000110465925056817/tm2517269d1_6k.htm
+        quote: "$500,000,000 aggregate principal amount of 2.00% convertible notes due 2029"
+        note: >-
+          Private placement closed 2025-06-05. Maturity 2029-06-05. Interest is paid on the original
+          principal, and the principal accretes (an "Accreted Principal Amount" is payable at
+          maturity), so the all-in yield exceeds the coupon. About $400m was exchanged in August
+          2026.
+
+  - id: issuer_debt.NBIS.conv_2031_3_00.coupon
+    indicator: credit
+    label: Nebius 3.00% convertible notes due 2031, coupon at issue
+    entity: Nebius Group N.V.
+    source: Nebius Form 6-K
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001513845
+    unit: "%"
+    currency: null
+    cadence: irregular
+    methodology: *m_conv
+    observations:
+      - period_start: 2025-06-05
+        period_end: 2025-06-05
+        value: 3.0
+        as_of: 2025-06-05
+        source_url: https://www.sec.gov/Archives/edgar/data/1513845/000110465925056817/tm2517269d1_6k.htm
+        quote: "$500,000,000 aggregate principal amount of 3.00% convertible notes due 2031"
+        note: >-
+          Private placement closed 2025-06-05. Maturity 2031-06-05. Interest is paid on the original
+          principal, and the principal accretes, so the all-in yield exceeds the coupon.
+
+  - id: issuer_debt.NBIS.conv_2030_1_00.coupon
+    indicator: credit
+    label: Nebius 1.00% convertible notes due 2030, coupon at issue
+    entity: Nebius Group N.V.
+    source: Nebius press release (SEC Form 6-K Exhibit 99.1)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001513845
+    unit: "%"
+    currency: null
+    cadence: irregular
+    methodology: *m_conv
+    observations:
+      - period_start: 2025-09-15
+        period_end: 2025-09-15
+        value: 1.0
+        as_of: 2025-09-15
+        source_url: https://www.sec.gov/Archives/edgar/data/1513845/000110465925089969/tm2525580d4_ex99-1.htm
+        quote: "in two series: 1.00% convertible notes due 2030 (the “2030 Notes”) and 2.75% convertible notes due 2032"
+        note: >-
+          Closing announced 2025-09-15 (release dated that day). About $1.58bn per series,
+          about $3.16bn total, including the initial purchasers' option. Proceeds tied to capex
+          for the Microsoft AI infrastructure agreement. Exact maturity date not verified.
+
+  - id: issuer_debt.NBIS.conv_2032_2_75.coupon
+    indicator: credit
+    label: Nebius 2.75% convertible notes due 2032, coupon at issue
+    entity: Nebius Group N.V.
+    source: Nebius press release (SEC Form 6-K Exhibit 99.1)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001513845
+    unit: "%"
+    currency: null
+    cadence: irregular
+    methodology: *m_conv
+    observations:
+      - period_start: 2025-09-15
+        period_end: 2025-09-15
+        value: 2.75
+        as_of: 2025-09-15
+        source_url: https://www.sec.gov/Archives/edgar/data/1513845/000110465925089969/tm2525580d4_ex99-1.htm
+        quote: "in two series: 1.00% convertible notes due 2030 (the “2030 Notes”) and 2.75% convertible notes due 2032"
+        note: Closing announced 2025-09-15. About $1.58bn. Exact maturity date not verified.
+
+  - id: issuer_debt.NBIS.conv_2031_1_25.coupon
+    indicator: credit
+    label: Nebius 1.250% convertible notes due 2031, coupon at issue
+    entity: Nebius Group N.V.
+    source: Nebius press release (SEC Form 6-K Exhibit 99.1)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001513845
+    unit: "%"
+    currency: null
+    cadence: irregular
+    methodology: *m_conv
+    observations:
+      - period_start: 2026-03-20
+        period_end: 2026-03-20
+        value: 1.25
+        as_of: 2026-03-20
+        source_url: https://www.sec.gov/Archives/edgar/data/1513845/000110465926032735/tm268409d4_ex99-1.htm
+        quote: "in two series: 1.250% convertible notes due 2031 (the “2031 Notes”) and 2.625% convertible notes due 2033"
+        note: Closing announced 2026-03-20. Principal $2.5875bn including the full $337.5m option. Exact maturity date not verified.
+
+  - id: issuer_debt.NBIS.conv_2033_2_625.coupon
+    indicator: credit
+    label: Nebius 2.625% convertible notes due 2033, coupon at issue
+    entity: Nebius Group N.V.
+    source: Nebius press release (SEC Form 6-K Exhibit 99.1)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001513845
+    unit: "%"
+    currency: null
+    cadence: irregular
+    methodology: *m_conv
+    observations:
+      - period_start: 2026-03-20
+        period_end: 2026-03-20
+        value: 2.625
+        as_of: 2026-03-20
+        source_url: https://www.sec.gov/Archives/edgar/data/1513845/000110465926032735/tm268409d4_ex99-1.htm
+        quote: "in two series: 1.250% convertible notes due 2031 (the “2031 Notes”) and 2.625% convertible notes due 2033"
+        note: >-
+          Closing announced 2026-03-20. Principal $1.75bn "to date", with a further option of up to
+          $262.5m open for 13 days. Exact maturity date not verified.
+
+  - id: issuer_debt.NBIS.conv_2030_0_50.coupon
+    indicator: credit
+    label: Nebius 0.50% convertible notes due 2030, coupon at issue
+    entity: Nebius Group N.V.
+    source: Nebius press release (SEC Form 6-K Exhibit 99.1)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001513845
+    unit: "%"
+    currency: null
+    cadence: irregular
+    methodology: *m_conv
+    observations:
+      - period_start: 2026-08-24
+        period_end: 2026-08-24
+        value: 0.5
+        as_of: 2026-08-24
+        source_url: https://www.sec.gov/Archives/edgar/data/1513845/000110465926100347/tm2623863d1_ex99-1.htm
+        quote: "in two series: 0.50% convertible notes due 2030 (the “2030 Notes”) and 4.50% convertible notes due 2034"
+        note: >-
+          Closing announced 2026-08-24. Principal $3.45bn including the full $450m option.
+          Concurrent exchanges retired part of the 2.00% 2029 and 3.00% 2031 notes. Exact maturity
+          date not verified. Distinct from the 1.00% notes due 2030.
+
+  - id: issuer_debt.NBIS.conv_2034_4_50.coupon
+    indicator: credit
+    label: Nebius 4.50% convertible notes due 2034, coupon at issue
+    entity: Nebius Group N.V.
+    source: Nebius press release (SEC Form 6-K Exhibit 99.1)
+    source_url: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001513845
+    unit: "%"
+    currency: null
+    cadence: irregular
+    methodology: *m_conv
+    observations:
+      - period_start: 2026-08-24
+        period_end: 2026-08-24
+        value: 4.5
+        as_of: 2026-08-24
+        source_url: https://www.sec.gov/Archives/edgar/data/1513845/000110465926100347/tm2623863d1_ex99-1.htm
+        quote: "in two series: 0.50% convertible notes due 2030 (the “2030 Notes”) and 4.50% convertible notes due 2034"
+        note: Closing announced 2026-08-24. Principal $2.3bn including the full $300m option. Exact maturity date not verified.

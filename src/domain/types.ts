@@ -55,6 +55,8 @@ export const ObservationInputSchema = v.pipe(
     asOf: v.optional(IsoDate),
     sourceUrl: v.optional(v.pipe(v.string(), v.url())),
     note: v.optional(v.string()),
+    // Verbatim source sentence for hand-entered values.
+    quote: v.optional(v.string()),
   }),
   v.check((o) => o.periodStart <= o.periodEnd, "periodStart must not be after periodEnd"),
 );

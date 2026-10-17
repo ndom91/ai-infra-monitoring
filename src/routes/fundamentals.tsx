@@ -3,6 +3,7 @@ import { ChartBlock } from "~/components/ChartBlock";
 import { CompanyPicker } from "~/components/CompanyPicker";
 import { IndicatorPanel } from "~/components/IndicatorPanel";
 import { SectionHeader } from "~/components/SectionHeader";
+import { TermsTable } from "~/components/TermsTable";
 import { SEC_COMPANIES } from "~/domain/companies";
 import { indicatorById, SECTIONS } from "~/domain/indicators";
 import { parseRange } from "~/domain/ranges";
@@ -19,6 +20,12 @@ export const Route = createFileRoute("/fundamentals")({
   loader: ({ deps }) => getFundamentalsData({ data: { range: deps.range } }),
   component: FundamentalsPage,
 });
+
+// "customer_concentration.CRWV.top2_pct_fy" -> "CRWV top2"
+const concentrationLabel = (s: SeriesView) => {
+  const [, ticker = "", metric = ""] = s.id.split(".");
+  return `${ticker} ${metric.replace(/_pct_(fy|q)$/, "").replaceAll("_", " ")}`;
+};
 
 function FundamentalsPage() {
   const { series } = Route.useLoaderData();
@@ -120,11 +127,24 @@ function FundamentalsPage() {
       </IndicatorPanel>
 
       <IndicatorPanel def={indicatorById("customer_concentration")}>
-        <ChartBlock
-          title="Largest customer share of revenue"
-          subtitle="As disclosed in filings; cited manual entries"
-          series={manual("customer_concentration")}
-          emptyReason="Concentration is disclosed in filing text, not XBRL. Cited entries are added manually."
+        <div className="grid-2">
+          <ChartBlock
+            title="Revenue share, full fiscal year"
+            subtitle="Disclosed share of revenue from named or largest customers"
+            series={manual("customer_concentration").filter((s) => s.id.endsWith("_pct_fy"))}
+            labelOf={concentrationLabel}
+          />
+          <ChartBlock
+            title="Revenue share, single quarter"
+            subtitle="Quarter-only disclosures; never mixed with year-to-date shares"
+            series={manual("customer_concentration").filter((s) => s.id.endsWith("_pct_q"))}
+            labelOf={concentrationLabel}
+          />
+        </div>
+        <TermsTable
+          title="Announced customer contracts"
+          subtitle="Total contract values as announced. Not RPO, not guaranteed revenue."
+          series={manual("customer_concentration").filter((s) => s.id.includes("contract_value"))}
         />
       </IndicatorPanel>
 

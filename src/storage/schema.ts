@@ -44,6 +44,8 @@ export const observations = sqliteTable(
     // Specific document (filing, report) when more precise than series.sourceUrl.
     sourceUrl: text(),
     note: text(),
+    // Verbatim source sentence backing a hand-entered value.
+    quote: text(),
     collectedAt: text().notNull(),
     runId: integer()
       .notNull()

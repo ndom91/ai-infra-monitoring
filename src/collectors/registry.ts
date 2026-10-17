@@ -1,7 +1,14 @@
 import { awsCollector } from "./aws";
 import { azureCollector } from "./azure";
 import { fredCollector } from "./fred";
+import { manualCollector } from "./manual";
 import { secCollector } from "./sec";
 import type { Collector } from "./types";
 
-export const COLLECTORS: Collector[] = [fredCollector, secCollector, azureCollector, awsCollector];
+export const COLLECTORS: Collector[] = [
+  fredCollector,
+  secCollector,
+  azureCollector,
+  awsCollector,
+  manualCollector,
+];

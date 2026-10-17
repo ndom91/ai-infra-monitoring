@@ -1,0 +1,835 @@
+# Data-center supply/demand fundamentals from CBRE and JLL North America reports.
+# CBRE and JLL use different market definitions and are never merged.
+# JLL changed its coverage twice (U.S.-only colocation in H1 2024, North America
+# colocation YE2024-H1 2025, expanded hyperscale + 40 frontier markets from YE2025),
+# so each JLL scope is its own series family.
+
+series:
+  # ---------------------------------------------------------------- CBRE
+  - id: cbre.na_primary.vacancy
+    indicator: vacancy
+    label: CBRE North America primary-market data-center vacancy
+    entity: North America primary markets (CBRE)
+    source: CBRE North America Data Center Trends
+    source_url: https://www.cbre.com/insights/data-center
+    unit: "%"
+    currency: null
+    cadence: semiannual
+    methodology: >
+      Overall vacancy rate across CBRE's primary wholesale colocation data-center
+      markets at the end of each half-year, as stated in the semiannual North America
+      Data Center Trends report covering that half. Market definition change: through
+      the H2 2022 report CBRE had seven primary markets (Northern Virginia, Dallas,
+      Silicon Valley, Chicago, Phoenix, New York Tri-State, Atlanta); from the H1 2023
+      report onward it uses eight, adding Hillsboro, OR. CBRE periodically revises
+      inventory and absorption history (e.g. H1 2025 report), so later reports may
+      restate earlier periods.
+    observations:
+      - period_start: 2022-01-01
+        period_end: 2022-06-30
+        value: 3.8
+        as_of: 2022-09-09
+        source_url: https://www.cbre.com/insights/reports/north-america-data-center-trends-h1-2022
+        quote: "The overall vacancy rate for primary markets is at a record-low 3.8%."
+        note: Seven primary markets (Hillsboro not yet included).
+      - period_start: 2022-07-01
+        period_end: 2022-12-31
+        value: 3.2
+        as_of: 2023-02-17
+        source_url: https://www.cbre.com/insights/reports/north-america-data-center-trends-h2-2022
+        quote: "The overall vacancy rate in primary markets is a record-low 3.2%."
+        note: Seven primary markets (Hillsboro not yet included).
+      - period_start: 2023-01-01
+        period_end: 2023-06-30
+        value: 3.3
+        as_of: 2023-09-06
+        source_url: https://www.cbre.com/insights/reports/north-america-data-center-trends-h1-2023
+        quote: "The overall vacancy rate for primary markets remains near a record low, at 3.3%."
+        note: First report with eight primary markets (Hillsboro added). Also restated as "3.3% a year earlier" in the H1 2024 report.
+      - period_start: 2023-07-01
+        period_end: 2023-12-31
+        value: 3.7
+        as_of: 2024-03-06
+        source_url: https://www.cbre.com/insights/reports/north-america-data-center-trends-h2-2023
+        quote: "The overall vacancy rate for primary markets remains near a record low, at 3.7%."
+      - period_start: 2024-01-01
+        period_end: 2024-06-30
+        value: 2.8
+        as_of: 2024-08-19
+        source_url: https://www.cbre.com/insights/reports/north-america-data-center-trends-h1-2024
+        quote: "The overall vacancy rate for primary markets fell to a record-low 2.8% in H1 2024 from 3.3% a year earlier"
+      - period_start: 2024-07-01
+        period_end: 2024-12-31
+        value: 1.9
+        as_of: 2025-02-26
+        source_url: https://www.cbre.com/insights/reports/north-america-data-center-trends-h2-2024
+        quote: "The overall vacancy rate in primary markets fell to a record-low 1.9% at year-end."
+      - period_start: 2025-01-01
+        period_end: 2025-06-30
+        value: 1.6
+        as_of: 2025-09-08
+        source_url: https://www.cbre.com/insights/reports/north-america-data-center-trends-h1-2025
+        quote: "Despite this significant increase in inventory, primary market vacancy dropped to a record-low 1.6%"
+        note: Also restated as "1.6% in H1 2025" in the H1 2026 report. Highlights brief published 2025-08-19.
+      - period_start: 2025-07-01
+        period_end: 2025-12-31
+        value: 1.4
+        as_of: 2026-02-25
+        source_url: https://www.cbre.com/insights/books/north-america-data-center-trends-h2-2025
+        quote: "The overall vacancy rate in primary markets fell to a record low 1.4% at year-end."
+      - period_start: 2026-01-01
+        period_end: 2026-06-30
+        value: 1.4
+        as_of: 2026-08-27
+        source_url: https://www.cbre.com/insights/books/north-america-data-center-trends-h1-2026
+        quote: "Despite record supply, primary market vacancy fell to a record low of 1.4% in H1 from 1.6% in H1 2025"
+        note: The H1 2026 press release says "Vacancy held steady at 1.4% compared with year-end 2025."
+
+  - id: cbre.na_primary.net_absorption_mw
+    indicator: vacancy
+    label: CBRE North America primary-market half-year net absorption
+    entity: North America primary markets (CBRE)
+    source: CBRE North America Data Center Trends
+    source_url: https://www.cbre.com/insights/data-center
+    unit: MW
+    currency: null
+    cadence: semiannual
+    methodology: >
+      Net absorption (MW) across CBRE's primary wholesale colocation markets during the
+      half-year, as stated in the report covering that half. H2 reports usually state
+      full-year absorption instead (see cbre.na_primary.net_absorption_mw_annual).
+      Seven primary markets through H2 2022, eight (adds Hillsboro) from H1 2023.
+    observations:
+      - period_start: 2021-07-01
+        period_end: 2021-12-31
+        value: 351.7
+        as_of: 2022-03-21
+        source_url: https://www.cbre.com/insights/reports/north-america-data-center-trends-h2-2021
+        quote: "Cumulative net absorption across primary markets in H2 2021 totaled 351.7 MW, up 158.5 MW year-over-year."
+        note: Seven primary markets.
+      - period_start: 2022-01-01
+        period_end: 2022-06-30
+        value: 453.4
+        as_of: 2022-09-09
+        source_url: https://www.cbre.com/insights/reports/north-america-data-center-trends-h1-2022
+        quote: "Net absorption across primary markets nearly tripled year-over-year in H1 to 453.4 MW, almost 60% of it in Northern Virginia."
+        note: Seven primary markets. The H1 2023 report (eight markets) restates H1 2022 absorption as 484.8 MW.
+      - period_start: 2023-01-01
+        period_end: 2023-06-30
+        value: 468.8
+        as_of: 2023-09-06
+        source_url: https://www.cbre.com/insights/reports/north-america-data-center-trends-h1-2023
+        quote: "It totaled 468.8 MW, compared to 484.8 MW absorbed in H1 2022."
+        note: Eight primary markets. "It" refers to primary-market absorption in H1 2023.
+      - period_start: 2026-01-01
+        period_end: 2026-06-30
+        value: 1456.2
+        as_of: 2026-08-27
+        source_url: https://www.cbre.com/insights/books/north-america-data-center-trends-h1-2026
+        quote: "Net absorption across primary markets increased by 11.7% year-over-year to 1,456.2 MW in H1."
+
+  - id: cbre.na_primary.net_absorption_mw_annual
+    indicator: vacancy
+    label: CBRE North America primary-market full-year net absorption
+    entity: North America primary markets (CBRE)
+    source: CBRE North America Data Center Trends
+    source_url: https://www.cbre.com/insights/data-center
+    unit: MW
+    currency: null
+    cadence: annual
+    methodology: >
+      Calendar-year net absorption (MW) across CBRE's primary wholesale colocation
+      markets, as stated in the H2 (year-end) report or its press release. Seven
+      primary markets for 2022, eight (adds Hillsboro) from 2023.
+    observations:
+      - period_start: 2022-01-01
+        period_end: 2022-12-31
+        value: 686.9
+        as_of: 2023-02-17
+        source_url: https://www.cbre.com/insights/reports/north-america-data-center-trends-h2-2022
+        quote: "Primary markets saw 686.9 MW of positive absorption in 2022, up 193.6 MW (39.1%) from 2021."
+        note: Seven primary markets.
+      - period_start: 2024-01-01
+        period_end: 2024-12-31
+        value: 1809.5
+        as_of: 2025-03-06
+        source_url: https://www.cbre.com/press-releases/north-american-data-center-construction-hit-new-heights-in-2024-amid-surging-demand-washington
+        quote: "Primary market net absorption jumped from 329.6 MW in 2020 to 1,809.5 MW in 2024—a 450% increase in just four years."
+        note: CBRE press release for the H2 2024 report; the H2 2025 report restates 2024 as 1,809.5 MW.
+      - period_start: 2025-01-01
+        period_end: 2025-12-31
+        value: 2497.6
+        as_of: 2026-02-25
+        source_url: https://www.cbre.com/insights/books/north-america-data-center-trends-h2-2025
+        quote: "Primary markets posted record net absorption of 2,497.6 MW in 2025, outpacing the previous record of 1,809.5 MW in 2024."
+
+  - id: cbre.na_primary.under_construction_mw
+    indicator: construction
+    label: CBRE North America primary-market capacity under construction
+    entity: North America primary markets (CBRE)
+    source: CBRE North America Data Center Trends
+    source_url: https://www.cbre.com/insights/data-center
+    unit: MW
+    currency: null
+    cadence: semiannual
+    methodology: >
+      Wholesale colocation capacity (MW) under construction across CBRE's primary
+      markets at the end of each half-year, as stated in the report covering that half.
+      Seven primary markets through H2 2022, eight (adds Hillsboro) from H1 2023.
+      Later reports sometimes restate earlier periods on the newer basis; see notes.
+    observations:
+      - period_start: 2021-07-01
+        period_end: 2021-12-31
+        value: 727.6
+        as_of: 2022-03-21
+        source_url: https://www.cbre.com/insights/reports/north-america-data-center-trends-h2-2021
+        quote: "with 321.7 MW of the 727.6 MW (44.2%) of under-construction capacity preleased."
+        note: Seven primary markets. The same report also rounds this to "another 728 MW of capacity is under construction".
+      - period_start: 2022-01-01
+        period_end: 2022-06-30
+        value: 1601.5
+        as_of: 2022-09-09
+        source_url: https://www.cbre.com/insights/reports/north-america-data-center-trends-h1-2022
+        quote: "The construction pipeline within primary markets more than doubled year-over-year to 1,601.5 MW."
+        note: Seven primary markets. The H1 2023 press release (eight markets) restates H1 2022 as 1,830.3 MW.
+      - period_start: 2022-07-01
+        period_end: 2022-12-31
+        value: 1839.9
+        as_of: 2023-02-17
+        source_url: https://www.cbre.com/insights/reports/north-america-data-center-trends-h2-2022
+        quote: "the construction pipeline within primary markets increased 153% year-over-year, to 1,839.9 MW."
+        note: Seven primary markets. The H2 2023 press release (eight markets) restates year-end 2022 as 2,109.2 MW.
+      - period_start: 2023-01-01
+        period_end: 2023-06-30
+        value: 2287.6
+        as_of: 2023-09-06
+        source_url: https://www.cbre.com/insights/reports/north-america-data-center-trends-h1-2023
+        quote: "An all-time high of 2,287.6 MW was under construction in primary markets, a 25% year-over-year increase."
+        note: First report with eight primary markets (Hillsboro added).
+      - period_start: 2023-07-01
+        period_end: 2023-12-31
+        value: 3077.8
+        as_of: 2024-03-06
+        source_url: https://www.cbre.com/insights/reports/north-america-data-center-trends-h2-2023
+        quote: "An all-time high of 3,077.8 MW was under construction in primary markets, a 46% year-over-year increase."
+        note: The H2 2024 report also restates year-end 2023 as 3,077.8 MW, but the H1 2025 report cites "H2 2023's total of 3,245.2 MW" (apparent revision).
+      - period_start: 2024-01-01
+        period_end: 2024-06-30
+        value: 3871.8
+        as_of: 2024-08-19
+        source_url: https://www.cbre.com/insights/reports/north-america-data-center-trends-h1-2024
+        quote: "Under-construction activity in primary markets hit a record-high 3,871.8 MW, up by 69% from a year earlier."
+      - period_start: 2024-07-01
+        period_end: 2024-12-31
+        value: 6350.1
+        as_of: 2025-03-06
+        source_url: https://www.cbre.com/press-releases/north-american-data-center-construction-hit-new-heights-in-2024-amid-surging-demand-washington
+        quote: "a record 6,350.1 megawatts (MW)—a 12-fold increase from the 456.8 MW under construction in 2020"
+        note: The H2 2024 report itself (published 2025-02-26) rounds this to "a record 6,350 MW under construction at the end of 2024"; the press release, H2 2025 and H1 2026 reports give 6,350.1 MW.
+      - period_start: 2025-01-01
+        period_end: 2025-06-30
+        value: 5242.5
+        as_of: 2025-09-08
+        source_url: https://www.cbre.com/insights/reports/north-america-data-center-trends-h1-2025
+        quote: "Total under-construction capacity across primary markets reached 5,242.5 MW in H1 2025,"
+      - period_start: 2025-07-01
+        period_end: 2025-12-31
+        value: 5994.4
+        as_of: 2026-02-25
+        source_url: https://www.cbre.com/insights/books/north-america-data-center-trends-h2-2025
+        quote: "There were 5,994.4 MW under construction at the end of 2025, down from 6,350.1 MW in 2024."
+      - period_start: 2026-01-01
+        period_end: 2026-06-30
+        value: 7481.1
+        as_of: 2026-08-27
+        source_url: https://www.cbre.com/insights/books/north-america-data-center-trends-h1-2026
+        quote: "Total under-construction capacity across primary markets increased by 24.8% in H1 to a record high of 7,481.1 MW."
+        note: The 24.8% increase is versus year-end 2025 (5,994.4 MW), not year-over-year.
+
+  - id: cbre.na_primary.preleased_pct
+    indicator: construction
+    label: CBRE North America primary-market share of under-construction capacity preleased
+    entity: North America primary markets (CBRE)
+    source: CBRE North America Data Center Trends
+    source_url: https://www.cbre.com/insights/data-center
+    unit: "%"
+    currency: null
+    cadence: semiannual
+    methodology: >
+      Share of primary-market capacity under construction that is preleased/committed
+      at the end of the half-year, as stated in the report covering that half. Seven
+      primary markets through H2 2022, eight (adds Hillsboro) from H1 2023.
+    observations:
+      - period_start: 2021-07-01
+        period_end: 2021-12-31
+        value: 44.2
+        as_of: 2022-03-21
+        source_url: https://www.cbre.com/insights/reports/north-america-data-center-trends-h2-2021
+        quote: "with 321.7 MW of the 727.6 MW (44.2%) of under-construction capacity preleased."
+        note: Seven primary markets.
+      - period_start: 2022-01-01
+        period_end: 2022-06-30
+        value: 73
+        as_of: 2022-09-09
+        source_url: https://www.cbre.com/insights/reports/north-america-data-center-trends-h1-2022
+        quote: "Seventy-three percent of the 1,601.5 MW of under-construction capacity across primary markets in H1 was already preleased."
+        note: Seven primary markets.
+      - period_start: 2023-01-01
+        period_end: 2023-06-30
+        value: 73.1
+        as_of: 2023-09-06
+        source_url: https://www.cbre.com/insights/reports/north-america-data-center-trends-h1-2023
+        quote: "Preleasing activity in primary markets is strong, with 1,673.1 MW (73.1%) of the 2,287.6 MW under construction preleased."
+      - period_start: 2023-07-01
+        period_end: 2023-12-31
+        value: 83
+        as_of: 2024-03-06
+        source_url: https://www.cbre.com/insights/reports/north-america-data-center-trends-h2-2023
+        quote: "Preleasing activity in primary markets is strengthening, with 2,553.1 MW (83%) of the 3,077.8 MW under construction preleased."
+      - period_start: 2024-01-01
+        period_end: 2024-06-30
+        value: 78.9
+        kind: calculated
+        as_of: 2024-08-19
+        source_url: https://www.cbre.com/insights/reports/north-america-data-center-trends-h1-2024
+        quote: "Nearly 80% or 3,056.4 of the 3,871.8 MW under construction in primary markets was preleased."
+        note: 3,056.4 / 3,871.8 = 78.94%, rounded to 78.9. CBRE states only "nearly 80%".
+      - period_start: 2025-01-01
+        period_end: 2025-06-30
+        value: 74.3
+        as_of: 2025-09-08
+        source_url: https://www.cbre.com/insights/reports/north-america-data-center-trends-h1-2025
+        quote: "Preleasing activity remained strong with 74.3% of all under-construction capacity already committed,"
+        note: Also restated as "74.3% a year ago" in the H1 2026 report.
+      - period_start: 2026-01-01
+        period_end: 2026-06-30
+        value: 80.4
+        as_of: 2026-08-27
+        source_url: https://www.cbre.com/insights/books/north-america-data-center-trends-h1-2026
+        quote: "Preleasing activity accelerated with commitments made on 80.4% of all under-construction capacity"
+
+  - id: cbre.na_primary.inventory_mw
+    indicator: vacancy
+    label: CBRE North America primary-market data-center supply (inventory)
+    entity: North America primary markets (CBRE)
+    source: CBRE North America Data Center Trends
+    source_url: https://www.cbre.com/insights/data-center
+    unit: MW
+    currency: null
+    cadence: semiannual
+    methodology: >
+      Total wholesale colocation supply/inventory (MW) across CBRE's primary markets at
+      the end of each half-year, as stated in the report covering that half. Seven
+      primary markets through H2 2022, eight (adds Hillsboro) from H1 2023. CBRE
+      revised inventory history in the H1 2025 report. H1 2023 and H1 2024 reports
+      state only the change in supply, not the total, so those periods are omitted.
+    observations:
+      - period_start: 2021-07-01
+        period_end: 2021-12-31
+        value: 3358.1
+        as_of: 2022-03-21
+        source_url: https://www.cbre.com/insights/reports/north-america-data-center-trends-h2-2021
+        quote: "Primary market supply grew 8.9% half-over-half and 17% year-over-year in 2021 to 3,358.1 MW."
+        note: Seven primary markets.
+      - period_start: 2022-01-01
+        period_end: 2022-06-30
+        value: 3711.0
+        as_of: 2022-09-09
+        source_url: https://www.cbre.com/insights/reports/north-america-data-center-trends-h1-2022
+        quote: "Total inventory across primary markets grew by 20% year-over-year to 3,711.0 MW."
+        note: Seven primary markets.
+      - period_start: 2022-07-01
+        period_end: 2022-12-31
+        value: 3928.7
+        as_of: 2023-02-17
+        source_url: https://www.cbre.com/insights/reports/north-america-data-center-trends-h2-2022
+        quote: "In 2022, primary market supply grew 17% year-over-year to 3,928.7 MW."
+        note: Seven primary markets.
+      - period_start: 2023-07-01
+        period_end: 2023-12-31
+        value: 5174.1
+        as_of: 2024-03-06
+        source_url: https://www.cbre.com/insights/reports/north-america-data-center-trends-h2-2023
+        quote: "In 2023, primary market supply grew 26% year-over-year to 5,174.1 MW."
+      - period_start: 2024-07-01
+        period_end: 2024-12-31
+        value: 6922.6
+        as_of: 2025-02-26
+        source_url: https://www.cbre.com/insights/reports/north-america-data-center-trends-h2-2024
+        quote: "Supply in primary data center markets increased by 34% year-over-year to 6,922.6 megawatts (MW)"
+      - period_start: 2025-01-01
+        period_end: 2025-06-30
+        value: 8155
+        as_of: 2025-09-08
+        source_url: https://www.cbre.com/insights/reports/north-america-data-center-trends-h1-2025
+        quote: "Primary market supply totaled a record 8,155 megawatts (MW) in H1 2025,"
+        note: The H1 2025 report notes that inventory and net absorption history were revised.
+      - period_start: 2025-07-01
+        period_end: 2025-12-31
+        value: 9432
+        as_of: 2026-02-25
+        source_url: https://www.cbre.com/insights/books/north-america-data-center-trends-h2-2025
+        quote: "Primary market supply increased by 36% year-over-year to 9,432 megawatts (MW)"
+      - period_start: 2026-01-01
+        period_end: 2026-06-30
+        value: 10903
+        as_of: 2026-08-27
+        source_url: https://www.cbre.com/insights/books/north-america-data-center-trends-h1-2026
+        quote: "Primary market supply surged by 33.7% year-over-year in H1 2026 to a record high of 10,903 megawatts (MW)."
+        note: The H1 2026 press release misprints this as "a record 10.9 megawatts (MW)"; the report page gives 10,903 MW.
+
+  - id: cbre.na_primary.asking_rent_250_500kw
+    indicator: vacancy
+    label: CBRE North America primary-market average asking rent, 250-500 kW requirement
+    entity: North America primary markets (CBRE)
+    source: CBRE North America Data Center Trends
+    source_url: https://www.cbre.com/insights/data-center
+    unit: USD/kW/month
+    currency: USD
+    cadence: semiannual
+    methodology: >
+      Average monthly asking rate for a 250-to-500-kW wholesale colocation requirement
+      across CBRE's primary markets, N+1/Tier III (CBRE footnote: "Rental rates are
+      quoted asking rates for 250+ kW at N+1/Tier III requirements"). Seven primary
+      markets through H2 2022, eight (adds Hillsboro) from H1 2023. H1 2025 and H1 2026
+      reports give only the percentage change, not a dollar level, so those periods are
+      omitted.
+    observations:
+      - period_start: 2021-07-01
+        period_end: 2021-12-31
+        value: 120
+        as_of: 2022-03-21
+        source_url: https://www.cbre.com/insights/reports/north-america-data-center-trends-h2-2021
+        quote: "The average asking rate for a 250- to 500-kW requirement across primary markets was approximately $120 kW/month."
+        note: Seven primary markets. CBRE states the level only approximately.
+      - period_start: 2022-01-01
+        period_end: 2022-06-30
+        value: 127.50
+        as_of: 2022-09-09
+        source_url: https://www.cbre.com/insights/reports/north-america-data-center-trends-h1-2022
+        quote: "Average rental rates increased for the first time since 2017, up by 5.9% to $127.50 per kW/month"
+        note: Seven primary markets.
+      - period_start: 2022-07-01
+        period_end: 2022-12-31
+        value: 137.90
+        as_of: 2023-02-17
+        source_url: https://www.cbre.com/insights/reports/north-america-data-center-trends-h2-2022
+        quote: "increased by 14.5% year-over-year, to $137.90 per kW/month."
+        note: Seven primary markets. The H2 2023 press release restates the year-earlier level as $137.86.
+      - period_start: 2023-01-01
+        period_end: 2023-06-30
+        value: 147.81
+        as_of: 2023-09-06
+        source_url: https://www.cbre.com/insights/reports/north-america-data-center-trends-h1-2023
+        quote: "increased by 7.2% in H1 2023 to $147.81 per kW/month."
+        note: The H1 2023 press release rounds this to $147.80.
+      - period_start: 2023-07-01
+        period_end: 2023-12-31
+        value: 163.44
+        as_of: 2024-03-06
+        source_url: https://www.cbre.com/insights/reports/north-america-data-center-trends-h2-2023
+        quote: "increased by 18.6% year-over-year to a record $163.44 per kW/month."
+      - period_start: 2024-01-01
+        period_end: 2024-06-30
+        value: 174.06
+        as_of: 2024-08-19
+        source_url: https://www.cbre.com/insights/reports/north-america-data-center-trends-h1-2024
+        quote: "increased by 7% in H1 2024 to $174.06 per kW/month."
+        note: The same report's pricing section gives the increase as 6.5% to the same $174.06 level.
+      - period_start: 2024-07-01
+        period_end: 2024-12-31
+        value: 184.06
+        as_of: 2025-02-26
+        source_url: https://www.cbre.com/insights/reports/north-america-data-center-trends-h2-2024
+        quote: "year-over-year to a record $184.06 per kW/month."
+      - period_start: 2025-07-01
+        period_end: 2025-12-31
+        value: 196.25
+        as_of: 2026-02-25
+        source_url: https://www.cbre.com/insights/books/north-america-data-center-trends-h2-2025
+        quote: "rose by 6.6% year-over-year to a record $196.25 per kW/month"
+        note: >-
+          National Pricing section (primary wholesale colocation markets). The same report's
+          overview says "rose by 6.5% year-over-year to $195.94 per kW/month", and the
+          2026-02-26 press release says "$194.95 per kW/month". CBRE published three
+          different levels for this period.
+
+  # ---------------------------------------------------------------- JLL, U.S. colocation (Midyear 2024 edition)
+  - id: jll.us_colo.vacancy
+    indicator: vacancy
+    label: JLL U.S. colocation data-center vacancy
+    entity: United States colocation market (JLL)
+    source: JLL U.S. Data Center Report
+    source_url: https://www.jll.com/en-us/insights/market-dynamics/north-america-data-centers
+    unit: "%"
+    currency: null
+    cadence: semiannual
+    methodology: >
+      JLL's Midyear 2024 edition was titled "U.S. Data Center Report" and covered U.S.
+      colocation only. Not comparable with JLL's later North America colocation series
+      (jll.na_colo.*) or the expanded series (jll.na.*), nor with CBRE.
+    observations:
+      - period_start: 2024-01-01
+        period_end: 2024-06-30
+        value: 3
+        as_of: 2024-08-27
+        source_url: https://www.jll.com/en-us/newsroom/power-challenges-not-dulling-record-demand-for-data-centers
+        quote: "Vacancy set a record low of 3%, and occupancy has increased at a 30% compound annual growth rate (CAGR) since 2020."
+
+  - id: jll.us_colo.net_absorption_mw
+    indicator: vacancy
+    label: JLL U.S. colocation half-year absorption
+    entity: United States colocation market (JLL)
+    source: JLL U.S. Data Center Report
+    source_url: https://www.jll.com/en-us/insights/market-dynamics/north-america-data-centers
+    unit: MW
+    currency: null
+    cadence: semiannual
+    methodology: >
+      Absorption during the half-year, U.S. colocation (JLL Midyear 2024 edition).
+      Published in GW and converted to MW (x1000).
+    observations:
+      - period_start: 2024-01-01
+        period_end: 2024-06-30
+        value: 2800
+        as_of: 2024-08-27
+        source_url: https://www.jll.com/en-us/newsroom/power-challenges-not-dulling-record-demand-for-data-centers
+        quote: "Absorption in the first half of 2024 reached a record of nearly 2.8 GW, a ninefold increase over 2020 levels."
+        note: Published as "nearly 2.8 GW"; converted to MW.
+
+  - id: jll.us_colo.under_construction_mw
+    indicator: construction
+    label: JLL U.S. colocation capacity under construction
+    entity: United States colocation market (JLL)
+    source: JLL U.S. Data Center Report
+    source_url: https://www.jll.com/en-us/insights/market-dynamics/north-america-data-centers
+    unit: MW
+    currency: null
+    cadence: semiannual
+    methodology: >
+      U.S. colocation capacity under construction at mid-2024 (JLL Midyear 2024 edition).
+      Published in GW and converted to MW (x1000).
+    observations:
+      - period_start: 2024-01-01
+        period_end: 2024-06-30
+        value: 5300
+        as_of: 2024-08-27
+        source_url: https://www.jll.com/en-us/newsroom/power-challenges-not-dulling-record-demand-for-data-centers
+        quote: "Colocation capacity under construction in the first half of 2024 has nearly levelled off at 5.3 GW"
+        note: Published as 5.3 GW; converted to MW.
+
+  - id: jll.us_colo.preleased_pct
+    indicator: construction
+    label: JLL U.S. colocation pre-leasing rate
+    entity: United States colocation market (JLL)
+    source: JLL U.S. Data Center Report
+    source_url: https://www.jll.com/en-us/insights/market-dynamics/north-america-data-centers
+    unit: "%"
+    currency: null
+    cadence: semiannual
+    methodology: >
+      JLL Midyear 2024 "pre-leasing" rate for U.S. colocation. The release does not say
+      explicitly that the denominator is capacity under construction.
+    observations:
+      - period_start: 2024-01-01
+        period_end: 2024-06-30
+        value: 84
+        as_of: 2024-08-27
+        source_url: https://www.jll.com/en-us/newsroom/power-challenges-not-dulling-record-demand-for-data-centers
+        quote: "Nearly all existing data center capacity is leased up, and pre-leasing currently stands at 84%."
+
+  - id: jll.us_colo.inventory_mw
+    indicator: vacancy
+    label: JLL U.S. colocation inventory
+    entity: United States colocation market (JLL)
+    source: JLL U.S. Data Center Report
+    source_url: https://www.jll.com/en-us/insights/market-dynamics/north-america-data-centers
+    unit: MW
+    currency: null
+    cadence: semiannual
+    methodology: >
+      Existing U.S. colocation capacity at mid-2024 (JLL Midyear 2024 edition).
+      Published in GW and converted to MW (x1000).
+    observations:
+      - period_start: 2024-01-01
+        period_end: 2024-06-30
+        value: 12000
+        as_of: 2024-08-27
+        source_url: https://www.jll.com/en-us/newsroom/power-challenges-not-dulling-record-demand-for-data-centers
+        quote: "At midyear, the U.S. has 12 GW of existing colocation data center capacity, which doubled since 2020."
+        note: Published as 12 GW; converted to MW.
+
+  # ---------------------------------------------------------------- JLL, North America colocation (YE2024 - Midyear 2025)
+  - id: jll.na_colo.vacancy
+    indicator: vacancy
+    label: JLL North America colocation data-center vacancy
+    entity: North America colocation market (JLL, pre-YE2025 coverage)
+    source: JLL North America Data Center Report
+    source_url: https://www.jll.com/en-us/insights/market-dynamics/north-america-data-centers
+    unit: "%"
+    currency: null
+    cadence: semiannual
+    methodology: >
+      North America colocation vacancy as published in JLL's Year-End 2024 and Midyear
+      2025 editions. From Year-End 2025 JLL expanded coverage (hyperscale-owned capacity
+      and 40+ frontier markets) and restated history, saying vacancy has been 1% since
+      2024; those figures are in jll.na.vacancy and are not comparable with this series.
+    observations:
+      - period_start: 2024-07-01
+        period_end: 2024-12-31
+        value: 2.6
+        as_of: 2025-03-10
+        source_url: https://www.jll.com/en-us/newsroom/record-low-data-center-vacancy-fuels-modern-day-gold-rush
+        quote: "colocation vacancy in North America declining to a new all-time low of 2.6%"
+        note: The Midyear 2025 report's vacancy chart appears to show 2.9% for 2024 (chart label, not stated in text); kept the figure from the report covering the period.
+      - period_start: 2025-01-01
+        period_end: 2025-06-30
+        value: 2.3
+        as_of: 2025-08-18
+        source_url: https://www.jll.com/content/dam/jllcom/en/amer/documents/reports/research-reports/25-insights-north-america-data-center-report-midyear-2025.pdf
+        quote: "North America colocation statistics Inventory 15.5 GW Vacancy 2.3%"
+        note: Statistics table on page 4 of the Midyear 2025 report PDF; press release dated 2025-08-18.
+
+  - id: jll.na_colo.net_absorption_mw
+    indicator: vacancy
+    label: JLL North America colocation absorption
+    entity: North America colocation market (JLL, pre-YE2025 coverage)
+    source: JLL North America Data Center Report
+    source_url: https://www.jll.com/en-us/insights/market-dynamics/north-america-data-centers
+    unit: MW
+    currency: null
+    cadence: semiannual
+    methodology: >
+      Absorption for the half-year (Midyear editions). Published in GW and converted to
+      MW (x1000). The Year-End 2024 edition reports only a full-year figure (4.4 GW for
+      2024), which is not a half-year value and is omitted here.
+    observations:
+      - period_start: 2025-01-01
+        period_end: 2025-06-30
+        value: 2200
+        as_of: 2025-08-18
+        source_url: https://www.jll.com/content/dam/jllcom/en/amer/documents/reports/research-reports/25-insights-north-america-data-center-report-midyear-2025.pdf
+        quote: "H1 2025 absorption 2.2 GW"
+        note: Statistics table, Midyear 2025 report PDF; converted from GW.
+
+  - id: jll.na_colo.under_construction_mw
+    indicator: construction
+    label: JLL North America colocation capacity under construction
+    entity: North America colocation market (JLL, pre-YE2025 coverage)
+    source: JLL North America Data Center Report
+    source_url: https://www.jll.com/en-us/insights/market-dynamics/north-america-data-centers
+    unit: MW
+    currency: null
+    cadence: semiannual
+    methodology: >
+      North America colocation capacity under construction at period end. Published in
+      GW and converted to MW (x1000). Not comparable with jll.na.under_construction_mw
+      (expanded coverage from Year-End 2025).
+    observations:
+      - period_start: 2024-07-01
+        period_end: 2024-12-31
+        value: 6600
+        as_of: 2025-03-10
+        source_url: https://www.jll.com/en-us/newsroom/record-low-data-center-vacancy-fuels-modern-day-gold-rush
+        quote: "a record-setting 6.6 GW of colocation capacity was under construction"
+        note: Published as 6.6 GW; converted to MW.
+      - period_start: 2025-01-01
+        period_end: 2025-06-30
+        value: 7800
+        as_of: 2025-08-18
+        source_url: https://www.jll.com/content/dam/jllcom/en/amer/documents/reports/research-reports/25-insights-north-america-data-center-report-midyear-2025.pdf
+        quote: "Under construction 7.8 GW U/C % preleased 73%"
+        note: Statistics table, Midyear 2025 report PDF; converted from GW.
+
+  - id: jll.na_colo.preleased_pct
+    indicator: construction
+    label: JLL North America colocation share of under-construction capacity preleased
+    entity: North America colocation market (JLL, pre-YE2025 coverage)
+    source: JLL North America Data Center Report
+    source_url: https://www.jll.com/en-us/insights/market-dynamics/north-america-data-centers
+    unit: "%"
+    currency: null
+    cadence: semiannual
+    methodology: >
+      Share of colocation capacity under construction that is preleased ("U/C %
+      preleased"). The Year-End 2024 release gives no figure.
+    observations:
+      - period_start: 2025-01-01
+        period_end: 2025-06-30
+        value: 73
+        as_of: 2025-08-18
+        source_url: https://www.jll.com/content/dam/jllcom/en/amer/documents/reports/research-reports/25-insights-north-america-data-center-report-midyear-2025.pdf
+        quote: "Under construction 7.8 GW U/C % preleased 73%"
+
+  - id: jll.na_colo.inventory_mw
+    indicator: vacancy
+    label: JLL North America colocation inventory
+    entity: North America colocation market (JLL, pre-YE2025 coverage)
+    source: JLL North America Data Center Report
+    source_url: https://www.jll.com/en-us/insights/market-dynamics/north-america-data-centers
+    unit: MW
+    currency: null
+    cadence: semiannual
+    methodology: >
+      North America colocation inventory at period end. Published in GW and converted to
+      MW (x1000). Not comparable with jll.na.inventory_mw (expanded coverage).
+    observations:
+      - period_start: 2025-01-01
+        period_end: 2025-06-30
+        value: 15500
+        as_of: 2025-08-18
+        source_url: https://www.jll.com/content/dam/jllcom/en/amer/documents/reports/research-reports/25-insights-north-america-data-center-report-midyear-2025.pdf
+        quote: "North America colocation statistics Inventory 15.5 GW Vacancy 2.3%"
+        note: Statistics table, Midyear 2025 report PDF; converted from GW.
+
+  - id: jll.na_colo.asking_rent_250kw_1mw
+    indicator: vacancy
+    label: JLL North America colocation average asking rent, 250 kW-1 MW
+    entity: North America colocation market (JLL, pre-YE2025 coverage)
+    source: JLL North America Data Center Report
+    source_url: https://www.jll.com/en-us/insights/market-dynamics/north-america-data-centers
+    unit: USD/kW/month
+    currency: USD
+    cadence: semiannual
+    methodology: >
+      JLL "Average rents ($/kW/mo)" for the 250 kW-1 MW band, North America colocation.
+      Different size band and market set from CBRE's 250-500 kW series. The same table
+      gives <250 kW (all in) $327, 1-5 MW $157, 5-20 MW $144, >20 MW $129 for H1 2025.
+    observations:
+      - period_start: 2025-01-01
+        period_end: 2025-06-30
+        value: 194
+        as_of: 2025-08-18
+        source_url: https://www.jll.com/content/dam/jllcom/en/amer/documents/reports/research-reports/25-insights-north-america-data-center-report-midyear-2025.pdf
+        quote: "Average rents ($/kW/mo) <250 kW (all in) $327 250 kW-1 MW $194"
+        note: Statistics table, Midyear 2025 report PDF.
+
+  # ---------------------------------------------------------------- JLL, expanded coverage (YE2025 onward)
+  - id: jll.na.vacancy
+    indicator: vacancy
+    label: JLL North America data-center vacancy (expanded coverage)
+    entity: North America data centers incl. hyperscale-owned and frontier markets (JLL)
+    source: JLL North America Data Center Report
+    source_url: https://www.jll.com/en-us/insights/market-dynamics/north-america-data-centers
+    unit: "%"
+    currency: null
+    cadence: semiannual
+    methodology: >
+      From the Year-End 2025 edition JLL expanded hyperscale coverage and added more than
+      40 frontier markets, tracking leased colocation plus hyperscaler-owned capacity.
+      Not comparable with jll.na_colo.* or jll.us_colo.*, nor with CBRE.
+    observations:
+      - period_start: 2025-07-01
+        period_end: 2025-12-31
+        value: 1
+        as_of: 2026-02-17
+        source_url: https://www.jll.com/en-us/newsroom/jll-north-america-data-center-report-year-end-2025
+        quote: "with vacancy locked at a record-low 1% for the second consecutive year"
+        note: The release body dateline reads "Feb. 17, 2025", an apparent typo; the page is dated 17 February 2026.
+      - period_start: 2026-01-01
+        period_end: 2026-06-30
+        value: 1
+        as_of: 2026-08-11
+        source_url: https://www.jll.com/en-us/insights/market-dynamics/north-america-data-centers
+        quote: "Vacancy remains at 1% for the third consecutive year, despite unprecedented construction."
+
+  - id: jll.na.net_absorption_mw
+    indicator: vacancy
+    label: JLL North America data-center half-year absorption (expanded coverage)
+    entity: North America data centers incl. hyperscale-owned and frontier markets (JLL)
+    source: JLL North America Data Center Report
+    source_url: https://www.jll.com/en-us/insights/market-dynamics/north-america-data-centers
+    unit: MW
+    currency: null
+    cadence: semiannual
+    methodology: >
+      Absorption during the half-year on JLL's expanded coverage (from Year-End 2025).
+      Published in GW and converted to MW (x1000). The Year-End 2025 release states no
+      total absorption figure.
+    observations:
+      - period_start: 2026-01-01
+        period_end: 2026-06-30
+        value: 25000
+        as_of: 2026-08-11
+        source_url: https://www.jll.com/en-us/newsroom/data-center-demand-exceeds-expectations-in-h1-2026
+        quote: "North America data center demand reached an all-time high in the first half of 2026 with 25 GW of absorption"
+        note: Published as 25 GW; converted to MW.
+
+  - id: jll.na.under_construction_mw
+    indicator: construction
+    label: JLL North America data-center capacity under construction (expanded coverage)
+    entity: North America data centers incl. hyperscale-owned and frontier markets (JLL)
+    source: JLL North America Data Center Report
+    source_url: https://www.jll.com/en-us/insights/market-dynamics/north-america-data-centers
+    unit: MW
+    currency: null
+    cadence: semiannual
+    methodology: >
+      Capacity under construction on JLL's expanded coverage (colocation plus
+      owner-occupied hyperscale, 40+ frontier markets added from Year-End 2025).
+      Published in GW and converted to MW (x1000).
+    observations:
+      - period_start: 2025-07-01
+        period_end: 2025-12-31
+        value: 35000
+        as_of: 2026-02-17
+        source_url: https://www.jll.com/en-us/newsroom/jll-north-america-data-center-report-year-end-2025
+        quote: "64% of the 35 GW construction pipeline now extends beyond traditional mature markets"
+        note: Published as 35 GW; converted to MW.
+      - period_start: 2026-01-01
+        period_end: 2026-06-30
+        value: 66000
+        as_of: 2026-08-11
+        source_url: https://www.jll.com/en-us/newsroom/data-center-demand-exceeds-expectations-in-h1-2026
+        quote: "North America now has 66 GW under construction, 95% of which is pre-committed."
+        note: Published as 66 GW (report page says "More than 66 GW"); converted to MW. Includes 28 GW of owner-occupied capacity under construction per the same release.
+
+  - id: jll.na.precommitted_pct
+    indicator: construction
+    label: JLL North America share of under-construction capacity pre-committed (expanded coverage)
+    entity: North America data centers incl. hyperscale-owned and frontier markets (JLL)
+    source: JLL North America Data Center Report
+    source_url: https://www.jll.com/en-us/insights/market-dynamics/north-america-data-centers
+    unit: "%"
+    currency: null
+    cadence: semiannual
+    methodology: >
+      Share of the construction pipeline pre-committed via leases or owner-occupied
+      development, on JLL's expanded coverage. Because owner-occupied hyperscale builds
+      count as committed, this is not comparable with CBRE's preleased share or with
+      jll.na_colo.preleased_pct.
+    observations:
+      - period_start: 2025-07-01
+        period_end: 2025-12-31
+        value: 92
+        as_of: 2026-02-23
+        source_url: https://www.datacenterfrontier.com/site-selection/article/55358093/jll-hyperscale-and-ai-demand-push-north-american-data-centers-toward-industrial-scale
+        quote: "92% of capacity currently under construction is already pre-leased"
+        note: Secondary source (Data Center Frontier, 2026-02-23) citing JLL North America Data Center Report Year-End 2025; JLL's own release says only "nearly all".
+      - period_start: 2026-01-01
+        period_end: 2026-06-30
+        value: 95
+        as_of: 2026-08-11
+        source_url: https://www.jll.com/en-us/newsroom/data-center-demand-exceeds-expectations-in-h1-2026
+        quote: "North America now has 66 GW under construction, 95% of which is pre-committed."
+
+  - id: jll.na.inventory_mw
+    indicator: vacancy
+    label: JLL North America data-center active capacity (expanded coverage)
+    entity: North America data centers incl. hyperscale-owned and frontier markets (JLL)
+    source: JLL North America Data Center Report
+    source_url: https://www.jll.com/en-us/insights/market-dynamics/north-america-data-centers
+    unit: MW
+    currency: null
+    cadence: semiannual
+    methodology: >
+      Active capacity tracked by JLL on its expanded coverage, roughly half leased
+      colocation and half hyperscaler-owned. Published in GW and converted to MW (x1000).
+    observations:
+      - period_start: 2025-07-01
+        period_end: 2025-12-31
+        value: 39000
+        as_of: 2026-02-17
+        source_url: https://www.jll.com/en-us/newsroom/jll-north-america-data-center-report-year-end-2025
+        quote: "JLL now tracks 39 GW of active capacity across North America"
+        note: Published as 39 GW; converted to MW.

@@ -24,6 +24,7 @@ export function latestObservations(db: Db, seriesIds: string[], since?: string) 
       asOf: observations.asOf,
       sourceUrl: observations.sourceUrl,
       note: observations.note,
+      quote: observations.quote,
       collectedAt: observations.collectedAt,
     })
     .from(observations)

@@ -27,7 +27,8 @@ One row per time series, holding its static provenance so observation rows stay 
 | `kind` | `reported` (as published), `calculated` (we derived it, e.g. Q4 = FY − 9M), `estimated`, `manual` (hand-entered with citation). |
 | `as_of` | Publication or filing date of this vintage, when known. |
 | `source_url` | The specific filing or report, when more precise than the series URL. |
-| `note` | Derivation details, citations. |
+| `note` | Derivation details. |
+| `quote` | Verbatim source sentence backing a hand-entered value (manual data). Shown on hover. |
 | `collected_at`, `run_id` | When and by which run it was stored. |
 | `is_latest` | Maintained on write. |
 

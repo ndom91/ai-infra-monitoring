@@ -51,7 +51,14 @@ function SeriesRow({ s }: { s: SeriesView }) {
       <td className="num strong">{s.latest ? formatValue(s.latest.value, s.unit) : "—"}</td>
       <td className="muted">
         {s.latest ? (
-          <a href={s.latest.sourceUrl ?? s.sourceUrl} target="_blank" rel="noopener noreferrer">
+          <a
+            href={s.latest.sourceUrl ?? s.sourceUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={[s.latest.quote && `“${s.latest.quote}”`, s.latest.note]
+              .filter(Boolean)
+              .join("\n\n")}
+          >
             {formatDate(s.latest.periodEnd)}
           </a>
         ) : (

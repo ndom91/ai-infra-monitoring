@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { SEC_COMPANIES } from "~/domain/companies";
-import { type Point, resampleAt } from "~/metrics/changes";
+import { type Point, resampleAt, snapToCalendarQuarter } from "~/metrics/changes";
 import { ttm } from "~/metrics/fundamentals";
 import { getDb } from "~/storage/db";
 import { recentAlerts } from "~/storage/queries";
@@ -22,11 +22,18 @@ export type Divergence = {
 
 const HYPERSCALERS = SEC_COMPANIES.filter((c) => c.group === "hyperscaler").map((c) => c.ticker);
 
-// Sums several quarterly series, only on quarter ends where every series has
+// Sums several quarterly series on calendar quarters where every series has
 // a value, so a missing filing never shows up as a drop.
 function sumAligned(seriesList: Point[][]): Point[] {
   if (seriesList.length === 0 || seriesList.some((s) => s.length === 0)) return [];
-  const maps = seriesList.map((s) => new Map(s.map((p) => [p.periodEnd, p.value])));
+  const maps = seriesList.map((s) => {
+    const m = new Map<string, number>();
+    for (const p of s) {
+      const q = snapToCalendarQuarter(p.periodEnd);
+      if (q) m.set(q, p.value);
+    }
+    return m;
+  });
   const dates = [...(maps[0]?.keys() ?? [])].filter((d) => maps.every((m) => m.has(d)));
   return dates.sort().map((d) => ({
     periodEnd: d,
@@ -110,9 +117,15 @@ export const getOverviewData = createServerFn({ method: "GET" }).handler(async (
       (id) => allSeries.filter((s) => s.id === id),
     ),
     capex: derivedViews.filter((s) => s.id.endsWith(".capex_ocf_ttm")),
-    other: rest.series.filter(
-      (s) => s.collector !== "sec" && s.points.length > 0 && s.indicator !== "depreciation",
-    ),
+    other: [
+      "aws.h100.us-east-1.ondemand",
+      "azure.h100.eastus2.spot",
+      "gpu_resale.amcompute.basket_index",
+      "cbre.na_primary.vacancy",
+      "cbre.na_primary.under_construction_mw",
+      "cbre.na_primary.preleased_pct",
+      "jll.na.vacancy",
+    ].flatMap((id) => rest.series.filter((s) => s.id === id)),
   };
 
   // --- Divergence watch ---
@@ -142,10 +155,11 @@ export const getOverviewData = createServerFn({ method: "GET" }).handler(async (
   );
   const crwvRpo = get("sec.CRWV.rpo");
   const hyOas = get("fred.BAMLH0A0HYM2");
-  const neocloudDebt = sumAligned(
-    ["CRWV", "CORZ", "IREN", "APLD"].map((t) => get(`sec.${t}.debt`)).filter((s) => s.length > 0),
+  // Other neoclouds have too few debt points to sum without gaps.
+  const crwvDebt = get("sec.CRWV.debt");
+  const lifeSteps = rest.series.filter((s) =>
+    HYPERSCALERS.some((t) => s.id === `depreciation.${t}.server_useful_life`),
   );
-  const lifeSteps = rest.series.filter((s) => s.indicator === "depreciation");
 
   const divergences: Divergence[] = [
     divergence(
@@ -153,6 +167,7 @@ export const getOverviewData = createServerFn({ method: "GET" }).handler(async (
         id: "rental_vs_capex",
         title: "GPU rental prices vs hyperscaler capex",
         pattern: "Rental prices falling while capex keeps rising.",
+        note: "AWS H100 on-demand list price (monthly) at calendar quarter ends; fiscal quarters snapped to the nearest calendar quarter.",
       },
       [
         { label: "Hyperscaler TTM capex (sum)", unit: "USD", points: hyperCapexTtm },
@@ -195,10 +210,11 @@ export const getOverviewData = createServerFn({ method: "GET" }).handler(async (
       {
         id: "collateral_vs_debt",
         title: "GPU collateral values vs loan balances",
-        pattern: "Resale values falling while neocloud debt stays high.",
+        pattern: "Resale values falling while CoreWeave debt stays high.",
+        note: "Resale index sampled at CoreWeave quarter ends.",
       },
       [
-        { label: "Neocloud long-term debt (sum)", unit: "USD", points: neocloudDebt },
+        { label: "CoreWeave long-term debt", unit: "USD", points: crwvDebt },
         ...(resale
           ? [
               {
@@ -206,8 +222,7 @@ export const getOverviewData = createServerFn({ method: "GET" }).handler(async (
                 unit: resale.unit,
                 points: resampleAt(
                   pts(raw.get(resale.id)),
-                  neocloudDebt.map((p) => p.periodEnd),
-                  100,
+                  crwvDebt.map((p) => p.periodEnd),
                 ),
               },
             ]

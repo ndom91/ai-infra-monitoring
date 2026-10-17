@@ -17,7 +17,8 @@
     "alerts": "tsx --env-file-if-exists=.env scripts/alerts.ts",
     "db:backup": "tsx --env-file-if-exists=.env scripts/backup.ts",
     "db:restore": "tsx --env-file-if-exists=.env scripts/restore.ts",
-    "check:bundle": "! grep -rlE \"@libsql|node:fs|drizzle-orm\" .output/public"
+    "check:bundle": "! grep -rlE \"@libsql|node:fs|drizzle-orm\" .output/public",
+    "check:manual": "tsx scripts/check-manual.ts"
   },
   "dependencies": {
     "@libsql/client": "^0.18.0",

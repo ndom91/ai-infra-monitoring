@@ -15,15 +15,20 @@ export const Route = createFileRoute("/infrastructure")({
   component: InfrastructurePage,
 });
 
-// One chart per publisher and unit: CBRE and JLL use different market
-// definitions, so their figures never share a chart.
+// One chart per publisher market definition ("cbre.na_primary", "jll.na_colo"),
+// unit, and cadence. Publishers and coverage changes never share a chart, and
+// annual totals never sit next to half-year figures.
 function groups(series: SeriesView[], indicator: IndicatorId) {
-  const map = new Map<string, SeriesView[]>();
+  const map = new Map<string, { title: string; list: SeriesView[] }>();
   for (const s of series.filter((x) => x.indicator === indicator)) {
-    const key = `${s.source} · ${s.unit}`;
-    map.set(key, [...(map.get(key) ?? []), s]);
+    const family = s.id.split(".").slice(0, 2).join(".");
+    const key = `${family}|${s.unit}|${s.cadence}`;
+    const title = `${s.source}${s.entity ? ` · ${s.entity}` : ""} (${s.unit}${s.cadence === "annual" ? ", annual" : ""})`;
+    const g = map.get(key) ?? { title, list: [] };
+    g.list.push(s);
+    map.set(key, g);
   }
-  return [...map.entries()];
+  return [...map.values()];
 }
 
 function InfrastructurePage() {
@@ -50,8 +55,8 @@ function InfrastructurePage() {
               />
             ) : (
               <div className="grid-2">
-                {g.map(([key, list]) => (
-                  <ChartBlock key={key} title={key} series={list} />
+                {g.map(({ title, list }) => (
+                  <ChartBlock key={title} title={title} series={list} />
                 ))}
               </div>
             )}

@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { changeFromPrior, changeOver, resampleAt, valueAtOrBefore } from "./changes";
+import {
+  changeFromPrior,
+  changeOver,
+  resampleAt,
+  snapToCalendarQuarter,
+  valueAtOrBefore,
+} from "./changes";
 
 const daily = [
   { periodEnd: "2026-01-01", value: 3 },
@@ -45,5 +51,15 @@ describe("resampleAt", () => {
     expect(resampleAt(pts, ["2026-03-31", "2026-06-30", "2025-12-31"])).toEqual([
       { periodEnd: "2026-03-31", value: 2 },
     ]);
+  });
+});
+
+describe("snapToCalendarQuarter", () => {
+  it("snaps fiscal quarter ends to the nearest calendar quarter end", () => {
+    expect(snapToCalendarQuarter("2026-08-31")).toBe("2026-09-30");
+    expect(snapToCalendarQuarter("2026-05-31")).toBe("2026-06-30");
+    expect(snapToCalendarQuarter("2026-02-28")).toBe("2026-03-31");
+    expect(snapToCalendarQuarter("2026-12-31")).toBe("2026-12-31");
+    expect(snapToCalendarQuarter("2027-01-15")).toBe("2026-12-31");
   });
 });

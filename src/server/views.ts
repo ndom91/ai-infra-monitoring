@@ -12,6 +12,7 @@ export type ObsPoint = {
   asOf: string | null;
   sourceUrl: string | null;
   note: string | null;
+  quote?: string | null;
 };
 
 export type SeriesDefView = Omit<SeriesRow, "updatedAt">;

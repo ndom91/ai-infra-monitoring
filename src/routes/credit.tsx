@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { ChartBlock } from "~/components/ChartBlock";
 import { IndicatorPanel } from "~/components/IndicatorPanel";
 import { SectionHeader } from "~/components/SectionHeader";
+import { TermsTable } from "~/components/TermsTable";
 import { indicatorById, SECTIONS } from "~/domain/indicators";
 import { parseRange } from "~/domain/ranges";
 import { getSectionData, type SeriesView } from "~/server/data";
@@ -52,13 +53,12 @@ function CreditPage() {
             subtitle="Absolute yields: these move with rates, not just credit risk"
             series={pick(series, ["fred.BAMLH0A0HYM2EY", "fred.DBAA", "fred.DGS10"])}
           />
-          <ChartBlock
-            title="AI infrastructure issuer debt"
-            subtitle="Issue terms from filings; not trading yields"
-            series={issuer}
-            emptyReason="Issuer bond prices need FINRA TRACE access. Issue terms are added from SEC filings as they are verified."
-          />
         </div>
+        <TermsTable
+          title="AI infrastructure issuer debt"
+          subtitle="Coupons and loan margins at issue, from filings. Issue terms, not trading yields. Hover a date for the source quote."
+          series={issuer}
+        />
       </IndicatorPanel>
     </>
   );

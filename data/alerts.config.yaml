@@ -57,3 +57,25 @@ rules:
     window_days: 60
     severity: critical
     description: Several independent credit warnings fired in the same window.
+
+  - id: gpu_list_price_cut
+    type: change
+    series: aws.*
+    window_days: 182
+    threshold: 0.15
+    relative: true
+    direction: down
+    severity: info
+    cooldown_days: 180
+    description: An AWS GPU on-demand list price fell 15% or more in about 6 months. Price cuts can reflect newer hardware, not only weak demand.
+
+  - id: azure_spot_cut
+    type: change
+    series: azure.*.spot
+    window_days: 91
+    threshold: 0.2
+    relative: true
+    direction: down
+    severity: info
+    cooldown_days: 90
+    description: An Azure GPU spot price fell 20% or more in about 3 months. Falling spot prices can signal idle capacity.

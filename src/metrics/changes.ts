@@ -69,3 +69,21 @@ export function resampleAt(points: Point[], dates: string[], toleranceDays = 10)
   }
   return out;
 }
+
+// Fiscal quarters differ (Oracle ends Aug/Nov/Feb/May), so each quarter end
+// is snapped to the nearest calendar quarter end, if within 45 days.
+export function snapToCalendarQuarter(date: string): string | undefined {
+  const d = new Date(`${date}T00:00:00Z`);
+  const y = d.getUTCFullYear();
+  const candidates = [-1, 0, 1].flatMap((dy) =>
+    [2, 5, 8, 11].map((m) => new Date(Date.UTC(y + dy, m + 1, 0))),
+  );
+  let best: Date | undefined;
+  for (const c of candidates) {
+    if (!best || Math.abs(c.getTime() - d.getTime()) < Math.abs(best.getTime() - d.getTime())) {
+      best = c;
+    }
+  }
+  if (!best || Math.abs(best.getTime() - d.getTime()) > 45 * 86_400_000) return undefined;
+  return best.toISOString().slice(0, 10);
+}

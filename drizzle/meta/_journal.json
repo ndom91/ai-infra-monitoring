@@ -15,6 +15,13 @@
       "when": 1792268317784,
       "tag": "0001_alert_series",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1792278409491,
+      "tag": "0002_observation_quote",
+      "breakpoints": true
     }
   ]
 }

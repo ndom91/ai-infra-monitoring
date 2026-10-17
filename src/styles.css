@@ -596,3 +596,7 @@ code {
 .alert-mini li.sev-critical {
   border-left-color: #ffa49e;
 }
+
+.panel > .block {
+  margin-top: 14px;
+}

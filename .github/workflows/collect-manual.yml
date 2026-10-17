@@ -1,0 +1,13 @@
+name: Load manual data
+on:
+  push:
+    branches: [main]
+    paths:
+      - "data/manual/**"
+  workflow_dispatch:
+jobs:
+  manual:
+    uses: ./.github/workflows/_collect.yml
+    with:
+      collectors: manual
+    secrets: inherit

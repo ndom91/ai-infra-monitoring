@@ -1,0 +1,111 @@
+# American Compute GPU Resale Index. The index page and the CSV both state
+# "Free to use with attribution." That feature-specific grant is what permits
+# reuse; the site-wide Terms of Use otherwise limit use to personal,
+# noncommercial access. Attribution: American Compute, GPU Resale Index,
+# https://www.amcompute.com/gpu-resale-index
+series:
+  - id: gpu_resale.amcompute.basket_index
+    indicator: gpu_resale
+    label: American Compute GPU Resale Index (used data center GPU basket, H1 2025 = 100)
+    entity: Used data center GPU basket (T4 to H100, aged 2.5 to 8 years)
+    source: American Compute GPU Resale Index (Rack Report)
+    source_url: https://www.amcompute.com/gpu-resale-index
+    unit: index (H1 2025 = 100)
+    currency: null
+    cadence: monthly
+    methodology: >-
+      Value type: index of completed (realized) sale prices, expressed relative
+      to price new. Not asking prices, not dealer buyback offers, not model
+      estimates. Published definition: "What a fixed basket of used data center
+      GPUs aged 2.5 to 8 years, from the T4 to the H100, sells for as a share of
+      its price new. H1 2025 = 100." The Rack Report describes its figures as
+      prices "from realized sales". Published monthly on the first of each month
+      with the Rack Report. Caveats: the publisher does not disclose sample
+      size, sales sources, basket composition or weights, condition grades, or
+      SXM vs PCIe / per-GPU vs per-server mix; there is no per-model USD price.
+      The publisher states "An issue can restate recent months as late sales
+      come in", so recent months may be revised. The publisher also reports a
+      vs-baseline column (premium/discount to "normal depreciation"), not
+      recorded here because "normal depreciation" is not defined. The
+      residual-value bands on the same page are forward estimates and are not
+      recorded. Free to use with attribution (stated on the index page and in
+      the CSV header).
+    observations:
+      - period_start: 2025-08-01
+        period_end: 2025-08-31
+        value: 89
+        as_of: 2026-10-01
+        source_url: https://www.amcompute.com/gpu-resale-index/data.csv
+        quote: "2025-08,89,-3"
+      - period_start: 2025-09-01
+        period_end: 2025-09-30
+        value: 92
+        as_of: 2026-10-01
+        source_url: https://www.amcompute.com/gpu-resale-index/data.csv
+        quote: "2025-09,92,-6"
+      - period_start: 2025-10-01
+        period_end: 2025-10-31
+        value: 78
+        as_of: 2026-10-01
+        source_url: https://www.amcompute.com/gpu-resale-index/data.csv
+        quote: "2025-10,78,-8"
+      - period_start: 2025-11-01
+        period_end: 2025-11-30
+        value: 86
+        as_of: 2026-10-01
+        source_url: https://www.amcompute.com/gpu-resale-index/data.csv
+        quote: "2025-11,86,-12"
+      - period_start: 2025-12-01
+        period_end: 2025-12-31
+        value: 99
+        as_of: 2026-10-01
+        source_url: https://www.amcompute.com/gpu-resale-index/data.csv
+        quote: "2025-12,99,-9"
+      - period_start: 2026-01-01
+        period_end: 2026-01-31
+        value: 93
+        as_of: 2026-10-01
+        source_url: https://www.amcompute.com/gpu-resale-index/data.csv
+        quote: "2026-01,93,-8"
+      - period_start: 2026-02-01
+        period_end: 2026-02-28
+        value: 98
+        as_of: 2026-10-01
+        source_url: https://www.amcompute.com/gpu-resale-index/data.csv
+        quote: "2026-02,98,-8"
+      - period_start: 2026-03-01
+        period_end: 2026-03-31
+        value: 91
+        as_of: 2026-10-01
+        source_url: https://www.amcompute.com/gpu-resale-index/data.csv
+        quote: "2026-03,91,-2"
+      - period_start: 2026-04-01
+        period_end: 2026-04-30
+        value: 107
+        as_of: 2026-10-01
+        source_url: https://www.amcompute.com/gpu-resale-index/data.csv
+        quote: "2026-04,107,7"
+      - period_start: 2026-05-01
+        period_end: 2026-05-31
+        value: 99
+        as_of: 2026-10-01
+        source_url: https://www.amcompute.com/gpu-resale-index/data.csv
+        quote: "2026-05,99,0"
+      - period_start: 2026-06-01
+        period_end: 2026-06-30
+        value: 93
+        as_of: 2026-10-01
+        source_url: https://www.amcompute.com/gpu-resale-index/data.csv
+        quote: "2026-06,93,-3"
+      - period_start: 2026-07-01
+        period_end: 2026-07-31
+        value: 86
+        as_of: 2026-10-01
+        source_url: https://www.amcompute.com/gpu-resale-index
+        quote: "July 2026: 86. Down 8% on June, giving back the spring rally that peaked at 107 in April."
+      - period_start: 2026-08-01
+        period_end: 2026-08-31
+        value: 75
+        as_of: 2026-10-01
+        source_url: https://www.amcompute.com/gpu-resale-index
+        quote: "August 2026: 75. Down 12% on July, the lowest in the 13 months we publish, with used GPUs 14% below normal depreciation."
