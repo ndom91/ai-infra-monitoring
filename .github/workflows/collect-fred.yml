@@ -1,0 +1,12 @@
+name: Collect FRED credit spreads
+on:
+  schedule:
+    # Weekdays after ICE BofA values for the prior day appear on FRED.
+    - cron: "40 9 * * 1-5"
+  workflow_dispatch:
+jobs:
+  fred:
+    uses: ./.github/workflows/_collect.yml
+    with:
+      collectors: fred
+    secrets: inherit

@@ -4,25 +4,18 @@ import type { ObservationInput, SeriesDef } from "~/domain/types";
 // Each series is one (provider, GPU cohort, region, price type) combination, so
 // on-demand, spot and commitment prices are never mixed in one series.
 
-export type GpuCohort = "a100_40gb" | "a100_80gb" | "h100" | "h200" | "b200" | "b300" | "gb200";
+export type GpuCohort = "h100" | "h200";
 
 export const COHORT_LABELS: Record<GpuCohort, string> = {
-  a100_40gb: "A100 40GB SXM",
-  a100_80gb: "A100 80GB SXM",
   h100: "H100 80GB SXM",
   h200: "H200 141GB SXM",
-  b200: "B200",
-  b300: "B300",
-  gb200: "GB200 (Blackwell GPU)",
 };
 
-export type PriceType = "ondemand" | "spot" | "savings1y" | "reserved1y";
+export type PriceType = "ondemand" | "spot";
 
 export const PRICE_TYPE_LABELS: Record<PriceType, string> = {
   ondemand: "on-demand",
   spot: "spot",
-  savings1y: "1-year savings plan",
-  reserved1y: "1-year reserved",
 };
 
 export const LIST_PRICE_CAVEAT =
@@ -45,8 +38,7 @@ export type ListPrice = {
   priceType: PriceType;
   sku: string;
   gpus: number;
-  // Instance price per hour as listed. Absent when the source lists a term
-  // total (Azure reservations), which only exists as a per-GPU-hour derivation.
+  // Instance price per hour as listed; recorded in the observation note.
   instancePerHour?: number;
   perGpuHour: number;
   // Where the per-GPU value came from, for the observation note.
@@ -55,12 +47,6 @@ export type ListPrice = {
 
 export function seriesId(p: Pick<ListPrice, "provider" | "cohort" | "region" | "priceType">) {
   return `${p.provider}.${p.cohort}.${p.region}.${p.priceType}`;
-}
-
-export function instanceSeriesId(
-  p: Pick<ListPrice, "provider" | "cohort" | "region" | "priceType">,
-) {
-  return `${seriesId(p)}.instance`;
 }
 
 type SeriesContext = {
@@ -82,23 +68,15 @@ export function perGpuSeriesDef(p: ListPrice, ctx: SeriesContext): SeriesDef {
     unit: "USD/GPU-hr",
     currency: "USD",
     methodology: `${PRICE_TYPE_LABELS[p.priceType]} list price of ${p.sku} (${p.gpus}x ${COHORT_LABELS[p.cohort]}) in ${p.region}, ${ctx.filters}, divided by the ${p.gpus} GPUs in the instance. ${LIST_PRICE_CAVEAT}`,
-    cadence: "daily",
+    // List prices change rarely; weekly collection is enough and keeps the
+    // ~300 MB AWS offer-file download infrequent.
+    cadence: "weekly",
     collector: ctx.collector,
   };
 }
 
-export function instanceSeriesDef(p: ListPrice, ctx: SeriesContext): SeriesDef {
-  return {
-    ...perGpuSeriesDef(p, ctx),
-    id: instanceSeriesId(p),
-    label: `${ctx.source} ${p.sku} ${PRICE_TYPE_LABELS[p.priceType]} (${p.region})`,
-    unit: "USD/instance-hr",
-    methodology: `${PRICE_TYPE_LABELS[p.priceType]} hourly list price of the whole ${p.sku} instance (${p.gpus}x ${COHORT_LABELS[p.cohort]}) in ${p.region}, ${ctx.filters}, exactly as published. ${LIST_PRICE_CAVEAT}`,
-  };
-}
-
-// Turns price points into observations: the published instance price is
-// "reported", the per-GPU value is "calculated" because we divide it.
+// Turns price points into per-GPU observations. They are "calculated" because
+// we divide the published instance price; the note records that price.
 export function toObservations(
   prices: ListPrice[],
   period: { start: string; end: string; asOf?: string; sourceUrl?: string; note?: string },
@@ -119,15 +97,6 @@ export function toObservations(
       kind: "calculated",
       note: `${p.derivation}.${suffix}`,
     });
-    if (p.instancePerHour !== undefined) {
-      out.push({
-        ...base,
-        seriesId: instanceSeriesId(p),
-        value: p.instancePerHour,
-        kind: "reported",
-        ...(period.note ? { note: period.note } : {}),
-      });
-    }
   }
   return out;
 }

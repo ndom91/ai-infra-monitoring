@@ -3,7 +3,6 @@ import type { SeriesDef } from "~/domain/types";
 import { classify, permanent, transient } from "../errors";
 import {
   type GpuCohort,
-  instanceSeriesDef,
   type ListPrice,
   perGpuHour,
   perGpuSeriesDef,
@@ -24,21 +23,18 @@ const CURRENT_URL = versionCsvUrl("current");
 
 // Large files: allow minutes, not the default 40 s.
 const DOWNLOAD_TIMEOUT_MS = 600_000;
-// p4d (first A100 instance) launched in November 2020; older versions have no
-// tracked instance types.
-const BACKFILL_FROM = "2020-11-01";
+// Backfill only recent history: enough for year-over-year comparisons and the
+// June 2025 price cut, without downloading every monthly file since 2020.
+const BACKFILL_MONTHS = 24;
 
 type AwsInstance = { instanceType: string; cohort: GpuCohort; gpus: number };
 
 // GPU counts come from the EC2 instance type docs (and match the file's "GPU" column).
 // p5e.48xlarge (H200) is not sold in us-east-1, so p5en stands in for H200.
 export const AWS_INSTANCES: AwsInstance[] = [
-  { instanceType: "p4d.24xlarge", cohort: "a100_40gb", gpus: 8 },
-  { instanceType: "p4de.24xlarge", cohort: "a100_80gb", gpus: 8 },
   { instanceType: "p5.48xlarge", cohort: "h100", gpus: 8 },
+  // p5e (H200) is not sold in us-east-1; p5en is the H200 instance there.
   { instanceType: "p5en.48xlarge", cohort: "h200", gpus: 8 },
-  { instanceType: "p6-b200.48xlarge", cohort: "b200", gpus: 8 },
-  { instanceType: "p6-b300.48xlarge", cohort: "b300", gpus: 8 },
 ];
 
 // Minimal CSV field splitter: AWS quotes every field and escapes quotes as "".
@@ -147,9 +143,7 @@ function single(rows: Record<string, string>[], what: string) {
   return price;
 }
 
-// On-demand and 1-year No Upfront convertible reserved rates. The latter is the
-// only 1-year term AWS publishes for every tracked older instance type, and it is
-// already an hourly rate (no upfront fee to amortize).
+// On-demand rate only. AWS publishes spot and savings plans elsewhere.
 export function extractAwsPrices(rows: Record<string, string>[], inst: AwsInstance): ListPrice[] {
   const linux = rows.filter((r) => r["Instance Type"] === inst.instanceType && isPlainLinux(r));
   const base = {
@@ -173,25 +167,6 @@ export function extractAwsPrices(rows: Record<string, string>[], inst: AwsInstan
       derivation: `Instance list price ${onDemand} USD/hr / ${inst.gpus} GPUs`,
     });
   }
-  const reserved = single(
-    linux.filter(
-      (r) =>
-        r.TermType === "Reserved" &&
-        r.LeaseContractLength === "1yr" &&
-        r.PurchaseOption === "No Upfront" &&
-        r.OfferingClass === "convertible",
-    ),
-    `${inst.instanceType} 1yr reserved`,
-  );
-  if (reserved !== undefined) {
-    out.push({
-      ...base,
-      priceType: "reserved1y",
-      instancePerHour: reserved,
-      perGpuHour: perGpuHour(reserved, inst.gpus),
-      derivation: `Instance 1-year No Upfront convertible reserved rate ${reserved} USD/hr / ${inst.gpus} GPUs`,
-    });
-  }
   return out;
 }
 
@@ -209,7 +184,7 @@ export type BackfillVersion = { version: string; start: string; end: string };
 
 // Monthly historical price lists. Each version is labelled with the month it
 // covers; the current (open-ended) version is handled by the daily path.
-export function backfillVersions(json: unknown, from = BACKFILL_FROM): BackfillVersion[] {
+export function backfillVersions(json: unknown, from: string): BackfillVersion[] {
   const r = v.safeParse(VersionIndexSchema, json);
   if (!r.success) throw permanent("unexpected AWS version index payload");
   const byEnd = new Map<string, BackfillVersion>();
@@ -255,7 +230,7 @@ const SERIES_CTX = {
   source: "AWS Price List",
   sourceUrl: CURRENT_URL,
   filters:
-    "Linux, shared tenancy, no pre-installed software, excluding capacity blocks and capacity reservations, from the us-east-1 AWS Price List bulk offer file (USD). Reserved is the 1-year No Upfront convertible reserved-instance hourly rate. Spot prices and savings plans are not in this file and are not tracked",
+    "Linux, shared tenancy, no pre-installed software, excluding capacity blocks and capacity reservations, from the us-east-1 AWS Price List bulk offer file (USD). On-demand only: spot prices and savings plans are not in this file",
 };
 
 function snapshotOf(extract: PriceListExtract) {
@@ -266,7 +241,7 @@ function snapshotOf(extract: PriceListExtract) {
 
 export const awsCollector: Collector = {
   name: "aws",
-  description: "AWS EC2 list prices for GPU instances (A100, H100, H200, B200, B300), per GPU-hour",
+  description: "AWS EC2 on-demand list prices for H100 and H200 instances, per GPU-hour",
   async collect({ backfill, now, fetch, log }) {
     const today = utcDate(now);
     const types = AWS_INSTANCES.map((i) => i.instanceType);
@@ -281,7 +256,6 @@ export const awsCollector: Collector = {
     const record = (prices: ListPrice[]) => {
       for (const p of prices) {
         addSeries(perGpuSeriesDef(p, SERIES_CTX));
-        addSeries(instanceSeriesDef(p, SERIES_CTX));
       }
     };
 
@@ -320,8 +294,11 @@ export const awsCollector: Collector = {
     // types that did not exist yet are simply absent from older files.
     if (backfill) {
       const index = await fetch(VERSIONS_URL);
-      const versions = backfillVersions(JSON.parse(await index.text()));
-      log(`backfill: ${versions.length} monthly price lists since ${BACKFILL_FROM}`);
+      const from = new Date(now.getTime() - BACKFILL_MONTHS * 30.5 * 86_400_000)
+        .toISOString()
+        .slice(0, 10);
+      const versions = backfillVersions(JSON.parse(await index.text()), from);
+      log(`backfill: ${versions.length} monthly price lists since ${from}`);
       for (const ver of versions) {
         const url = versionCsvUrl(ver.version);
         try {

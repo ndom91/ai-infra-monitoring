@@ -48,8 +48,9 @@ describe("extractPriceList", () => {
     expect(extract.publicationDate).toBe("2026-10-15T19:13:16Z");
     expect(extract.preamble).toHaveLength(6);
     // The fixture includes three unrelated rows from the top of the real file.
+    const dataLines = current.trim().split("\n").length - 6;
+    expect(extract.rows.length).toBe(dataLines - 3);
     expect(extract.rows.every((r) => TYPES.includes(r.fields["Instance Type"] ?? ""))).toBe(true);
-    expect(extract.rows.length).toBe(current.trim().split("\n").length - 6 - 3);
   });
 
   it("rejects files without the expected header", async () => {
@@ -58,17 +59,15 @@ describe("extractPriceList", () => {
 });
 
 describe("extractAwsPrices", () => {
-  it("normalizes Linux on-demand and 1-year reserved prices per GPU", async () => {
+  it("normalizes the Linux on-demand price per GPU and nothing else", async () => {
     const p5 = await pricesFrom(current, "p5.48xlarge");
+    // The fixture also has reserved-instance rows; only on-demand is tracked.
+    expect(Object.keys(p5)).toEqual(["ondemand"]);
     expect(p5.ondemand?.instancePerHour).toBe(55.04);
     expect(p5.ondemand?.perGpuHour).toBeCloseTo(6.88, 6);
-    // 1-year No Upfront convertible, not the 3-year or partial-upfront rates.
-    expect(p5.reserved1y?.instancePerHour).toBe(43.344);
 
-    const b300 = await pricesFrom(current, "p6-b300.48xlarge");
-    expect(b300.ondemand?.perGpuHour).toBeCloseTo(142.416 / 8, 6);
-    // No reserved instances are published for the newest instance types.
-    expect(b300.reserved1y).toBeUndefined();
+    const p5en = await pricesFrom(current, "p5en.48xlarge");
+    expect(p5en.ondemand?.perGpuHour).toBeCloseTo(63.296 / 8, 6);
   });
 
   it("ignores capacity blocks, other OSes and dedicated tenancy", async () => {
@@ -95,17 +94,21 @@ describe("extractAwsPrices", () => {
 });
 
 describe("backfillVersions", () => {
-  it("keeps closed monthly versions since November 2020", () => {
-    expect(backfillVersions(JSON.parse(versions))).toEqual([
+  it("keeps closed monthly versions since the cutoff", () => {
+    expect(backfillVersions(JSON.parse(versions), "2020-11-01")).toEqual([
       { version: "20230905140324", start: "2023-08-01", end: "2023-08-31" },
     ]);
+    expect(backfillVersions(JSON.parse(versions), "2024-01-01")).toEqual([]);
   });
 });
 
 describe("awsCollector", () => {
   const now = new Date("2026-10-17T12:00:00Z");
+  // Backfill covers the last 24 months, so the August 2023 fixture is in range
+  // only when "now" is mid-2025.
+  const backfillNow = new Date("2025-06-01T12:00:00Z");
 
-  it("records today's prices and a trimmed snapshot", async () => {
+  it("records today's per-GPU prices and a trimmed snapshot", async () => {
     const out = await awsCollector.collect({
       backfill: false,
       now,
@@ -113,18 +116,22 @@ describe("awsCollector", () => {
       log: () => {},
     });
     expect(out.failures).toEqual([]);
+    expect(out.series.map((s) => s.id).sort()).toEqual([
+      "aws.h100.us-east-1.ondemand",
+      "aws.h200.us-east-1.ondemand",
+    ]);
     const h100 = out.observations.find((o) => o.seriesId === "aws.h100.us-east-1.ondemand");
     expect(h100).toMatchObject({ value: 6.88, kind: "calculated", periodEnd: "2026-10-17" });
     expect(h100?.asOf).toBe("2026-10-15");
-    const raw = out.observations.find((o) => o.seriesId === "aws.h100.us-east-1.ondemand.instance");
-    expect(raw).toMatchObject({ value: 55.04, kind: "reported" });
+    expect(h100?.note).toMatch(/55\.04 USD\/hr \/ 8 GPUs/);
+    expect(out.snapshots).toHaveLength(1);
     expect(out.snapshots?.[0]?.body.length).toBeLessThan(current.length);
   });
 
   it("backfills monthly versions and persists through the runner", async () => {
     const db = await memoryDb();
     const res = await runCollector(db, awsCollector, {
-      now,
+      now: backfillNow,
       backfill: true,
       fetch: fakeFetch({
         "current/us-east-1": current,
@@ -134,13 +141,14 @@ describe("awsCollector", () => {
       log: () => {},
     });
     expect(res.status).toBe("ok");
-    expect(res.inserted).toBeGreaterThan(20);
+    // Two series today, plus p5 (H100) for August 2023; p5en did not exist yet.
+    expect(res.inserted).toBe(3);
   });
 
   it("is partial when a historical version fails", async () => {
     const db = await memoryDb();
     const res = await runCollector(db, awsCollector, {
-      now,
+      now: backfillNow,
       backfill: true,
       fetch: fakeFetch({
         "current/us-east-1": current,

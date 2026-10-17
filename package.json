@@ -14,7 +14,10 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx --env-file-if-exists=.env scripts/migrate.ts",
     "collect": "tsx --env-file-if-exists=.env scripts/collect.ts",
-    "alerts": "tsx --env-file-if-exists=.env scripts/alerts.ts"
+    "alerts": "tsx --env-file-if-exists=.env scripts/alerts.ts",
+    "db:backup": "tsx --env-file-if-exists=.env scripts/backup.ts",
+    "db:restore": "tsx --env-file-if-exists=.env scripts/restore.ts",
+    "check:bundle": "! grep -rlE \"@libsql|node:fs|drizzle-orm\" .output/public"
   },
   "dependencies": {
     "@libsql/client": "^0.18.0",
@@ -42,5 +45,8 @@
     "typescript": "^7.0.2",
     "vite": "^8.3.4",
     "vitest": "^5.0.5"
+  },
+  "engines": {
+    "node": ">=24"
   }
 }

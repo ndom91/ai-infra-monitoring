@@ -51,17 +51,24 @@ export const INDICATORS: IndicatorDef[] = [
     section: "market",
     classification: "Leading",
     measures:
-      "Hourly marketplace rental prices per GPU, by generation and form factor, plus the number of listed and available offers.",
+      "Hourly list prices per GPU for H100 and H200 instances on Azure (on-demand and spot) and AWS (on-demand).",
     deterioration:
-      "Falling median prices for the same GPU cohort while listed or available inventory rises. That combination suggests supply outrunning demand.",
+      "Cuts to list or spot prices for the same GPU, especially spot falling while on-demand holds. That suggests idle capacity being discounted.",
     caveats: [
+      "These are hyperscaler list prices, a weak proxy. They change rarely, show no inventory, and exclude the negotiated discounts large buyers get.",
+      "Marketplace prices (Vast.ai, Shadeform) would be a better signal, but their terms forbid building price indexes without written permission.",
+      "AWS history covers the last 24 months of monthly price lists. Azure only states when the current price took effect.",
       "Price cuts alone are not distress: newer GPUs lower the value of older ones by design.",
-      "Marketplaces (Vast.ai) and aggregators (Shadeform) cover a small, retail slice of capacity. Large contracted capacity is priced privately.",
-      "No backfill exists. History starts on the first day this monitor collected.",
     ],
     sources: [
-      { label: "Vast.ai", url: "https://vast.ai/pricing" },
-      { label: "Shadeform", url: "https://www.shadeform.ai/" },
+      {
+        label: "Azure Retail Prices API",
+        url: "https://learn.microsoft.com/en-us/rest/api/cost-management/retail-prices/azure-retail-prices",
+      },
+      {
+        label: "AWS Price List Bulk API",
+        url: "https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/using-the-aws-price-list-bulk-api.html",
+      },
     ],
   },
   {

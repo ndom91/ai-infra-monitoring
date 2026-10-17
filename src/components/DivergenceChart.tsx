@@ -58,7 +58,7 @@ export function DivergenceChart({ lines }: { lines: DivergenceLine[] }) {
           scales: {
             x: {
               type: "time",
-              time: { minUnit: "month" },
+              time: { minUnit: "month", tooltipFormat: "d MMM yyyy" },
               ticks: { color: TICK, maxTicksLimit: 6, maxRotation: 0 },
               grid: { display: false },
             },

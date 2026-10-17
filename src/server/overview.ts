@@ -127,7 +127,8 @@ export const getOverviewData = createServerFn({ method: "GET" }).handler(async (
     }),
   );
   const firstOf = (pred: (s: SeriesView) => boolean) => rest.series.find(pred);
-  const rental = firstOf((s) => s.indicator === "gpu_rental" && /h100/i.test(s.id));
+  // AWS is the only rental series with real monthly history (24 months).
+  const rental = firstOf((s) => s.id === "aws.h100.us-east-1.ondemand");
   const resale = firstOf((s) => s.indicator === "gpu_resale");
   const construction = firstOf(
     (s) => s.indicator === "construction" && s.unit === "MW" && s.points.length > 1,

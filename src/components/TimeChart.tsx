@@ -97,7 +97,7 @@ export function TimeChart({ lines, unit, height = 220, stepped, rebase, minUnit 
           scales: {
             x: {
               type: "time",
-              time: { minUnit },
+              time: { minUnit, tooltipFormat: "d MMM yyyy" },
               ticks: { color: TICK, maxTicksLimit: 7, maxRotation: 0 },
               grid: { display: false },
             },

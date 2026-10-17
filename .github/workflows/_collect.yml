@@ -1,0 +1,33 @@
+# Reusable: run one or more collectors against Turso, then evaluate alerts.
+name: collect
+on:
+  workflow_call:
+    inputs:
+      collectors:
+        description: Space-separated collector names (or "all")
+        required: true
+        type: string
+      args:
+        description: Extra flags, e.g. --backfill
+        required: false
+        type: string
+        default: ""
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      # Exit code 1 = partial/transient, 2 = permanent; either marks the run red.
+      - run: pnpm collect ${{ inputs.collectors }} ${{ inputs.args }}
+        env:
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+          SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}

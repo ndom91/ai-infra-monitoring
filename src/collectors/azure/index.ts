@@ -3,7 +3,6 @@ import type { SeriesDef } from "~/domain/types";
 import { classify, permanent } from "../errors";
 import {
   type GpuCohort,
-  instanceSeriesDef,
   type ListPrice,
   perGpuHour,
   perGpuSeriesDef,
@@ -16,47 +15,22 @@ import type { CollectOutput, Collector } from "../types";
 // "your own tools for internal analysis and price comparison across SKUs and regions".
 // https://learn.microsoft.com/en-us/rest/api/cost-management/retail-prices/azure-retail-prices
 const API = "https://prices.azure.com/api/retail/prices";
-const API_VERSION = "2023-01-01-preview"; // needed for savings plan prices
+const API_VERSION = "2023-01-01-preview";
 const DOCS_URL =
   "https://learn.microsoft.com/en-us/rest/api/cost-management/retail-prices/azure-retail-prices";
-
-// Azure lists reservations as a USD total for the whole term. Converting to an
-// hourly rate assumes 365 days of 24 hours, the convention of Azure's calculator.
-const HOURS_PER_YEAR = 8760;
 
 type AzureSku = { armSkuName: string; cohort: GpuCohort; gpus: number };
 
 // GPU counts come from the Azure VM size docs, not from the price feed.
 export const AZURE_SKUS: AzureSku[] = [
-  { armSkuName: "Standard_ND96asr_v4", cohort: "a100_40gb", gpus: 8 },
-  { armSkuName: "Standard_ND96amsr_A100_v4", cohort: "a100_80gb", gpus: 8 },
   { armSkuName: "Standard_ND96isr_H100_v5", cohort: "h100", gpus: 8 },
   { armSkuName: "Standard_ND96isr_H200_v5", cohort: "h200", gpus: 8 },
-  { armSkuName: "Standard_ND128isr_NDR_GB200_v6", cohort: "gb200", gpus: 4 },
 ];
 
-// Fixed reference regions. eastus has the A100 40GB SKU but no H200, eastus2
-// has the H200, so both are tracked. A SKU listed here that disappears from its
-// region shows up as a failure instead of silently vanishing.
+// One fixed reference region that offers both SKUs (eastus has no H200). A
+// SKU that disappears from it shows up as a failure instead of silently vanishing.
 export const AZURE_REGIONS: { region: string; skus: string[] }[] = [
-  {
-    region: "eastus",
-    skus: [
-      "Standard_ND96asr_v4",
-      "Standard_ND96amsr_A100_v4",
-      "Standard_ND96isr_H100_v5",
-      "Standard_ND128isr_NDR_GB200_v6",
-    ],
-  },
-  {
-    region: "eastus2",
-    skus: [
-      "Standard_ND96amsr_A100_v4",
-      "Standard_ND96isr_H100_v5",
-      "Standard_ND96isr_H200_v5",
-      "Standard_ND128isr_NDR_GB200_v6",
-    ],
-  },
+  { region: "eastus2", skus: ["Standard_ND96isr_H100_v5", "Standard_ND96isr_H200_v5"] },
 ];
 
 const MAX_PAGES = 5;
@@ -72,10 +46,6 @@ const ItemSchema = v.object({
   effectiveStartDate: v.pipe(v.string(), v.regex(/^\d{4}-\d{2}-\d{2}T/)),
   unitOfMeasure: v.string(),
   isPrimaryMeterRegion: v.boolean(),
-  reservationTerm: v.optional(v.string()),
-  savingsPlan: v.optional(
-    v.array(v.object({ retailPrice: v.pipe(v.number(), v.finite()), term: v.string() })),
-  ),
 });
 export type AzureItem = v.InferOutput<typeof ItemSchema>;
 
@@ -128,9 +98,8 @@ function current(items: AzureItem[], today: string, value: (i: AzureItem) => num
 
 export type AzurePricePoint = ListPrice & { effectiveDate: string };
 
-// Extracts on-demand, spot, 1-year savings plan and 1-year reservation prices
-// for one SKU in one region. On-demand must exist; the others are optional
-// because Azure does not offer every commitment type for every SKU.
+// Extracts on-demand and spot prices for one SKU in one region. On-demand
+// must exist; spot is optional.
 export function extractPrices(
   items: AzureItem[],
   sku: AzureSku,
@@ -150,9 +119,6 @@ export function extractPrices(
   const isLowPriority = (r: AzureItem) => /Low Priority/.test(r.meterName);
   const onDemandRows = consumption.filter((r) => !isSpot(r) && !isLowPriority(r));
   const spotRows = consumption.filter(isSpot);
-  const reservedRows = rows.filter(
-    (r) => r.type === "Reservation" && r.reservationTerm === "1 Year",
-  );
 
   const base = { provider: "azure" as const, cohort: sku.cohort, region, sku: sku.armSkuName };
   const out: AzurePricePoint[] = [];
@@ -188,35 +154,6 @@ export function extractPrices(
     });
   }
 
-  // Savings plan rates hang off the on-demand meter and are already hourly.
-  const savings = current(
-    onDemandRows,
-    today,
-    (i) => i.savingsPlan?.find((s) => s.term === "1 Year")?.retailPrice,
-  );
-  if (savings) {
-    out.push({
-      ...base,
-      priceType: "savings1y",
-      gpus: sku.gpus,
-      instancePerHour: savings.price,
-      perGpuHour: perGpuHour(savings.price, sku.gpus),
-      derivation: `Instance 1-year savings plan rate ${savings.price} USD/hr / ${sku.gpus} GPUs`,
-      effectiveDate: savings.effectiveDate,
-    });
-  }
-
-  const reserved = current(reservedRows, today, (i) => i.retailPrice);
-  if (reserved) {
-    out.push({
-      ...base,
-      priceType: "reserved1y",
-      gpus: sku.gpus,
-      perGpuHour: reserved.price / HOURS_PER_YEAR / sku.gpus,
-      derivation: `1-year reservation total ${reserved.price} USD / ${HOURS_PER_YEAR} h / ${sku.gpus} GPUs`,
-      effectiveDate: reserved.effectiveDate,
-    });
-  }
   return out;
 }
 
@@ -225,12 +162,12 @@ const SERIES_CTX = {
   source: "Azure Retail Prices",
   sourceUrl: DOCS_URL,
   filters:
-    "Linux meters, primary meter region, Azure Retail Prices API (USD). Spot is the published spot meter; savings plan is the 1-year compute savings plan hourly rate; reserved is the 1-year reservation term total divided by 8760 h",
+    "Linux meters, primary meter region, Azure Retail Prices API (USD). Spot is the published spot meter",
 };
 
 export const azureCollector: Collector = {
   name: "azure",
-  description: "Azure list prices for GPU VMs (A100, H100, H200, GB200), per GPU-hour",
+  description: "Azure on-demand and spot list prices for H100 and H200 VMs, per GPU-hour",
   async collect({ backfill, now, fetch, log }) {
     const today = utcDate(now);
     const out: Required<Pick<CollectOutput, "series" | "observations" | "failures" | "snapshots">> =
@@ -269,16 +206,13 @@ export const azureCollector: Collector = {
           const prices = extractPrices(items, sku, region, today);
           for (const p of prices) {
             addSeries(perGpuSeriesDef(p, SERIES_CTX));
-            if (p.instancePerHour !== undefined) addSeries(instanceSeriesDef(p, SERIES_CTX));
           }
           out.observations.push(...toObservations(prices, { start: today, end: today }));
           // effectiveStartDate tells us the price has been unchanged since that
           // date, so it is a real (single) historical point, not interpolation.
-          // Savings plans are skipped: their rates hang off the on-demand row and
-          // carry no effective date of their own.
           if (backfill) {
             for (const p of prices) {
-              if (p.priceType === "savings1y" || p.effectiveDate >= today) continue;
+              if (p.effectiveDate >= today) continue;
               out.observations.push(
                 ...toObservations([p], {
                   start: p.effectiveDate,

@@ -1,4 +1,4 @@
-import { createServerFn } from "@tanstack/react-start";
+import { createServerFn, createServerOnlyFn } from "@tanstack/react-start";
 import * as v from "valibot";
 import { RANGE_KEYS, rangeStart } from "~/domain/ranges";
 import { INDICATOR_IDS } from "~/domain/types";
@@ -26,7 +26,10 @@ export const SectionInput = v.object({
 // Extra history beyond the visible range so YoY comparisons always work.
 const CHANGE_LOOKBACK_DAYS = 400;
 
-export async function loadSection(
+// Shared by several server functions. Wrapped in createServerOnlyFn so the
+// compiler strips it (and the node:fs DB client it imports) from the client
+// bundle; a plain exported function would leak it and break hydration.
+export const loadSection = createServerOnlyFn(async function loadSection(
   input: v.InferOutput<typeof SectionInput>,
   now: Date,
 ): Promise<{
@@ -59,7 +62,7 @@ export async function loadSection(
     }),
   );
   return { series, raw, runStatus, visibleFrom };
-}
+});
 
 export const getSectionData = createServerFn({ method: "GET" })
   .validator(SectionInput)

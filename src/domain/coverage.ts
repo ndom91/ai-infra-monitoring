@@ -9,14 +9,15 @@ export const COVERAGE: Record<
   { status: CoverageStatus; collectors: string[]; summary: string; gaps: string[] }
 > = {
   gpu_rental: {
-    status: "unavailable",
-    collectors: [],
+    status: "partial",
+    collectors: ["azure", "aws"],
     summary:
-      "Marketplace prices are not collected: Vast.ai and Shadeform terms prohibit automated collection for price indexes without written permission.",
+      "Hyperscaler list prices for H100 and H200: Azure on-demand and spot (eastus2), AWS on-demand (us-east-1). Collected weekly.",
     gaps: [
-      "Vast.ai terms (Sep 2026) forbid using pricing data to build or maintain any pricing index or price-comparison database.",
-      "Shadeform terms (Aug 2026) forbid systematic retrieval to create databases without written permission.",
-      "Hyperscaler list-price APIs are being evaluated as a weaker proxy (list prices, no inventory).",
+      "Marketplace prices are not collected: Vast.ai (Sep 2026) and Shadeform (Aug 2026) terms prohibit building price indexes or databases without written permission.",
+      "List prices carry no inventory or utilization signal.",
+      "Microsoft API terms forbid redistributing the data: keep the dashboard private.",
+      "GCP's pricing API needs an API key and is not used.",
     ],
   },
   gpu_resale: {
