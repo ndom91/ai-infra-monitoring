@@ -1,5 +1,6 @@
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
+import { nitro } from "nitro/vite";
 import { defineConfig, loadEnv } from "vite";
 
 export default defineConfig(({ mode }) => {
@@ -8,7 +9,8 @@ export default defineConfig(({ mode }) => {
   Object.assign(process.env, loadEnv(mode, process.cwd(), ""), process.env);
   return {
     resolve: { tsconfigPaths: true },
-    // tanstackStart() must come before react().
-    plugins: [tanstackStart(), viteReact()],
+    // tanstackStart() must come before react(). Nitro picks the Vercel
+    // preset automatically when building on Vercel, Node server otherwise.
+    plugins: [tanstackStart(), nitro(), viteReact()],
   };
 });

@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite dev --port 3000",
     "build": "vite build",
-    "start": "vite preview --port 4173",
+    "start": "node --env-file-if-exists=.env .output/server/index.mjs",
     "typecheck": "tsc --noEmit",
     "lint": "biome check .",
     "format": "biome check --write .",
@@ -24,6 +24,7 @@
     "chartjs-adapter-date-fns": "^3.0.0",
     "date-fns": "^4.4.0",
     "drizzle-orm": "^0.45.4",
+    "nitro": "3.0.260903-beta",
     "react": "^19.3.1",
     "react-chartjs-2": "^5.3.1",
     "react-dom": "^19.3.1",

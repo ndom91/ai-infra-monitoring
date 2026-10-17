@@ -12,3 +12,4 @@ instructions.md
 !.env.example
 data/*.db*
 .claude
+.vercel
