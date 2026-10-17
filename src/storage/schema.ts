@@ -98,6 +98,8 @@ export const alertEvents = sqliteTable(
   {
     id: integer().primaryKey({ autoIncrement: true }),
     ruleId: text().notNull(),
+    // Null for rules that span several series (breadth rules).
+    seriesId: text(),
     triggeredAt: text().notNull(),
     severity: text({ enum: ["info", "warning", "critical"] }).notNull(),
     message: text().notNull(),

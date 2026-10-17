@@ -1,0 +1,1 @@
+ALTER TABLE `alert_events` ADD `series_id` text;
