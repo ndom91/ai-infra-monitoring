@@ -11,3 +11,4 @@ instructions.md
 .env.*
 !.env.example
 data/*.db*
+.claude
