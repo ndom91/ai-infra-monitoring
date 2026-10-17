@@ -544,3 +544,21 @@ code {
   font: 12px var(--mono);
   color: var(--teal);
 }
+
+.picker {
+  margin: -6px 0 18px;
+  flex-wrap: wrap;
+  gap: 18px;
+}
+
+.picker-group {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.picker-label {
+  color: var(--muted);
+  font-size: 11px;
+  margin-right: 4px;
+}
