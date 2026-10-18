@@ -7,7 +7,7 @@ const HIGH_FREQUENCY = new Set(["daily", "weekdays", "weekly", "monthly"]);
 
 export function SeriesStats({ series }: { series: SeriesView[] }) {
   return (
-    <table className="stats">
+    <table className="stats series-stats">
       <thead>
         <tr>
           <th>Series</th>
@@ -42,14 +42,16 @@ function SeriesRow({ s }: { s: SeriesView }) {
       ];
   return (
     <tr>
-      <td>
+      <td className="c-series">
         <a href={s.sourceUrl} target="_blank" rel="noopener noreferrer" title={s.methodology}>
           {s.label}
         </a>
         {s.latest && s.latest.kind !== "reported" && <span className="kind">{s.latest.kind}</span>}
       </td>
-      <td className="num strong">{s.latest ? formatValue(s.latest.value, s.unit) : "—"}</td>
-      <td className="muted">
+      <td className="num strong c-latest">
+        {s.latest ? formatValue(s.latest.value, s.unit) : "—"}
+      </td>
+      <td className="muted c-observed">
         {s.latest ? (
           <a
             href={s.latest.sourceUrl ?? s.sourceUrl}
@@ -65,7 +67,7 @@ function SeriesRow({ s }: { s: SeriesView }) {
           "—"
         )}
       </td>
-      <td className="num deltas">
+      <td className="num deltas c-change">
         {deltas.map(([label, c]) =>
           c ? (
             <span
@@ -77,7 +79,7 @@ function SeriesRow({ s }: { s: SeriesView }) {
           ) : null,
         )}
       </td>
-      <td>
+      <td className="c-status">
         <FreshnessBadge state={s.freshness} />
       </td>
     </tr>

@@ -613,3 +613,157 @@ code {
   margin-left: 6px;
   letter-spacing: 0.5px;
 }
+
+/* ---- Mobile ---- */
+
+.table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table-scroll .stats tr > td,
+.table-scroll .stats tr > th {
+  white-space: nowrap;
+}
+
+.table-scroll .coverage td:last-child {
+  white-space: normal;
+  min-width: 260px;
+}
+
+@media (max-width: 640px) {
+  .wrap {
+    padding: 18px 12px 48px;
+  }
+
+  .topbar {
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  .nav a {
+    padding: 5px 8px;
+  }
+
+  .section-head h1 {
+    font-size: 22px;
+  }
+
+  .panel {
+    padding: 14px 12px;
+  }
+
+  .panel-head {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .block {
+    padding: 12px 10px;
+  }
+
+  .toolbar {
+    flex-wrap: wrap;
+  }
+
+  .picker-group {
+    flex-wrap: wrap;
+  }
+
+  /* Series tables: one small card per row. */
+  .series-stats thead,
+  .terms-table thead {
+    display: none;
+  }
+
+  .series-stats tr {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    grid-template-areas:
+      "series series series"
+      "latest observed status"
+      "change change change";
+    column-gap: 10px;
+    row-gap: 2px;
+    padding: 8px 0;
+    border-bottom: 1px solid #222a2c;
+  }
+
+  .series-stats td {
+    padding: 0;
+    border: 0;
+  }
+
+  .series-stats .c-series {
+    grid-area: series;
+  }
+
+  .series-stats .c-latest {
+    grid-area: latest;
+    text-align: left;
+  }
+
+  .series-stats .c-observed {
+    grid-area: observed;
+  }
+
+  .series-stats .c-status {
+    grid-area: status;
+  }
+
+  .series-stats .c-change {
+    grid-area: change;
+    text-align: left;
+    white-space: normal;
+  }
+
+  .series-stats .deltas span:first-child {
+    margin-left: 0;
+  }
+
+  .terms-table tr {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "issuer value"
+      "item item"
+      "date date";
+    column-gap: 12px;
+    row-gap: 2px;
+    padding: 8px 0;
+    border-bottom: 1px solid #222a2c;
+  }
+
+  .terms-table td {
+    padding: 0;
+    border: 0;
+  }
+
+  .terms-table .c-issuer {
+    grid-area: issuer;
+  }
+
+  .terms-table .c-value {
+    grid-area: value;
+  }
+
+  .terms-table .c-item {
+    grid-area: item;
+  }
+
+  .terms-table .c-date {
+    grid-area: date;
+  }
+
+  .alert-mini li {
+    grid-template-columns: auto 1fr;
+  }
+
+  .alert-mini li > span:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .readme-body {
+    gap: 14px;
+  }
+}

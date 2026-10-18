@@ -35,7 +35,7 @@ export function TermsTable({
           <span>Try a longer range.</span>
         </div>
       ) : (
-        <table className="stats">
+        <table className="stats terms-table">
           <thead>
             <tr>
               <th>Issuer</th>
@@ -47,10 +47,12 @@ export function TermsTable({
           <tbody>
             {rows.map(({ s, p }) => (
               <tr key={`${s.id}-${p.periodEnd}`}>
-                <td className="strong">{s.entity}</td>
-                <td title={s.methodology}>{labelOf(s)}</td>
-                <td className="num strong">{formatValue(p.value, s.unit)}</td>
-                <td className="muted">
+                <td className="strong c-issuer">{s.entity}</td>
+                <td className="c-item" title={s.methodology}>
+                  {labelOf(s)}
+                </td>
+                <td className="num strong c-value">{formatValue(p.value, s.unit)}</td>
+                <td className="muted c-date">
                   <a
                     href={p.sourceUrl ?? s.sourceUrl}
                     target="_blank"

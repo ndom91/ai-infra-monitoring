@@ -21,108 +21,114 @@ function CoveragePage() {
       />
       <section className="panel">
         <h2>Coverage matrix</h2>
-        <table className="stats coverage">
-          <thead>
-            <tr>
-              <th>Indicator</th>
-              <th>Status</th>
-              <th className="num">Series</th>
-              <th>Notes and gaps</th>
-            </tr>
-          </thead>
-          <tbody>
-            {INDICATORS.map((i) => {
-              const c = COVERAGE[i.id];
-              const n = series.filter((s) => s.indicator === i.id).length;
-              return (
-                <tr key={i.id}>
-                  <td>
-                    {i.number} {i.title}
-                  </td>
-                  <td>
-                    <span className={`badge cov-${c.status}`}>{c.status}</span>
-                  </td>
-                  <td className="num">{n}</td>
-                  <td>
-                    <p>{c.summary}</p>
-                    {c.gaps.length > 0 && (
-                      <ul>
-                        {c.gaps.map((g) => (
-                          <li key={g}>{g}</li>
-                        ))}
-                      </ul>
-                    )}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+        <div className="table-scroll">
+          <table className="stats coverage">
+            <thead>
+              <tr>
+                <th>Indicator</th>
+                <th>Status</th>
+                <th className="num">Series</th>
+                <th>Notes and gaps</th>
+              </tr>
+            </thead>
+            <tbody>
+              {INDICATORS.map((i) => {
+                const c = COVERAGE[i.id];
+                const n = series.filter((s) => s.indicator === i.id).length;
+                return (
+                  <tr key={i.id}>
+                    <td>
+                      {i.number} {i.title}
+                    </td>
+                    <td>
+                      <span className={`badge cov-${c.status}`}>{c.status}</span>
+                    </td>
+                    <td className="num">{n}</td>
+                    <td>
+                      <p>{c.summary}</p>
+                      {c.gaps.length > 0 && (
+                        <ul>
+                          {c.gaps.map((g) => (
+                            <li key={g}>{g}</li>
+                          ))}
+                        </ul>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       </section>
 
       <section className="panel">
         <h2>Collectors</h2>
-        <table className="stats">
-          <thead>
-            <tr>
-              <th>Collector</th>
-              <th>Last run</th>
-              <th>Status</th>
-              <th className="num">New</th>
-              <th className="num">Revised</th>
-              <th className="num">Unchanged</th>
-              <th>Message</th>
-            </tr>
-          </thead>
-          <tbody>
-            {latest.map((r) => (
-              <tr key={r.id}>
-                <td>
-                  <code>{r.collector}</code>
-                </td>
-                <td className="muted">{formatDateTime(r.startedAt)} UTC</td>
-                <td>
-                  <FreshnessBadge
-                    state={
-                      r.status === "ok"
-                        ? "current"
-                        : r.status === "failed"
-                          ? "unavailable"
-                          : "stale"
-                    }
-                  />{" "}
-                  <span className="muted">{r.status}</span>
-                </td>
-                <td className="num">{r.inserted}</td>
-                <td className="num">{r.revised}</td>
-                <td className="num">{r.unchanged}</td>
-                <td className="muted">{r.message ?? ""}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        <details className="readme">
-          <summary>Run history ({runs.length})</summary>
+        <div className="table-scroll">
           <table className="stats">
+            <thead>
+              <tr>
+                <th>Collector</th>
+                <th>Last run</th>
+                <th>Status</th>
+                <th className="num">New</th>
+                <th className="num">Revised</th>
+                <th className="num">Unchanged</th>
+                <th>Message</th>
+              </tr>
+            </thead>
             <tbody>
-              {runs.map((r) => (
+              {latest.map((r) => (
                 <tr key={r.id}>
                   <td>
                     <code>{r.collector}</code>
                   </td>
-                  <td className="muted">{formatDateTime(r.startedAt)}</td>
-                  <td>{r.status}</td>
-                  <td className="num">
-                    +{r.inserted} / ~{r.revised} / ={r.unchanged}
+                  <td className="muted">{formatDateTime(r.startedAt)} UTC</td>
+                  <td>
+                    <FreshnessBadge
+                      state={
+                        r.status === "ok"
+                          ? "current"
+                          : r.status === "failed"
+                            ? "unavailable"
+                            : "stale"
+                      }
+                    />{" "}
+                    <span className="muted">{r.status}</span>
                   </td>
-                  <td className="muted">
-                    {r.errorClass ? `${r.errorClass}: ` : ""}
-                    {r.message ?? ""}
-                  </td>
+                  <td className="num">{r.inserted}</td>
+                  <td className="num">{r.revised}</td>
+                  <td className="num">{r.unchanged}</td>
+                  <td className="muted">{r.message ?? ""}</td>
                 </tr>
               ))}
             </tbody>
           </table>
+        </div>
+        <details className="readme">
+          <summary>Run history ({runs.length})</summary>
+          <div className="table-scroll">
+            <table className="stats">
+              <tbody>
+                {runs.map((r) => (
+                  <tr key={r.id}>
+                    <td>
+                      <code>{r.collector}</code>
+                    </td>
+                    <td className="muted">{formatDateTime(r.startedAt)}</td>
+                    <td>{r.status}</td>
+                    <td className="num">
+                      +{r.inserted} / ~{r.revised} / ={r.unchanged}
+                    </td>
+                    <td className="muted">
+                      {r.errorClass ? `${r.errorClass}: ` : ""}
+                      {r.message ?? ""}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </details>
       </section>
     </>

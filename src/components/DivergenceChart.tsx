@@ -17,7 +17,9 @@ export function DivergenceChart({ lines }: { lines: DivergenceLine[] }) {
     ticks: {
       color,
       maxTicksLimit: 5,
-      callback: (v: string | number) => formatValue(Number(v), line.unit),
+      // Long units ("index (H1 2025 = 100)") would crowd the axis; the legend names them.
+      callback: (v: string | number) =>
+        line.unit.length > 10 ? `${+Number(v).toFixed(2)}` : formatValue(Number(v), line.unit),
     },
     grid: { color: position === "left" ? "#252d2f" : "transparent" },
   });
