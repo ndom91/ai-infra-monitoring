@@ -145,7 +145,8 @@ h2 {
 
 .topbar {
   display: flex;
-  align-items: flex-end;
+  /* Brand name, updated date and nav labels share one text baseline. */
+  align-items: last baseline;
   justify-content: space-between;
   gap: 24px;
   border-bottom: 1px solid var(--line);
@@ -177,7 +178,6 @@ h2 {
   color: var(--muted);
   letter-spacing: 0.3px;
   white-space: nowrap;
-  padding-bottom: 7px;
 }
 
 .nav {
@@ -996,8 +996,9 @@ h3,
 
 .key-figure {
   display: grid;
-  grid-template-columns: minmax(0, 3fr) minmax(0, 1fr);
-  gap: 8px;
+  /* Indicator column is only as wide as its text; the rest goes to the figure. */
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
   padding: 16px 18px;
   border-left: 1px solid var(--line);
   container-type: inline-size;
@@ -1048,17 +1049,18 @@ h3,
 }
 
 .kf-arrow {
-  font-size: 14px;
+  font-size: clamp(16px, 8cqi, 32px);
   line-height: 1;
 }
 
 .kf-pct {
-  font-size: 15px;
+  font-size: clamp(17px, 8.5cqi, 26px);
+  line-height: 1.2;
   font-weight: 600;
 }
 
 .kf-period {
-  font-size: 10px;
+  font-size: 11px;
   color: var(--muted);
 }
 
