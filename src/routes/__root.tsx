@@ -1,5 +1,7 @@
 import { createRootRoute, HeadContent, Link, Outlet, Scripts } from "@tanstack/react-router";
 import type { ReactNode } from "react";
+import { formatDate } from "~/lib/format";
+import { getLastUpdated } from "~/server/data";
 import styles from "~/styles.css?url";
 
 export const Route = createRootRoute({
@@ -17,6 +19,9 @@ export const Route = createRootRoute({
       },
     ],
   }),
+  // Cheap single-row query; cached briefly so client navigation doesn't refetch it.
+  loader: () => getLastUpdated(),
+  staleTime: 5 * 60_000,
   component: RootComponent,
 });
 
@@ -31,6 +36,7 @@ const NAV = [
 ] as const;
 
 function RootComponent() {
+  const lastUpdated = Route.useLoaderData();
   return (
     <RootDocument>
       <div className="wrap">
@@ -41,6 +47,7 @@ function RootComponent() {
               Infrastructure Risk Monitor<span className="accent">.</span>
             </span>
           </Link>
+          {lastUpdated && <span className="topbar-updated">Updated {formatDate(lastUpdated)}</span>}
           <nav className="nav">
             {NAV.map((n) => (
               <Link

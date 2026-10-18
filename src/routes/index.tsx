@@ -28,14 +28,18 @@ const calculated = (points: Point[]) => points.map((p) => ({ ...p, kind: "calcul
 
 function keyFigures(story: ReturnType<typeof Route.useLoaderData>["story"]): KeyFigure[] {
   const out: KeyFigure[] = [];
+  // Only compare with a real point within 3 weeks of a year earlier.
+  const yearChange = (pts: Point[]) => changeOver(pts, 365, 21);
+
   const spread = (label: string, pts: Point[]) => {
     const last = pts.at(-1);
     if (!last) return;
-    const y = changeOver(pts, 365, 21);
+    const y = yearChange(pts);
     out.push({
       label,
       value: `${last.value.toFixed(2)}%`,
-      note: `${shortDate(last.periodEnd)}${y ? ` · ${y.delta >= 0 ? "+" : "−"}${Math.round(Math.abs(y.delta) * 100)} bps in a year` : ""}`,
+      note: `${shortDate(last.periodEnd)}${y ? ` · ${y.delta >= 0 ? "+" : "−"}${Math.round(Math.abs(y.delta) * 100)} bps` : ""}`,
+      change: y?.pct ?? null,
     });
   };
   spread("Riskiest-company borrowing premium (CCC)", story.credit.ccc);
@@ -43,11 +47,11 @@ function keyFigures(story: ReturnType<typeof Route.useLoaderData>["story"]): Key
 
   const capex = story.capex.capexTtm.at(-1);
   if (capex) {
-    const y = changeOver(story.capex.capexTtm, 365, 21);
     out.push({
       label: "Big tech capex, last 12 months",
       value: usd(capex.value).replace(" billion", "B").replace(" trillion", "T"),
-      note: `to ${shortDate(capex.periodEnd)}${y?.pct != null ? ` · ${y.pct >= 0 ? "+" : "−"}${Math.abs(y.pct * 100).toFixed(0)}% in a year` : ""}`,
+      note: `to ${shortDate(capex.periodEnd)}`,
+      change: yearChange(story.capex.capexTtm)?.pct ?? null,
     });
   }
   const h100 = story.rental.aws.at(-1);
@@ -56,6 +60,7 @@ function keyFigures(story: ReturnType<typeof Route.useLoaderData>["story"]): Key
       label: "Nvidia H100 on AWS",
       value: `$${h100.value.toFixed(2)}`,
       note: `per GPU-hour, list price · ${shortDate(h100.periodEnd)}`,
+      change: yearChange(story.rental.aws)?.pct ?? null,
     });
   }
   const vac = story.buildings.vacancy.at(-1);
@@ -64,6 +69,7 @@ function keyFigures(story: ReturnType<typeof Route.useLoaderData>["story"]): Key
       label: "Empty data-center space",
       value: `${vac.value.toFixed(1)}%`,
       note: `North America primary markets · ${monthYear(vac.periodEnd)}`,
+      change: yearChange(story.buildings.vacancy)?.pct ?? null,
     });
   }
   return out;
@@ -104,12 +110,7 @@ function Home() {
             computing power sells for, and whether the buildings fill up. Every figure comes from a
             public source and links back to it. Nothing is estimated to fill gaps.
           </p>
-          <p className="story-updated">
-            {story.lastCollected
-              ? `Data last collected ${shortDate(story.lastCollected)}`
-              : "No data collected yet"}{" "}
-            · Research, not investment advice
-          </p>
+          <p className="story-updated">Research, not investment advice</p>
           <nav className="story-jump" aria-label="Sections">
             {SECTIONS.map((s) => (
               <a key={s.id} href={`#${s.id}`}>

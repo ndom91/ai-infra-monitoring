@@ -171,6 +171,15 @@ h2 {
   letter-spacing: -0.6px;
 }
 
+.topbar-updated {
+  margin-left: auto;
+  font: 11px var(--mono);
+  color: var(--muted);
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  padding-bottom: 7px;
+}
+
 .nav {
   display: flex;
   gap: 2px;
@@ -929,21 +938,45 @@ h3,
 }
 
 .story-aside li {
+  position: relative;
   font-size: 13px;
   line-height: 1.55;
   color: var(--reading);
-  padding: 0 0 14px 12px;
-  margin-bottom: 14px;
-  border-left: 2px solid var(--muted);
+  padding: 14px 0 14px 14px;
   border-bottom: 1px solid #222a2c;
 }
 
-.story-aside li.sev-warning {
-  border-left-color: var(--orange);
+.story-aside li:first-child {
+  padding-top: 0;
 }
 
-.story-aside li.sev-critical {
-  border-left-color: #ffa49e;
+/* Severity bar, inset by the same amount top and bottom so it sits
+   centered between the separators. */
+.story-aside li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 14px;
+  bottom: 14px;
+  width: 2px;
+  border-radius: 1px;
+  background: var(--muted);
+}
+
+.story-aside li:first-child::before {
+  top: 0;
+}
+
+.story-aside li.sev-warning::before {
+  background: var(--orange);
+}
+
+.story-aside li.sev-critical::before {
+  background: #ffa49e;
+}
+
+.story-aside .more {
+  margin-top: 14px;
 }
 
 .aside-date {
@@ -962,15 +995,23 @@ h3,
 }
 
 .key-figure {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 1fr);
+  gap: 8px;
   padding: 16px 18px;
   border-left: 1px solid var(--line);
+  container-type: inline-size;
 }
 
 .key-figure:first-child {
   border-left: 0;
+}
+
+.kf-main {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
 }
 
 .kf-label {
@@ -978,15 +1019,58 @@ h3,
   color: var(--muted);
 }
 
+/* Grows to fill the tile so every note sits on the bottom edge; the font
+   scales with the tile width (container query units). */
 .kf-value {
-  font: 600 26px var(--mono);
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  font: 600 clamp(22px, 13cqi, 38px) / 1.1 var(--mono);
   letter-spacing: -0.5px;
   color: var(--text);
+  padding: 4px 0;
 }
 
 .kf-note {
   font-size: 11.5px;
   line-height: 1.45;
+  color: var(--muted);
+}
+
+.kf-change {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 2px;
+  font-family: var(--mono);
+  text-align: right;
+}
+
+.kf-arrow {
+  font-size: 14px;
+  line-height: 1;
+}
+
+.kf-pct {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.kf-period {
+  font-size: 10px;
+  color: var(--muted);
+}
+
+.kf-change.up {
+  color: #7fd6a4;
+}
+
+.kf-change.down {
+  color: #ff8f88;
+}
+
+.kf-change.flat {
   color: var(--muted);
 }
 
@@ -1140,10 +1224,6 @@ h3,
 
   .story-chart-head h3 {
     font-size: 19px;
-  }
-
-  .kf-value {
-    font-size: 21px;
   }
 
   .key-figure {

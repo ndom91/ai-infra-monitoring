@@ -6,6 +6,7 @@ import { getDb } from "~/storage/db";
 import {
   allSeries,
   lastRuns,
+  lastSuccessfulRun,
   latestObservations,
   recentAlerts,
   recentRuns,
@@ -107,3 +108,7 @@ export const getStatusData = createServerFn({ method: "GET" }).handler(async () 
   ]);
   return { series, runs, latest, alerts, now: new Date().toISOString() };
 });
+
+export const getLastUpdated = createServerFn({ method: "GET" }).handler(async () =>
+  lastSuccessfulRun(getDb()),
+);

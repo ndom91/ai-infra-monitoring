@@ -64,3 +64,14 @@ export function recentAlerts(db: Db, limit = 100) {
 export function allSeries(db: Db) {
   return db.select().from(series).orderBy(series.indicator, series.id);
 }
+
+// When data last landed: the newest run that wrote something (ok or partial).
+export async function lastSuccessfulRun(db: Db) {
+  const [row] = await db
+    .select({ finishedAt: collectorRuns.finishedAt })
+    .from(collectorRuns)
+    .where(inArray(collectorRuns.status, ["ok", "partial"]))
+    .orderBy(desc(collectorRuns.id))
+    .limit(1);
+  return row?.finishedAt ?? null;
+}
