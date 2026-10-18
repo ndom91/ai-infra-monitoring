@@ -12,6 +12,7 @@ import { type Point, resampleAt, snapToCalendarQuarter } from "~/metrics/changes
 import { ttm } from "~/metrics/fundamentals";
 import { getDb } from "~/storage/db";
 import { recentAlerts, recentRuns } from "~/storage/queries";
+import { withCurrentWording } from "./alert-text";
 import { loadSection } from "./data";
 import type { ObsPoint, SeriesView } from "./views";
 
@@ -151,10 +152,10 @@ export const getOverviewData = createServerFn({ method: "GET" }).handler(async (
         id: "rental_vs_capex",
         title: "GPU rental prices vs hyperscaler capex",
         pattern: "Rental prices falling while capex keeps rising.",
-        note: "AWS H100 on-demand list price (monthly) at calendar quarter ends; fiscal quarters snapped to the nearest calendar quarter.",
+        note: "AWS H100 list price, taken at each quarter end. Company fiscal quarters are matched to the nearest calendar quarter.",
       },
       [
-        { label: "Hyperscaler TTM capex (sum)", unit: "USD", points: hyperCapexTtm },
+        { label: "Hyperscaler capex, last 12 months (total)", unit: "USD", points: hyperCapexTtm },
         ...(rental
           ? [
               {
@@ -168,19 +169,19 @@ export const getOverviewData = createServerFn({ method: "GET" }).handler(async (
             ]
           : []),
       ],
-      "No permitted GPU rental price source yet. See Coverage.",
+      "No GPU rental prices we're allowed to use yet. The Coverage page explains why.",
     ),
     divergence(
       {
         id: "spreads_vs_backlog",
-        title: "Credit spreads vs contracted backlog",
-        pattern: "Spreads widening while contracted backlog keeps growing.",
-        note: "HY OAS sampled at CoreWeave's quarter ends.",
+        title: "Borrowing costs vs CoreWeave's order book",
+        pattern: "Borrowing costs rising while the order book keeps growing.",
+        note: "Junk-bond borrowing cost, taken at each CoreWeave quarter end.",
       },
       [
-        { label: "CoreWeave RPO", unit: "USD", points: crwvRpo },
+        { label: "CoreWeave order book (RPO)", unit: "USD", points: crwvRpo },
         {
-          label: "US High Yield OAS",
+          label: "Junk-bond borrowing cost",
           unit: "%",
           points: resampleAt(
             hyOas,
@@ -188,14 +189,14 @@ export const getOverviewData = createServerFn({ method: "GET" }).handler(async (
           ),
         },
       ],
-      "Needs CoreWeave RPO and HY OAS on common quarter ends.",
+      "Needs CoreWeave's order book and junk-bond borrowing costs for the same quarters.",
     ),
     divergence(
       {
         id: "collateral_vs_debt",
-        title: "GPU collateral values vs loan balances",
-        pattern: "Resale values falling while CoreWeave debt stays high.",
-        note: "Resale index sampled at CoreWeave quarter ends.",
+        title: "Used-GPU prices vs CoreWeave's debt",
+        pattern: "Used-GPU prices falling while CoreWeave's debt stays high.",
+        note: "Resale index, taken at each CoreWeave quarter end.",
       },
       [
         { label: "CoreWeave long-term debt", unit: "USD", points: crwvDebt },
@@ -212,13 +213,13 @@ export const getOverviewData = createServerFn({ method: "GET" }).handler(async (
             ]
           : []),
       ],
-      "No licensed GPU resale series yet. See Coverage.",
+      "No used-GPU price index we're allowed to use yet. The Coverage page explains why.",
     ),
     divergence(
       {
         id: "construction_vs_preleasing",
-        title: "Construction vs preleasing",
-        pattern: "Construction accelerating while the preleased share falls.",
+        title: "New building vs space already rented",
+        pattern: "Building speeding up while less of it is rented in advance.",
         note: construction ? `Source: ${construction.source}.` : undefined,
       },
       [
@@ -229,20 +230,24 @@ export const getOverviewData = createServerFn({ method: "GET" }).handler(async (
           ? [{ label: preleased.label, unit: "%", points: pts(raw.get(preleased.id)) }]
           : []),
       ],
-      "Needs cited construction and preleasing figures from the same publisher.",
+      "Needs construction and pre-rented figures from the same publisher.",
     ),
     divergence(
       {
         id: "lives_vs_cash",
-        title: "Useful-life extensions vs free cash flow",
+        title: "Assumed server lifespan vs spare cash",
         pattern:
-          "Depreciation lives lengthening (flattering earnings) while free cash flow after capex weakens.",
-        note: "Average useful life across hyperscalers with a disclosed change, held between disclosures.",
+          "Servers assumed to last longer (which flatters profits) while spare cash shrinks.",
+        note: "Average assumed server life across hyperscalers that disclosed a change. Held flat between disclosures.",
       },
       [
-        { label: "Hyperscaler TTM FCF after capex (sum)", unit: "USD", points: hyperFcfTtm },
         {
-          label: "Average server useful life",
+          label: "Hyperscaler free cash flow, last 12 months (total)",
+          unit: "USD",
+          points: hyperFcfTtm,
+        },
+        {
+          label: "Average assumed server life",
           unit: "years",
           points: averageSteps(
             lifeSteps.map((s) => pts(raw.get(s.id))),
@@ -250,7 +255,7 @@ export const getOverviewData = createServerFn({ method: "GET" }).handler(async (
           ),
         },
       ],
-      "Needs cited useful-life disclosures for at least 3 hyperscalers.",
+      "Needs server-life disclosures from at least 3 hyperscalers.",
     ),
   ];
 
@@ -290,7 +295,7 @@ export const getOverviewData = createServerFn({ method: "GET" }).handler(async (
   return {
     now: now.toISOString(),
     story,
-    alerts,
+    alerts: withCurrentWording(alerts),
     divergences,
     lifeChanges: lifeSteps.flatMap((s) =>
       (raw.get(s.id) ?? []).map((p) => ({

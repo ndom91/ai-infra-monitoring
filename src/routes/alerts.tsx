@@ -14,12 +14,12 @@ function AlertsPage() {
     <>
       <SectionHeader
         title="Alerts"
-        blurb="Transparent threshold rules from data/alerts.config.yaml. Each event lists the exact observations that triggered it. These are analytical flags, not predictions."
+        blurb="Simple threshold rules. Each alert lists the exact data points that triggered it. These are flags, not predictions."
       />
       {alerts.length === 0 ? (
         <div className="no-data">
           <b>No alerts have fired</b>
-          <span>Rules are evaluated after every collection run.</span>
+          <span>Rules are checked every time new data comes in.</span>
         </div>
       ) : (
         <div className="alert-list">

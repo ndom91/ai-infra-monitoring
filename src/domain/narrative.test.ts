@@ -46,7 +46,7 @@ describe("narrative", () => {
     expect(s?.headline).toBe(
       "Big tech spent $450 billion on data centers and equipment in a year, up 50%",
     );
-    expect(s?.body[1]).toMatch(/50% below its peak of \$240 billion in June 2024/);
+    expect(s?.body[2]).toMatch(/50% below its peak of \$240 billion in June 2024/);
   });
 
   it("handles negative operating cash for neoclouds", () => {

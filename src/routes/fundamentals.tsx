@@ -57,37 +57,36 @@ function FundamentalsPage() {
           <div>
             <h2>Peer comparison</h2>
             <p className="measures">
-              All tracked companies side by side. These charts do not change with the company
-              selected below.
+              Every company side by side. These charts don't change when you pick a company below.
             </p>
           </div>
         </header>
         <div className="grid-2">
           <ChartBlock
-            title="Capex intensity: hyperscalers"
+            title="Big tech: spending vs cash coming in"
             info={EXPLAINERS.capexIntensityHyper}
-            subtitle="TTM capex / TTM operating cash flow"
+            subtitle="12-month capital spending ÷ 12-month operating cash flow"
             series={acrossGroup("hyperscaler", "capex_ocf_ttm")}
             labelOf={tickerLabel}
           />
           <ChartBlock
-            title="Capex intensity: neoclouds"
+            title="Neoclouds: spending vs cash coming in"
             info={EXPLAINERS.capexIntensityNeo}
-            subtitle="TTM capex / TTM operating cash flow. Missing where OCF ≤ 0"
+            subtitle="12-month capex ÷ 12-month operating cash flow. Blank where cash flow was negative"
             series={acrossGroup("neocloud", "capex_ocf_ttm")}
             labelOf={tickerLabel}
           />
           <ChartBlock
-            title="Leverage: neoclouds"
+            title="Neoclouds: debt vs cash coming in"
             info={EXPLAINERS.leverageNeo}
-            subtitle="(Debt + finance leases) / TTM operating cash flow"
+            subtitle="(Debt + finance leases) ÷ 12-month operating cash flow"
             series={acrossGroup("neocloud", "debt_to_ocf")}
             labelOf={tickerLabel}
           />
           <ChartBlock
-            title="Conversion across companies"
+            title="How fast the order book turns into revenue"
             info={EXPLAINERS.conversionPeers}
-            subtitle="TTM revenue / RPO a year earlier"
+            subtitle="12-month revenue ÷ order book (RPO) a year earlier"
             series={TICKERS.flatMap((t) => byId.get(`derived.${t}.rpo_conversion`) ?? [])}
             labelOf={tickerLabel}
           />
@@ -102,9 +101,9 @@ function FundamentalsPage() {
           </h1>
           <p>
             {selected?.group === "hyperscaler"
-              ? "Hyperscaler: funds capex mostly from operating cash flow."
-              : "Neocloud: funds capex largely with debt and leases."}{" "}
-            Everything below follows the selected company.
+              ? "Hyperscaler: pays for most of its capex from its own cash."
+              : "Neocloud: pays for most of its capex with debt and leases."}{" "}
+            Everything below is for this company.
           </p>
         </div>
       </div>
@@ -113,33 +112,33 @@ function FundamentalsPage() {
       <IndicatorPanel def={indicatorById("capex_cashflow")}>
         <div className="grid-2">
           <ChartBlock
-            title={`${company}: capex vs operating cash flow`}
+            title={`${company}: capex vs cash from the business`}
             info={EXPLAINERS.capexVsOcf}
-            subtitle="Quarterly, as filed or derived from year-to-date figures"
+            subtitle="Quarterly. Some quarters are worked out from year-to-date totals"
             series={sec(["capex", "ocf"])}
           />
           <ChartBlock
-            title={`${company}: free cash flow after capex`}
+            title={`${company}: free cash flow`}
             info={EXPLAINERS.fcf}
-            subtitle="TTM operating cash flow minus TTM capex"
+            subtitle="Last 12 months: operating cash flow minus capex"
             series={derived(["fcf_ttm"])}
           />
           <ChartBlock
-            title={`${company}: debt and lease obligations`}
+            title={`${company}: debt and leases`}
             info={EXPLAINERS.debtLeases}
-            subtitle="Balance-sheet values at quarter end"
+            subtitle="What it owes at each quarter end"
             series={sec(["debt", "finance_leases", "operating_leases", "cash"])}
           />
           <ChartBlock
-            title={`${company}: leverage and coverage`}
+            title={`${company}: can it carry its debt?`}
             info={EXPLAINERS.leverageCoverage}
-            subtitle="Derived ratios; lines with different meanings share one axis only as indices"
+            subtitle="Calculated ratios. Each line means something different, so compare it with its own history"
             series={derived(["debt_to_ocf", "interest_coverage_ttm"])}
           />
           <ChartBlock
-            title={`${company}: interest`}
+            title={`${company}: interest costs`}
             info={EXPLAINERS.interest}
-            subtitle="Income-statement expense vs cash actually paid"
+            subtitle="Interest on the books vs interest actually paid"
             series={sec(["interest_expense", "interest_paid"])}
           />
         </div>
@@ -148,21 +147,21 @@ function FundamentalsPage() {
       <IndicatorPanel def={indicatorById("contract_conversion")}>
         <div className="grid-2">
           <ChartBlock
-            title={`${company}: backlog vs revenue`}
+            title={`${company}: order book vs revenue`}
             info={EXPLAINERS.backlog}
-            subtitle="RPO (balance at quarter end) and quarterly revenue"
+            subtitle="Order book (RPO) at quarter end, and quarterly revenue"
             series={sec(["rpo", "revenue", "ar"])}
           />
           <ChartBlock
-            title={`${company}: conversion`}
+            title={`${company}: order book to revenue`}
             info={EXPLAINERS.conversion}
-            subtitle="TTM revenue / RPO reported a year earlier"
+            subtitle="12-month revenue ÷ order book a year earlier"
             series={derived(["rpo_conversion"])}
           />
           <ChartBlock
-            title={`${company}: growth, year over year`}
+            title={`${company}: growth vs a year ago`}
             info={EXPLAINERS.growth}
-            subtitle="Backlog rising faster than revenue and receivables is the pattern to watch"
+            subtitle="Watch for the order book growing much faster than revenue"
             series={derived(["rpo_yoy", "revenue_ttm_yoy", "ar_yoy"])}
           />
         </div>
@@ -171,16 +170,16 @@ function FundamentalsPage() {
       <IndicatorPanel def={indicatorById("customer_concentration")}>
         <div className="grid-2">
           <ChartBlock
-            title="Revenue share, full fiscal year"
+            title="Biggest customers' share of revenue, full year"
             info={EXPLAINERS.concentrationFy}
-            subtitle="Disclosed share of revenue from named or largest customers"
+            subtitle="As disclosed in company filings"
             series={manual("customer_concentration").filter((s) => s.id.endsWith("_pct_fy"))}
             labelOf={concentrationLabel}
           />
           <ChartBlock
-            title="Revenue share, single quarter"
+            title="Biggest customers' share of revenue, one quarter"
             info={EXPLAINERS.concentrationQ}
-            subtitle="Quarter-only disclosures; never mixed with year-to-date shares"
+            subtitle="Single-quarter disclosures, kept apart from full-year ones"
             series={manual("customer_concentration").filter((s) => s.id.endsWith("_pct_q"))}
             labelOf={concentrationLabel}
           />
@@ -188,7 +187,7 @@ function FundamentalsPage() {
         <TermsTable
           title="Announced customer contracts"
           info={EXPLAINERS.contracts}
-          subtitle="Total contract values as announced. Not RPO, not guaranteed revenue."
+          subtitle="Total value as announced. Not guaranteed revenue."
           series={manual("customer_concentration").filter((s) => s.id.includes("contract_value"))}
         />
       </IndicatorPanel>
@@ -196,18 +195,18 @@ function FundamentalsPage() {
       <IndicatorPanel def={indicatorById("depreciation")}>
         <div className="grid-2">
           <ChartBlock
-            title="Server useful-life assumptions"
+            title="How long servers are assumed to last"
             info={EXPLAINERS.usefulLife}
-            subtitle="Stepped: each point is an effective date of a change"
+            subtitle="Each step is a change the company announced"
             series={manual("depreciation")}
             stepped
             labelOf={tickerLabel}
-            emptyReason="Useful-life changes are added manually from 10-K/10-Q notes, with citations."
+            emptyReason="Changes are added by hand from company filings, with citations."
           />
           <ChartBlock
             title={`${company}: depreciation & amortization`}
             info={EXPLAINERS.da}
-            subtitle="Quarterly expense"
+            subtitle="Quarterly cost of equipment wearing out"
             series={sec(["da"])}
           />
         </div>

@@ -42,8 +42,8 @@ function keyFigures(story: ReturnType<typeof Route.useLoaderData>["story"]): Key
       change: y?.pct ?? null,
     });
   };
-  spread("Riskiest-company borrowing premium (CCC)", story.credit.ccc);
-  spread("Junk-bond borrowing premium", story.credit.hy);
+  spread("Borrowing cost, riskiest companies", story.credit.ccc);
+  spread("Borrowing cost, all junk-rated", story.credit.hy);
 
   const capex = story.capex.capexTtm.at(-1);
   if (capex) {
@@ -68,7 +68,7 @@ function keyFigures(story: ReturnType<typeof Route.useLoaderData>["story"]): Key
     out.push({
       label: "Empty data-center space",
       value: `${vac.value.toFixed(1)}%`,
-      note: `North America primary markets · ${monthYear(vac.periodEnd)}`,
+      note: `Main North American markets · ${monthYear(vac.periodEnd)}`,
       change: yearChange(story.buildings.vacancy)?.pct ?? null,
     });
   }
@@ -100,15 +100,14 @@ function Home() {
               : ""}
           </p>
           <p>
-            Railways in the 1800s and fiber-optic networks in the late 1990s changed the world, yet
-            bankrupted many of the companies that built them. Too much capacity was built with
-            borrowed money, on equipment that aged quickly. AI could prove transformative and still
-            follow the same path.
+            Railways in the 1800s and fiber-optic networks in the 1990s changed the world. They also
+            bankrupted many of the companies that built them: too much was built, with borrowed
+            money, on equipment that aged fast. AI could change the world and still follow the same
+            path.
           </p>
           <p>
-            This page tracks the early signs: what it costs to borrow, how much is being spent, what
-            computing power sells for, and whether the buildings fill up. Every figure comes from a
-            public source and links back to it. Nothing is estimated to fill gaps.
+            This page tracks the early warning signs. Every figure links to its public source, and
+            nothing is estimated to fill gaps.
           </p>
           <p className="story-updated">Research, not investment advice</p>
           <nav className="story-jump" aria-label="Sections">
@@ -128,7 +127,7 @@ function Home() {
               {alerts.slice(0, 5).map((a) => (
                 <li key={a.id} className={`sev-${a.severity}`}>
                   <span className="aside-date">{formatDate(a.triggeredAt)}</span>
-                  {a.evidence.params.description ?? a.message}
+                  {a.description}
                 </li>
               ))}
             </ul>
@@ -144,17 +143,16 @@ function Home() {
       <section id="borrowing" className="story-section">
         <h2>Borrowing costs</h2>
         <p className="story-lede">
-          Most AI data centers are paid for at least partly with borrowed money. The cost of that
-          money shows up first in the "spread": the extra interest a company pays compared with the
-          US government. When lenders get nervous, spreads widen, and the most indebted companies
-          feel it first.
+          Most AI data centers are built at least partly with borrowed money. The key number is the
+          "spread": the extra interest a company pays over the US government. When lenders get
+          nervous, spreads widen, and the most indebted companies feel it first.
         </p>
         <div className="story-grid one">
           <StoryChart
             story={story.credit.story}
             fallbackTitle="Credit spreads"
             dek="Extra interest over US Treasuries, percentage points"
-            source="Source: ICE BofA US High Yield and CCC & Lower option-adjusted spreads, via FRED. Daily."
+            source="Source: ICE BofA bond indexes, via FRED. Updated daily."
             info={EXPLAINERS.hySpreads}
           >
             <TimeChart
@@ -177,14 +175,15 @@ function Home() {
         <p className="story-lede">
           Data centers and the chips inside them are paid for out of "capital expenditure", or
           capex. The big tech companies fund it mostly from their own cash. Newer specialist AI
-          clouds fund it mostly with debt. Both are worth watching, for different reasons.
+          clouds, or neoclouds, fund it mostly with debt. Both are worth watching, for different
+          reasons.
         </p>
         <div className="story-grid">
           <StoryChart
             story={story.capex.story}
             fallbackTitle="Big tech capital spending"
             dek="Microsoft, Alphabet, Amazon, Meta, Oracle · 12-month totals"
-            source="Source: company 10-Q and 10-K filings via SEC EDGAR. Quarterly; 12-month totals calculated."
+            source="Source: company filings via SEC EDGAR. Quarterly; 12-month totals are calculated."
             info={EXPLAINERS.capexIntensityHyper}
           >
             <TimeChart
@@ -200,7 +199,7 @@ function Home() {
             story={story.neocloud.story}
             fallbackTitle="CoreWeave spending"
             dek="CoreWeave · 12-month totals"
-            source="Source: CoreWeave 10-Q and 10-K filings via SEC EDGAR. 12-month totals calculated."
+            source="Source: CoreWeave filings via SEC EDGAR. 12-month totals are calculated."
             info={EXPLAINERS.capexIntensityNeo}
           >
             <TimeChart
@@ -230,7 +229,7 @@ function Home() {
             story={story.rental.story}
             fallbackTitle="GPU rental prices"
             dek="Nvidia H100, list price per GPU per hour"
-            source="Source: AWS Price List (us-east-1, monthly history) and Azure Retail Prices (eastus2). List prices exclude negotiated discounts."
+            source="Source: AWS and Azure public price lists, US East. List prices exclude negotiated discounts."
             info={EXPLAINERS.gpuListPrice}
           >
             <TimeChart
@@ -246,7 +245,7 @@ function Home() {
             story={story.resale.story}
             fallbackTitle="Used GPU prices"
             dek="Resale index of used data-center GPUs · early 2025 = 100"
-            source="Source: American Compute GPU Resale Index, entered by hand with attribution. Monthly."
+            source="Source: American Compute GPU Resale Index, entered by hand with credit. Monthly."
             info={EXPLAINERS.gpuResale}
           >
             <TimeChart
@@ -270,7 +269,7 @@ function Home() {
           <StoryChart
             story={story.buildings.story}
             fallbackTitle="Data-center space"
-            dek="North America primary markets · each line has its own scale"
+            dek="Main North American markets · each line has its own scale"
             source="Source: CBRE North America Data Center Trends, half-yearly. Entered by hand with a quote from each report."
             info={EXPLAINERS.vacancy}
           >
@@ -294,10 +293,9 @@ function Home() {
       <section id="warnings" className="story-section">
         <h2>Warning signs</h2>
         <p className="story-lede">
-          A single chart rarely tells you much. The pattern to look for is two things pulling apart:
-          spending still rising while prices fall, or debt growing while the collateral behind it
-          loses value. Each pair below puts two series side by side, each on its own scale. These
-          are observations, not proof of cause.
+          One chart alone rarely tells you much. The pattern to watch is two things pulling apart:
+          spending still rising while prices fall, or debt growing while what backs it loses value.
+          Each pair below shows two lines, each on its own scale. They show what happened, not why.
         </p>
         <div className="story-grid">
           {divergences.map((d) => (

@@ -65,8 +65,8 @@ function RootComponent() {
           <Outlet />
         </main>
         <footer className="site-foot">
-          Research dashboard, not investment advice. Values are never synthesized; derived figures
-          are marked as calculated.
+          Research, not investment advice. Every number comes from a public source. Nothing is
+          estimated; calculated figures are labelled.
         </footer>
       </div>
     </RootDocument>

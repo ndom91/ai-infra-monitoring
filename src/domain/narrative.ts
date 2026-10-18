@@ -73,8 +73,8 @@ export function creditStory(hy: Point[], ccc: Point[]): Story | null {
         : `Lending to the riskiest companies costs ${bps(cccMove)} basis points less than a year ago`;
 
   const body = [
-    `Investors now demand ${cccNow.value.toFixed(2)} percentage points more interest than US government bonds to lend to companies rated CCC, the lowest rung of junk debt. A year ago it was ${cccThen.value.toFixed(2)}. (A basis point is a hundredth of a percentage point.)`,
-    `Across all junk-rated companies the gap is ${hyNow.value.toFixed(2)} points, ${hyMove >= 0 ? "up" : "down"} ${bps(hyMove)} basis points over the same year.`,
+    `Companies rated CCC, the lowest rung of junk debt, now pay ${cccNow.value.toFixed(2)} percentage points more interest than the US government. A year ago they paid ${cccThen.value.toFixed(2)} more. (A basis point is a hundredth of a percentage point.)`,
+    `Across all junk-rated companies, the gap is ${hyNow.value.toFixed(2)} points, ${hyMove >= 0 ? "up" : "down"} ${bps(hyMove)} basis points over the same year.`,
   ];
   if (cccMove > 1 && cccMove > 3 * Math.max(hyMove, 0.01)) {
     body.push(
@@ -101,7 +101,8 @@ export function capexStory(capexTtm: Point[], fcfTtm: Point[]): Story | null {
   const headline = `Big tech spent ${usd(now.value)} on data centers and equipment in a year, ${growth >= 0 ? "up" : "down"} ${pct(growth)}`;
 
   const body = [
-    `Microsoft, Alphabet, Amazon, Meta and Oracle together spent ${usd(now.value)} on capital projects in the 12 months to ${shortDate(now.periodEnd)}, compared with ${usd(then.value)} a year earlier. The companies say a growing share of it goes to AI data centers and chips; the filings do not break it out.`,
+    `Microsoft, Alphabet, Amazon, Meta and Oracle spent ${usd(now.value)} on capital projects in the 12 months to ${shortDate(now.periodEnd)}. A year earlier it was ${usd(then.value)}.`,
+    "The companies say a growing share goes to AI data centers and chips. Their filings don't say how much.",
   ];
   const fcfNow = fcfTtm.at(-1);
   const peak = fcfTtm.reduce<Point | undefined>(
@@ -112,8 +113,8 @@ export function capexStory(capexTtm: Point[], fcfTtm: Point[]): Story | null {
     const drop = 1 - fcfNow.value / peak.value;
     body.push(
       drop > 0.1 && peak.periodEnd !== fcfNow.periodEnd
-        ? `What is left after that spending, their combined free cash flow, is ${usd(fcfNow.value)}. That is ${pct(drop)} below its peak of ${usd(peak.value)} in ${monthYear(peak.periodEnd)}.`
-        : `What is left after that spending, their combined free cash flow, is ${usd(fcfNow.value)}.`,
+        ? `What's left after that spending, their free cash flow, is ${usd(fcfNow.value)}. That is ${pct(drop)} below its peak of ${usd(peak.value)} in ${monthYear(peak.periodEnd)}.`
+        : `What's left after that spending, their free cash flow, is ${usd(fcfNow.value)}.`,
     );
   }
   body.push(
@@ -137,11 +138,11 @@ export function neocloudStory(
   const d = debt.at(-1);
   if (d) {
     body.push(
-      `The gap is covered by borrowing and leases. Its long-term debt was ${usd(d.value)} on ${shortDate(d.periodEnd)}; the Credit page lists the individual loans and bonds.`,
+      `Borrowing and leases cover the gap. Its long-term debt was ${usd(d.value)} on ${shortDate(d.periodEnd)}. The Credit page lists each loan and bond.`,
     );
   }
   body.push(
-    "Specialist AI clouds like this depend on lenders staying willing. That is why credit spreads and GPU resale values matter so much here.",
+    "Neoclouds like this depend on lenders staying willing. That is why borrowing costs and used-GPU prices matter so much here.",
   );
   if (ocf.value <= 0) {
     return {
@@ -186,7 +187,7 @@ export function rentalStory(awsH100: Point[], azureH100: Point[]): Story | null 
     body.push(`Microsoft lists the same chip at $${az.value.toFixed(2)} per GPU-hour.`);
   }
   body.push(
-    "Falling prices can mean there is more capacity than demand. But newer chips also make older ones cheaper by design, so a price cut on its own is not proof of a glut.",
+    "Falling prices can mean more capacity than demand. But newer chips make older ones cheaper by design, so a price cut alone doesn't prove a glut.",
   );
   return { headline, body };
 }
@@ -232,9 +233,9 @@ export function buildingsStory(
   const pre = preleased.at(-1);
   if (pre) {
     body.push(
-      `${pre.value.toFixed(0)}% of that new space is already leased before it is finished. ${pre.value >= 70 ? "Most of the building is spoken for, which is reassuring." : "A growing share is being built without a tenant lined up."}`,
+      `${pre.value.toFixed(0)}% of that new space is already leased before it is finished. ${pre.value >= 70 ? "Most of it is spoken for, which is reassuring." : "The rest is being built without a tenant lined up."}`,
     );
   }
-  body.push("Vacancy tends to rise late in a downturn, so this is a lagging signal.");
+  body.push("Vacancy usually rises late in a downturn, so it is a slow signal.");
   return { headline, body };
 }

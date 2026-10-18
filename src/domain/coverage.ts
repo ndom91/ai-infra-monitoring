@@ -2,6 +2,12 @@ import type { IndicatorId } from "./types";
 
 export type CoverageStatus = "implemented" | "partial" | "unavailable";
 
+export const COVERAGE_LABEL: Record<CoverageStatus, string> = {
+  implemented: "Full",
+  partial: "Partial",
+  unavailable: "Not available",
+};
+
 // Hand-maintained: what each indicator can and cannot show, and why.
 // Mirrored in docs/coverage.md.
 export const COVERAGE: Record<
@@ -12,97 +18,97 @@ export const COVERAGE: Record<
     status: "partial",
     collectors: ["azure", "aws"],
     summary:
-      "Hyperscaler list prices for H100 and H200: Azure on-demand and spot (eastus2), AWS on-demand (us-east-1). Collected weekly.",
+      "AWS and Azure list prices for H100 and H200 GPUs: Azure on-demand and spot (US East 2), AWS on-demand (US East 1). Collected weekly.",
     gaps: [
-      "Marketplace prices are not collected: Vast.ai (Sep 2026) and Shadeform (Aug 2026) terms prohibit building price indexes or databases without written permission.",
-      "List prices carry no inventory or utilization signal.",
-      "Microsoft API terms forbid redistributing the data: keep the dashboard private.",
-      "GCP's pricing API needs an API key and is not used.",
+      "No marketplace prices. Vast.ai (Sep 2026) and Shadeform (Aug 2026) terms forbid building price indexes or databases without written permission.",
+      "List prices say nothing about how much capacity is in use.",
+      "Microsoft's API terms forbid sharing the data, so keep this dashboard private.",
+      "Google Cloud's pricing API needs an API key and isn't used.",
     ],
   },
   gpu_resale: {
     status: "partial",
     collectors: ["manual"],
     summary:
-      "American Compute GPU resale index (monthly basket of realized sale prices as a share of price new), entered manually with attribution.",
+      "American Compute's GPU resale index: a monthly basket of real sale prices as a share of the price new. Entered by hand with credit.",
     gaps: [
-      "An index, not per-model USD prices; no completed-transaction data per GPU.",
-      "ServerBuyback publishes no reuse license and only estimate ranges; not used.",
-      "No source links resale values to secured debt balances.",
+      "It's an index, not dollar prices per GPU model. There is no per-GPU sales data.",
+      "ServerBuyback publishes only estimate ranges and no license to reuse them, so it isn't used.",
+      "No source links resale values to the loans they secure.",
     ],
   },
   credit: {
     status: "partial",
     collectors: ["fred", "manual"],
     summary:
-      "Index spreads by rating (ICE BofA via FRED) and Moody's Baa context, daily. Coupons and loan margins at issue for CoreWeave and other neoclouds, from filings.",
+      "Daily borrowing costs by credit rating (ICE BofA via FRED), plus Moody's Baa for long history. Rates CoreWeave and other neoclouds agreed when they borrowed, from filings.",
     gaps: [
-      "ICE BofA history on FRED is limited to a rolling 3 years; older values exist only if collected here.",
-      "No market prices or yields for individual AI issuer bonds: FINRA's free per-bond data forbids automated collection, and the TRACE feed needs a paid agreement.",
-      "Ratings are verified for only one CoreWeave note; agency pages are gated.",
+      "FRED only keeps the last 3 years of ICE BofA data. Older values exist only if this monitor saved them.",
+      "No market prices for individual AI company bonds. FINRA's free data forbids automated collection, and its TRACE feed needs a paid agreement.",
+      "Credit ratings are confirmed for only one CoreWeave note. Rating agency pages need a login.",
     ],
   },
   capex_cashflow: {
     status: "implemented",
     collectors: ["sec"],
     summary:
-      "Quarterly capex, OCF, D&A, interest, debt, and leases for MSFT, GOOGL, AMZN, META, ORCL, CRWV, CORZ, IREN, APLD from SEC XBRL, with TTM ratios derived at read time.",
+      "Quarterly capex, operating cash flow, depreciation, interest, debt and leases for MSFT, GOOGL, AMZN, META, ORCL, CRWV, CORZ, IREN and APLD, from SEC filings. 12-month ratios are calculated on the fly.",
     gaps: [
-      "Nebius files 20-F only (no quarterly XBRL) and is excluded.",
-      "Some tags change over time; older history under a previous tag is not stitched in (e.g. CRWV debt after Mar 2026, MSFT/ORCL cash interest paid).",
-      "Off-balance-sheet commitments and debt maturities are disclosed in text, not XBRL, and are not captured.",
+      "Nebius files only annual 20-F reports with no quarterly data, so it's left out.",
+      "Some data labels change over time, and history under an old label isn't joined up. Examples: CRWV debt after Mar 2026, MSFT and ORCL cash interest paid.",
+      "Off-balance-sheet commitments and debt due dates appear only in filing text, so they aren't captured.",
     ],
   },
   customer_concentration: {
     status: "partial",
     collectors: ["manual"],
     summary:
-      "Disclosed revenue shares and announced contract values for CoreWeave, Core Scientific, Nebius, IREN, Applied Digital, Cipher, TeraWulf, Hut 8; cited manually.",
+      "Revenue share from top customers and announced contract values for CoreWeave, Core Scientific, Nebius, IREN, Applied Digital, Cipher, TeraWulf and Hut 8. Entered by hand with citations.",
     gaps: [
-      "Disclosures are irregular; some filers give contract values but no revenue share.",
-      "CoreWeave Q4-only shares and its 2026 largest customers are not disclosed.",
+      "Disclosures are irregular. Some companies give contract values but no revenue share.",
+      "CoreWeave doesn't disclose Q4-only shares or its largest 2026 customers.",
     ],
   },
   construction: {
     status: "partial",
     collectors: ["manual"],
     summary:
-      "CBRE primary-market construction and preleasing (H2 2021 onward) and JLL under-construction and preleasing, cited manually per report.",
+      "CBRE construction and pre-leasing for main markets (H2 2021 onward), and JLL construction and pre-leasing. Entered by hand from each report.",
     gaps: [
-      "Broker reports are not published as datasets; entries are manual on each release.",
-      "JLL changed coverage twice; its series are split by definition and never joined.",
-      "Some CBRE half-years state no preleasing figure.",
+      "Broker reports aren't published as data, so each release is entered by hand.",
+      "JLL changed what it covers twice. Its series are split at each change and never joined.",
+      "Some CBRE half-years give no pre-leasing figure.",
     ],
   },
   vacancy: {
     status: "partial",
     collectors: ["manual"],
     summary:
-      "CBRE and JLL vacancy, absorption, inventory, and asking rents, cited manually per report.",
+      "CBRE and JLL vacancy, take-up (net absorption), total capacity and asking rents. Entered by hand from each report.",
     gaps: [
-      "Several CBRE half-year absorption figures appear only in charts and were left out.",
-      "JLL 2022–2023 reports could not be retrieved.",
+      "Several CBRE half-year take-up figures appear only in charts, so they were left out.",
+      "JLL's 2022–2023 reports couldn't be retrieved.",
     ],
   },
   contract_conversion: {
     status: "implemented",
     collectors: ["sec"],
     summary:
-      "RPO, revenue, and receivables from SEC XBRL, with RPO conversion and YoY growth derived at read time.",
+      "Order book (RPO), revenue and money owed by customers, from SEC filings. How fast the order book turns into revenue, and yearly growth, are calculated on the fly.",
     gaps: [
-      "META reports no RPO; AMZN's RPO tag stops in 2020.",
-      "Contract cancellations and payment problems appear only in filing text.",
+      "Meta reports no order book. Amazon's order-book data stops in 2020.",
+      "Cancelled contracts and late payments appear only in filing text.",
     ],
   },
   depreciation: {
     status: "partial",
     collectors: ["manual", "sec"],
     summary:
-      "Server and network useful-life changes for AMZN, META, GOOGL, MSFT, ORCL, CRWV, NBIS, IREN with effective dates, cited from filings; D&A expense from SEC XBRL.",
+      "Changes to how long AMZN, META, GOOGL, MSFT, ORCL, CRWV, NBIS and IREN assume their servers last, with effective dates, cited from filings. Depreciation costs from SEC filings.",
     gaps: [
-      "Disclosures are rarely GPU-specific; some changes apply to subsets of servers (e.g. Amazon 2025).",
-      "Applied Digital and Core Scientific disclose only ranges.",
-      "Book-vs-resale curves need per-model resale prices, which are not available.",
+      "Disclosures are rarely GPU-specific. Some changes cover only some servers (e.g. Amazon 2025).",
+      "Applied Digital and Core Scientific give only ranges.",
+      "Comparing book value with resale value needs per-model resale prices, which aren't available.",
     ],
   },
 };

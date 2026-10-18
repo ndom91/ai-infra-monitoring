@@ -19,11 +19,11 @@ export function IndicatorPanel({ def, children }: { def: IndicatorDef; children:
         <summary>How to read this</summary>
         <div className="readme-body">
           <div>
-            <h4>What deterioration looks like</h4>
+            <h4>Warning signs</h4>
             <p>{def.deterioration}</p>
           </div>
           <div>
-            <h4>Caveats</h4>
+            <h4>Keep in mind</h4>
             <ul>
               {def.caveats.map((c) => (
                 <li key={c}>{c}</li>

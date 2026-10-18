@@ -35,9 +35,9 @@ function CreditPage() {
       <IndicatorPanel def={indicatorById("credit")}>
         <div className="grid-2">
           <ChartBlock
-            title="High-yield spreads by rating"
+            title="Junk-bond borrowing costs, by rating"
             info={EXPLAINERS.hySpreads}
-            subtitle="Option-adjusted spread over Treasuries"
+            subtitle="Extra interest over US government bonds (option-adjusted spread)"
             series={pick(series, [
               "fred.BAMLH0A0HYM2",
               "fred.BAMLH0A1HYBB",
@@ -46,22 +46,22 @@ function CreditPage() {
             ])}
           />
           <ChartBlock
-            title="Investment-grade spreads"
+            title="Borrowing costs, safer companies"
             info={EXPLAINERS.igSpreads}
-            subtitle="BBB OAS (3y window) and Moody's Baa − 10y (long history)"
+            subtitle="BBB-rated spread (last 3 years) and Moody's Baa minus 10-year Treasury (long history)"
             series={pick(series, ["fred.BAMLC0A4CBBB", "fred.BAA10Y"])}
           />
           <ChartBlock
-            title="Yields vs rates"
+            title="Total interest rates"
             info={EXPLAINERS.yields}
-            subtitle="Absolute yields: these move with rates, not just credit risk"
+            subtitle="These move with all interest rates, not just credit risk"
             series={pick(series, ["fred.BAMLH0A0HYM2EY", "fred.DBAA", "fred.DGS10"])}
           />
         </div>
         <TermsTable
-          title="AI infrastructure issuer debt"
+          title="What AI companies pay to borrow"
           info={EXPLAINERS.issuerDebt}
-          subtitle="Coupons and loan margins at issue, from filings. Issue terms, not trading yields."
+          subtitle="Rates agreed when the debt was issued, from filings. Not today's market price."
           series={issuer}
         />
       </IndicatorPanel>

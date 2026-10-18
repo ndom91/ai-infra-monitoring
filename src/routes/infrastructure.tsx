@@ -52,7 +52,7 @@ function InfrastructurePage() {
               <ChartBlock
                 title="No series yet"
                 series={[]}
-                emptyReason="Broker reports are entered manually with citations in data/manual/."
+                emptyReason="Broker reports are added by hand when they come out."
               />
             ) : (
               <div className="grid-2">

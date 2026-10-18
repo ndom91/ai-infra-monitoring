@@ -46,22 +46,22 @@ function MarketPage() {
               key={cohort}
               title={`${label}: list price per GPU-hour`}
               info={EXPLAINERS.gpuListPrice}
-              subtitle="Instance list price divided by GPUs per instance"
+              subtitle="Machine list price divided by the GPUs in it"
               series={rental.filter((s) => cohortOf(s) === cohort)}
               labelOf={shortLabel}
               stepped
-              emptyReason="Run pnpm collect azure aws to collect list prices."
+              emptyReason="No price data collected yet."
             />
           ))}
         </div>
       </IndicatorPanel>
       <IndicatorPanel def={indicatorById("gpu_resale")}>
         <ChartBlock
-          title="GPU resale values"
+          title="Used GPU prices"
           info={EXPLAINERS.gpuResale}
-          subtitle="Published index points, cited manually"
+          subtitle="Published index, entered by hand with a citation"
           series={resale}
-          emptyReason="No licensed resale index is available yet. See Coverage for why."
+          emptyReason="No used-GPU price index we're allowed to use yet. The Coverage page explains why."
         />
       </IndicatorPanel>
     </>

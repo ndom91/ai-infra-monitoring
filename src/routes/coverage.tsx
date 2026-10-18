@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { FreshnessBadge } from "~/components/FreshnessBadge";
 import { SectionHeader } from "~/components/SectionHeader";
-import { COVERAGE } from "~/domain/coverage";
+import { COVERAGE, COVERAGE_LABEL } from "~/domain/coverage";
 import { INDICATORS } from "~/domain/indicators";
 import { formatDateTime } from "~/lib/format";
 import { getStatusData } from "~/server/data";
@@ -17,10 +17,10 @@ function CoveragePage() {
     <>
       <SectionHeader
         title="Coverage & data health"
-        blurb="What each indicator can and cannot show, where its data comes from, and how recent collection runs went."
+        blurb="What each indicator can and can't show, where the data comes from, and how recent data pulls went."
       />
       <section className="panel">
-        <h2>Coverage matrix</h2>
+        <h2>What we cover</h2>
         <div className="table-scroll">
           <table className="stats coverage">
             <thead>
@@ -41,7 +41,7 @@ function CoveragePage() {
                       {i.number} {i.title}
                     </td>
                     <td>
-                      <span className={`badge cov-${c.status}`}>{c.status}</span>
+                      <span className={`badge cov-${c.status}`}>{COVERAGE_LABEL[c.status]}</span>
                     </td>
                     <td className="num">{n}</td>
                     <td>

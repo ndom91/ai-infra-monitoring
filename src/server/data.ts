@@ -12,6 +12,7 @@ import {
   recentRuns,
   seriesForIndicators,
 } from "~/storage/queries";
+import { withCurrentWording } from "./alert-text";
 import { deriveCompanySeries, TICKERS } from "./derived";
 import { buildView, groupBySeries, type ObsPoint, type SeriesView } from "./views";
 
@@ -106,7 +107,13 @@ export const getStatusData = createServerFn({ method: "GET" }).handler(async () 
     lastRuns(db),
     recentAlerts(db, 200),
   ]);
-  return { series, runs, latest, alerts, now: new Date().toISOString() };
+  return {
+    series,
+    runs,
+    latest,
+    alerts: withCurrentWording(alerts),
+    now: new Date().toISOString(),
+  };
 });
 
 export const getLastUpdated = createServerFn({ method: "GET" }).handler(async () =>

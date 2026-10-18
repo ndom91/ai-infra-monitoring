@@ -59,9 +59,9 @@ export const EXPLAINERS = {
     why: "Highly indebted companies are the first to struggle if demand or GPU prices fall.",
   },
   conversionPeers: {
-    what: "How much revenue each company earned in the last year, compared with the contracted backlog it reported a year earlier.",
-    read: "Lower means backlog is turning into actual revenue more slowly. Companies differ a lot, so compare each one with its own history.",
-    why: "Big backlog numbers are only valuable if customers pay. Slowing conversion can be an early sign of delays or weaker demand.",
+    what: "How much revenue each company earned in the last year, compared with its order book a year earlier.",
+    read: "Lower means the order book is turning into actual revenue more slowly. Companies differ a lot, so compare each one with its own history.",
+    why: "A big order book is only valuable if customers pay. Slowing conversion can be an early sign of delays or weaker demand.",
   },
 
   // ---- Fundamentals: selected company ----
@@ -91,18 +91,18 @@ export const EXPLAINERS = {
     why: "Interest is a fixed cost. It has to be paid even if GPU demand slows.",
   },
   backlog: {
-    what: "Contracted future revenue (RPO, 'remaining performance obligations'), quarterly revenue, and money customers still owe (receivables).",
-    read: "Backlog far above revenue means lots of promised work ahead. Receivables rising faster than revenue can mean customers pay more slowly.",
-    why: "Backlog is not cash. Contracts can be delayed, cut, or renegotiated.",
+    what: "The order book: revenue already contracted for the future (RPO, 'remaining performance obligations'). Shown with quarterly revenue and money customers still owe (receivables).",
+    read: "An order book far above revenue means lots of promised work ahead. Money owed rising faster than revenue can mean customers pay more slowly.",
+    why: "An order book is not cash. Contracts can be delayed, cut, or renegotiated.",
   },
   conversion: {
-    what: "Last year's revenue divided by the backlog reported one year before.",
-    read: "A falling line means backlog is turning into revenue more slowly than before.",
+    what: "Last year's revenue divided by the order book one year before.",
+    read: "A falling line means the order book is turning into revenue more slowly than before.",
     why: "If promised demand keeps growing but conversion slows, some of that demand may never arrive.",
   },
   growth: {
-    what: "Year-over-year growth of backlog, revenue, and receivables.",
-    read: "Healthy: all three grow together. Warning: backlog grows much faster than revenue, or receivables outpace revenue.",
+    what: "Growth vs a year ago in the order book, revenue, and money owed by customers.",
+    read: "Healthy: all three grow together. Warning: the order book grows much faster than revenue, or money owed outpaces revenue.",
     why: "Mismatched growth can be an early sign that headline demand is ahead of real payments.",
   },
 
@@ -174,18 +174,18 @@ export const EXPLAINERS = {
 
   // ---- Overview divergences ----
   divRentalCapex: {
-    what: "Big tech's combined capital spending next to the price to rent an H100 GPU.",
+    what: "Hyperscalers' combined capex next to the price to rent an H100 GPU.",
     read: "Each line has its own scale. The warning pattern is spending still rising while rental prices fall.",
     why: "That combination suggests money keeps flowing into capacity the market values less and less.",
   },
   divSpreadsBacklog: {
-    what: "CoreWeave's contracted backlog next to the high-yield credit spread.",
-    read: "Watch for spreads rising (credit getting tighter) while backlog keeps growing.",
-    why: "Growing commitments need financing. If credit tightens, delivering on that backlog gets harder.",
+    what: "CoreWeave's order book next to the junk-bond borrowing cost (high-yield spread).",
+    read: "Watch for borrowing costs rising while the order book keeps growing.",
+    why: "Growing commitments need financing. If credit tightens, delivering on that order book gets harder.",
   },
   divCollateralDebt: {
-    what: "A used-GPU resale index next to CoreWeave's long-term debt.",
-    read: "Watch for resale values falling while debt stays high or grows.",
+    what: "A used-GPU price index next to CoreWeave's long-term debt.",
+    read: "Watch for used-GPU prices falling while debt stays high or grows.",
     why: "Loans backed by GPUs become riskier as those GPUs lose value.",
   },
   divConstructionPreleasing: {
@@ -194,8 +194,8 @@ export const EXPLAINERS = {
     why: "That means more building is speculative, raising the risk of empty capacity later.",
   },
   divLivesFcf: {
-    what: "Big tech's combined free cash flow next to the average accounting life of their servers.",
-    read: "Watch for useful lives rising (which flatters profits) while free cash flow falls.",
+    what: "Hyperscalers' combined free cash flow next to how long they assume their servers last.",
+    read: "Watch for assumed lifespans rising (which flatters profits) while free cash flow falls.",
     why: "Profits can look healthy on paper while the cash reality weakens.",
   },
 } satisfies Record<string, Explainer>;
