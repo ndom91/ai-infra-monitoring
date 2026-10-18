@@ -50,9 +50,16 @@ function FundamentalsPage() {
         blurb={section?.blurb ?? ""}
         range={range}
       />
-      <CompanyPicker active={company} />
-
-      <IndicatorPanel def={indicatorById("capex_cashflow")}>
+      <section className="panel">
+        <header className="panel-head">
+          <div>
+            <h2>Peer comparison</h2>
+            <p className="measures">
+              All tracked companies side by side. These charts do not change with the company
+              selected below.
+            </p>
+          </div>
+        </header>
         <div className="grid-2">
           <ChartBlock
             title="Capex intensity: hyperscalers"
@@ -66,6 +73,25 @@ function FundamentalsPage() {
             series={acrossGroup("neocloud", "capex_ocf_ttm")}
             labelOf={tickerLabel}
           />
+          <ChartBlock
+            title="Leverage: neoclouds"
+            subtitle="(Debt + finance leases) / TTM operating cash flow"
+            series={acrossGroup("neocloud", "debt_to_ocf")}
+            labelOf={tickerLabel}
+          />
+          <ChartBlock
+            title="Conversion across companies"
+            subtitle="TTM revenue / RPO a year earlier"
+            series={TICKERS.flatMap((t) => byId.get(`derived.${t}.rpo_conversion`) ?? [])}
+            labelOf={tickerLabel}
+          />
+        </div>
+      </section>
+
+      <CompanyPicker active={company} />
+
+      <IndicatorPanel def={indicatorById("capex_cashflow")}>
+        <div className="grid-2">
           <ChartBlock
             title={`${company}: capex vs operating cash flow`}
             subtitle="Quarterly, as filed or derived from year-to-date figures"
@@ -91,12 +117,6 @@ function FundamentalsPage() {
             subtitle="Income-statement expense vs cash actually paid"
             series={sec(["interest_expense", "interest_paid"])}
           />
-          <ChartBlock
-            title="Leverage: neoclouds"
-            subtitle="(Debt + finance leases) / TTM operating cash flow"
-            series={acrossGroup("neocloud", "debt_to_ocf")}
-            labelOf={tickerLabel}
-          />
         </div>
       </IndicatorPanel>
 
@@ -116,12 +136,6 @@ function FundamentalsPage() {
             title={`${company}: growth, year over year`}
             subtitle="Backlog rising faster than revenue and receivables is the pattern to watch"
             series={derived(["rpo_yoy", "revenue_ttm_yoy", "ar_yoy"])}
-          />
-          <ChartBlock
-            title="Conversion across companies"
-            subtitle="TTM revenue / RPO a year earlier"
-            series={TICKERS.flatMap((t) => byId.get(`derived.${t}.rpo_conversion`) ?? [])}
-            labelOf={tickerLabel}
           />
         </div>
       </IndicatorPanel>
