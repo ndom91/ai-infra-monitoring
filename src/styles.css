@@ -881,6 +881,7 @@ h3,
   font-weight: 760;
   letter-spacing: -1.6px;
   line-height: 1.04;
+  text-wrap: pretty;
   margin: 0 0 20px;
 }
 
