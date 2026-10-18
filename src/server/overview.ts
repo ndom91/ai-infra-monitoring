@@ -1,12 +1,19 @@
 import { createServerFn } from "@tanstack/react-start";
 import { SEC_COMPANIES } from "~/domain/companies";
+import {
+  buildingsStory,
+  capexStory,
+  creditStory,
+  neocloudStory,
+  rentalStory,
+  resaleStory,
+} from "~/domain/narrative";
 import { type Point, resampleAt, snapToCalendarQuarter } from "~/metrics/changes";
 import { ttm } from "~/metrics/fundamentals";
 import { getDb } from "~/storage/db";
-import { recentAlerts } from "~/storage/queries";
+import { recentAlerts, recentRuns } from "~/storage/queries";
 import { loadSection } from "./data";
-import { deriveCompanySeries } from "./derived";
-import { buildView, type ObsPoint, type SeriesView } from "./views";
+import type { ObsPoint, SeriesView } from "./views";
 
 export type DivergenceLine = { label: string; unit: string; points: Point[] };
 
@@ -80,7 +87,7 @@ const pts = (obs: ObsPoint[] | undefined): Point[] =>
 
 export const getOverviewData = createServerFn({ method: "GET" }).handler(async () => {
   const now = new Date();
-  const [credit, rest, alerts] = await Promise.all([
+  const [credit, rest, alerts, runs] = await Promise.all([
     loadSection({ indicators: ["credit"], range: "3y", fullHistory: false }, now),
     loadSection(
       {
@@ -100,33 +107,10 @@ export const getOverviewData = createServerFn({ method: "GET" }).handler(async (
       now,
     ),
     recentAlerts(getDb(), 6),
+    recentRuns(getDb(), 1),
   ]);
   const raw = new Map([...credit.raw, ...rest.raw]);
   const get = (id: string) => pts(raw.get(id));
-  const secStatus = rest.runStatus.get("sec");
-
-  const derivedViews: SeriesView[] = SEC_COMPANIES.flatMap((c) =>
-    deriveCompanySeries(c.ticker, (concept) => get(`sec.${c.ticker}.${concept}`)),
-  )
-    .filter((d) => d.def.id.endsWith(".capex_ocf_ttm") || d.def.id.endsWith(".debt_to_ocf"))
-    .map((d) => buildView(d.def, d.points, { now, lastRunStatus: secStatus }));
-
-  const allSeries = [...credit.series, ...rest.series];
-  const headline = {
-    credit: ["fred.BAMLH0A0HYM2", "fred.BAMLH0A3HYC", "fred.BAMLC0A4CBBB", "fred.BAA10Y"].flatMap(
-      (id) => allSeries.filter((s) => s.id === id),
-    ),
-    capex: derivedViews.filter((s) => s.id.endsWith(".capex_ocf_ttm")),
-    other: [
-      "aws.h100.us-east-1.ondemand",
-      "azure.h100.eastus2.spot",
-      "gpu_resale.amcompute.basket_index",
-      "cbre.na_primary.vacancy",
-      "cbre.na_primary.under_construction_mw",
-      "cbre.na_primary.preleased_pct",
-      "jll.na.vacancy",
-    ].flatMap((id) => rest.series.filter((s) => s.id === id)),
-  };
 
   // --- Divergence watch ---
   const hyperCapexTtm = sumAligned(HYPERSCALERS.map((t) => ttm(get(`sec.${t}.capex`))));
@@ -270,9 +254,42 @@ export const getOverviewData = createServerFn({ method: "GET" }).handler(async (
     ),
   ];
 
+  // --- Story ---
+  const hy = get("fred.BAMLH0A0HYM2");
+  const ccc = get("fred.BAMLH0A3HYC");
+  const crwvCapexTtm = ttm(get("sec.CRWV.capex"));
+  const crwvOcfTtm = ttm(get("sec.CRWV.ocf"));
+  const awsH100 = get("aws.h100.us-east-1.ondemand");
+  const azureH100 = get("azure.h100.eastus2.ondemand");
+  const resaleIdx = get("gpu_resale.amcompute.basket_index");
+  const vacancy = get("cbre.na_primary.vacancy");
+  const constructionMw = get("cbre.na_primary.under_construction_mw");
+  const preleasedPct = get("cbre.na_primary.preleased_pct");
+  const story = {
+    lastCollected: runs[0]?.finishedAt ?? runs[0]?.startedAt ?? null,
+    credit: { story: creditStory(hy, ccc), hy, ccc },
+    capex: {
+      story: capexStory(hyperCapexTtm, hyperFcfTtm),
+      capexTtm: hyperCapexTtm,
+      fcfTtm: hyperFcfTtm,
+    },
+    neocloud: {
+      story: neocloudStory("CoreWeave", crwvCapexTtm, crwvOcfTtm, get("sec.CRWV.debt")),
+      capexTtm: crwvCapexTtm,
+      ocfTtm: crwvOcfTtm,
+    },
+    rental: { story: rentalStory(awsH100, azureH100), aws: awsH100, azure: azureH100 },
+    resale: { story: resaleStory(resaleIdx), index: resaleIdx },
+    buildings: {
+      story: buildingsStory(vacancy, constructionMw, preleasedPct),
+      vacancy,
+      construction: constructionMw,
+    },
+  };
+
   return {
     now: now.toISOString(),
-    headline,
+    story,
     alerts,
     divergences,
     lifeChanges: lifeSteps.flatMap((s) =>

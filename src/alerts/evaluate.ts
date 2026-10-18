@@ -68,6 +68,7 @@ function evalChange(rule: ChangeRule, s: EvalSeries): AlertCandidate | null {
     evidence: {
       observations: evidenceFor(s, [from, to]),
       params: {
+        description: rule.description,
         window_days: rule.window_days,
         threshold: rule.threshold,
         relative: String(rule.relative),
@@ -93,6 +94,7 @@ function evalLevel(rule: LevelRule, s: EvalSeries): AlertCandidate | null {
     evidence: {
       observations: evidenceFor(s, [last]),
       params: {
+        description: rule.description,
         ...(rule.above != null && { above: rule.above }),
         ...(rule.below != null && { below: rule.below }),
       },
@@ -160,6 +162,7 @@ function breadthCandidate(
     evidence: {
       observations: recent.flatMap((e) => e.evidence.observations),
       params: {
+        description: rule.description,
         rules_fired: fired.join(","),
         min_rules: rule.min_rules,
         window_days: rule.window_days,
