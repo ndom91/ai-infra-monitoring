@@ -31,6 +31,7 @@ function FundamentalsPage() {
   const { series } = Route.useLoaderData();
   const { range, company } = Route.useSearch();
   const section = SECTIONS.find((s) => s.id === "fundamentals");
+  const selected = SEC_COMPANIES.find((c) => c.ticker === company);
   const byId = new Map(series.map((s) => [s.id, s]));
   const pick = (ids: string[]) => ids.flatMap((id) => byId.get(id) ?? []);
   const sec = (concepts: string[]) => pick(concepts.map((c) => `sec.${company}.${c}`));
@@ -88,6 +89,20 @@ function FundamentalsPage() {
         </div>
       </section>
 
+      <div className="section-head company-head">
+        <div>
+          <div className="eyebrow">Company detail</div>
+          <h1>
+            {selected?.name ?? company} <span className="ticker">{company}</span>
+          </h1>
+          <p>
+            {selected?.group === "hyperscaler"
+              ? "Hyperscaler: funds capex mostly from operating cash flow."
+              : "Neocloud: funds capex largely with debt and leases."}{" "}
+            Everything below follows the selected company.
+          </p>
+        </div>
+      </div>
       <CompanyPicker active={company} />
 
       <IndicatorPanel def={indicatorById("capex_cashflow")}>

@@ -600,3 +600,16 @@ code {
 .panel > .block {
   margin-top: 14px;
 }
+
+.company-head {
+  margin-top: 34px;
+  padding-top: 26px;
+  border-top: 1px solid var(--line);
+}
+
+.company-head .ticker {
+  font: 14px var(--mono);
+  color: var(--teal);
+  margin-left: 6px;
+  letter-spacing: 0.5px;
+}
