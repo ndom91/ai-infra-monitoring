@@ -1,8 +1,18 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { DivergenceChart } from "~/components/DivergenceChart";
+import { InfoTip } from "~/components/InfoTip";
 import { SeriesStats } from "~/components/SeriesStats";
+import { EXPLAINERS, type Explainer } from "~/domain/explainers";
 import { formatDate } from "~/lib/format";
 import { getOverviewData } from "~/server/overview";
+
+const DIVERGENCE_INFO: Record<string, Explainer> = {
+  rental_vs_capex: EXPLAINERS.divRentalCapex,
+  spreads_vs_backlog: EXPLAINERS.divSpreadsBacklog,
+  collateral_vs_debt: EXPLAINERS.divCollateralDebt,
+  construction_vs_preleasing: EXPLAINERS.divConstructionPreleasing,
+  lives_vs_cash: EXPLAINERS.divLivesFcf,
+};
 
 export const Route = createFileRoute("/")({
   loader: () => getOverviewData(),
@@ -85,6 +95,7 @@ function Overview() {
           <section key={d.id} className="block">
             <div className="block-head">
               <h3>{d.title}</h3>
+              <InfoTip label={d.title} info={DIVERGENCE_INFO[d.id] ?? EXPLAINERS.infraGeneric} />
               <span className="muted">Watch for: {d.pattern}</span>
             </div>
             {d.awaiting ? (

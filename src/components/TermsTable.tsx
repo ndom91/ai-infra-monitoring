@@ -1,5 +1,7 @@
+import type { Explainer } from "~/domain/explainers";
 import { formatDate, formatValue } from "~/lib/format";
 import type { SeriesView } from "~/server/data";
+import { InfoTip } from "./InfoTip";
 
 // One-off disclosed figures (debt issue terms, contract announcements) are
 // events, not time series, so they are listed rather than charted.
@@ -8,11 +10,13 @@ export function TermsTable({
   subtitle,
   series,
   labelOf = (s) => s.label,
+  info,
 }: {
   title: string;
   subtitle?: string;
   series: SeriesView[];
   labelOf?: (s: SeriesView) => string;
+  info?: Explainer;
 }) {
   // Always include each series' latest entry: a one-off term (e.g. a 2023
   // note issue) should not vanish because the page range is shorter.
@@ -27,6 +31,7 @@ export function TermsTable({
     <div className="block">
       <div className="block-head">
         <h3>{title}</h3>
+        {info && <InfoTip label={title} info={info} />}
         {subtitle && <span className="muted">{subtitle}</span>}
       </div>
       {rows.length === 0 ? (

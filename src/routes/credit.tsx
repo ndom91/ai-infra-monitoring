@@ -3,6 +3,7 @@ import { ChartBlock } from "~/components/ChartBlock";
 import { IndicatorPanel } from "~/components/IndicatorPanel";
 import { SectionHeader } from "~/components/SectionHeader";
 import { TermsTable } from "~/components/TermsTable";
+import { EXPLAINERS } from "~/domain/explainers";
 import { indicatorById, SECTIONS } from "~/domain/indicators";
 import { parseRange } from "~/domain/ranges";
 import { getSectionData, type SeriesView } from "~/server/data";
@@ -35,6 +36,7 @@ function CreditPage() {
         <div className="grid-2">
           <ChartBlock
             title="High-yield spreads by rating"
+            info={EXPLAINERS.hySpreads}
             subtitle="Option-adjusted spread over Treasuries"
             series={pick(series, [
               "fred.BAMLH0A0HYM2",
@@ -45,18 +47,21 @@ function CreditPage() {
           />
           <ChartBlock
             title="Investment-grade spreads"
+            info={EXPLAINERS.igSpreads}
             subtitle="BBB OAS (3y window) and Moody's Baa − 10y (long history)"
             series={pick(series, ["fred.BAMLC0A4CBBB", "fred.BAA10Y"])}
           />
           <ChartBlock
             title="Yields vs rates"
+            info={EXPLAINERS.yields}
             subtitle="Absolute yields: these move with rates, not just credit risk"
             series={pick(series, ["fred.BAMLH0A0HYM2EY", "fred.DBAA", "fred.DGS10"])}
           />
         </div>
         <TermsTable
           title="AI infrastructure issuer debt"
-          subtitle="Coupons and loan margins at issue, from filings. Issue terms, not trading yields. Hover a date for the source quote."
+          info={EXPLAINERS.issuerDebt}
+          subtitle="Coupons and loan margins at issue, from filings. Issue terms, not trading yields."
           series={issuer}
         />
       </IndicatorPanel>

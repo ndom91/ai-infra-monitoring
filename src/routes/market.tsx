@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { ChartBlock } from "~/components/ChartBlock";
 import { IndicatorPanel } from "~/components/IndicatorPanel";
 import { SectionHeader } from "~/components/SectionHeader";
+import { EXPLAINERS } from "~/domain/explainers";
 import { indicatorById, SECTIONS } from "~/domain/indicators";
 import { parseRange } from "~/domain/ranges";
 import { getSectionData, type SeriesView } from "~/server/data";
@@ -44,6 +45,7 @@ function MarketPage() {
             <ChartBlock
               key={cohort}
               title={`${label}: list price per GPU-hour`}
+              info={EXPLAINERS.gpuListPrice}
               subtitle="Instance list price divided by GPUs per instance"
               series={rental.filter((s) => cohortOf(s) === cohort)}
               labelOf={shortLabel}
@@ -56,6 +58,7 @@ function MarketPage() {
       <IndicatorPanel def={indicatorById("gpu_resale")}>
         <ChartBlock
           title="GPU resale values"
+          info={EXPLAINERS.gpuResale}
           subtitle="Published index points, cited manually"
           series={resale}
           emptyReason="No licensed resale index is available yet. See Coverage for why."

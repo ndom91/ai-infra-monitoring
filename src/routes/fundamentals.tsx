@@ -5,6 +5,7 @@ import { IndicatorPanel } from "~/components/IndicatorPanel";
 import { SectionHeader } from "~/components/SectionHeader";
 import { TermsTable } from "~/components/TermsTable";
 import { SEC_COMPANIES } from "~/domain/companies";
+import { EXPLAINERS } from "~/domain/explainers";
 import { indicatorById, SECTIONS } from "~/domain/indicators";
 import { parseRange } from "~/domain/ranges";
 import { getFundamentalsData, type SeriesView } from "~/server/data";
@@ -64,24 +65,28 @@ function FundamentalsPage() {
         <div className="grid-2">
           <ChartBlock
             title="Capex intensity: hyperscalers"
+            info={EXPLAINERS.capexIntensityHyper}
             subtitle="TTM capex / TTM operating cash flow"
             series={acrossGroup("hyperscaler", "capex_ocf_ttm")}
             labelOf={tickerLabel}
           />
           <ChartBlock
             title="Capex intensity: neoclouds"
+            info={EXPLAINERS.capexIntensityNeo}
             subtitle="TTM capex / TTM operating cash flow. Missing where OCF ≤ 0"
             series={acrossGroup("neocloud", "capex_ocf_ttm")}
             labelOf={tickerLabel}
           />
           <ChartBlock
             title="Leverage: neoclouds"
+            info={EXPLAINERS.leverageNeo}
             subtitle="(Debt + finance leases) / TTM operating cash flow"
             series={acrossGroup("neocloud", "debt_to_ocf")}
             labelOf={tickerLabel}
           />
           <ChartBlock
             title="Conversion across companies"
+            info={EXPLAINERS.conversionPeers}
             subtitle="TTM revenue / RPO a year earlier"
             series={TICKERS.flatMap((t) => byId.get(`derived.${t}.rpo_conversion`) ?? [])}
             labelOf={tickerLabel}
@@ -109,26 +114,31 @@ function FundamentalsPage() {
         <div className="grid-2">
           <ChartBlock
             title={`${company}: capex vs operating cash flow`}
+            info={EXPLAINERS.capexVsOcf}
             subtitle="Quarterly, as filed or derived from year-to-date figures"
             series={sec(["capex", "ocf"])}
           />
           <ChartBlock
             title={`${company}: free cash flow after capex`}
+            info={EXPLAINERS.fcf}
             subtitle="TTM operating cash flow minus TTM capex"
             series={derived(["fcf_ttm"])}
           />
           <ChartBlock
             title={`${company}: debt and lease obligations`}
+            info={EXPLAINERS.debtLeases}
             subtitle="Balance-sheet values at quarter end"
             series={sec(["debt", "finance_leases", "operating_leases", "cash"])}
           />
           <ChartBlock
             title={`${company}: leverage and coverage`}
+            info={EXPLAINERS.leverageCoverage}
             subtitle="Derived ratios; lines with different meanings share one axis only as indices"
             series={derived(["debt_to_ocf", "interest_coverage_ttm"])}
           />
           <ChartBlock
             title={`${company}: interest`}
+            info={EXPLAINERS.interest}
             subtitle="Income-statement expense vs cash actually paid"
             series={sec(["interest_expense", "interest_paid"])}
           />
@@ -139,16 +149,19 @@ function FundamentalsPage() {
         <div className="grid-2">
           <ChartBlock
             title={`${company}: backlog vs revenue`}
+            info={EXPLAINERS.backlog}
             subtitle="RPO (balance at quarter end) and quarterly revenue"
             series={sec(["rpo", "revenue", "ar"])}
           />
           <ChartBlock
             title={`${company}: conversion`}
+            info={EXPLAINERS.conversion}
             subtitle="TTM revenue / RPO reported a year earlier"
             series={derived(["rpo_conversion"])}
           />
           <ChartBlock
             title={`${company}: growth, year over year`}
+            info={EXPLAINERS.growth}
             subtitle="Backlog rising faster than revenue and receivables is the pattern to watch"
             series={derived(["rpo_yoy", "revenue_ttm_yoy", "ar_yoy"])}
           />
@@ -159,12 +172,14 @@ function FundamentalsPage() {
         <div className="grid-2">
           <ChartBlock
             title="Revenue share, full fiscal year"
+            info={EXPLAINERS.concentrationFy}
             subtitle="Disclosed share of revenue from named or largest customers"
             series={manual("customer_concentration").filter((s) => s.id.endsWith("_pct_fy"))}
             labelOf={concentrationLabel}
           />
           <ChartBlock
             title="Revenue share, single quarter"
+            info={EXPLAINERS.concentrationQ}
             subtitle="Quarter-only disclosures; never mixed with year-to-date shares"
             series={manual("customer_concentration").filter((s) => s.id.endsWith("_pct_q"))}
             labelOf={concentrationLabel}
@@ -172,6 +187,7 @@ function FundamentalsPage() {
         </div>
         <TermsTable
           title="Announced customer contracts"
+          info={EXPLAINERS.contracts}
           subtitle="Total contract values as announced. Not RPO, not guaranteed revenue."
           series={manual("customer_concentration").filter((s) => s.id.includes("contract_value"))}
         />
@@ -181,6 +197,7 @@ function FundamentalsPage() {
         <div className="grid-2">
           <ChartBlock
             title="Server useful-life assumptions"
+            info={EXPLAINERS.usefulLife}
             subtitle="Stepped: each point is an effective date of a change"
             series={manual("depreciation")}
             stepped
@@ -189,6 +206,7 @@ function FundamentalsPage() {
           />
           <ChartBlock
             title={`${company}: depreciation & amortization`}
+            info={EXPLAINERS.da}
             subtitle="Quarterly expense"
             series={sec(["da"])}
           />

@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { ChartBlock } from "~/components/ChartBlock";
 import { IndicatorPanel } from "~/components/IndicatorPanel";
 import { SectionHeader } from "~/components/SectionHeader";
+import { infraExplainer } from "~/domain/explainers";
 import { indicatorById, SECTIONS } from "~/domain/indicators";
 import { parseRange } from "~/domain/ranges";
 import type { IndicatorId } from "~/domain/types";
@@ -56,7 +57,12 @@ function InfrastructurePage() {
             ) : (
               <div className="grid-2">
                 {g.map(({ title, list }) => (
-                  <ChartBlock key={title} title={title} series={list} />
+                  <ChartBlock
+                    key={title}
+                    title={title}
+                    series={list}
+                    info={infraExplainer(list.map((x) => x.id))}
+                  />
                 ))}
               </div>
             )}

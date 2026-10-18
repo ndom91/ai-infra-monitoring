@@ -1,4 +1,6 @@
+import type { Explainer } from "~/domain/explainers";
 import type { SeriesView } from "~/server/data";
+import { InfoTip } from "./InfoTip";
 import { SeriesStats } from "./SeriesStats";
 import { TimeChart } from "./TimeChart";
 
@@ -13,6 +15,7 @@ type Props = {
   // Shown instead of a chart when no series has data yet.
   emptyReason?: string;
   labelOf?: (s: SeriesView) => string;
+  info?: Explainer;
 };
 
 export function ChartBlock({
@@ -23,6 +26,7 @@ export function ChartBlock({
   rebase,
   emptyReason,
   labelOf = (s) => s.label,
+  info,
 }: Props) {
   const withData = series.filter((s) => s.points.length > 0);
   const units = new Set(series.map((s) => s.unit));
@@ -30,6 +34,7 @@ export function ChartBlock({
     <div className="block">
       <div className="block-head">
         <h3>{title}</h3>
+        {info && <InfoTip label={title} info={info} />}
         {subtitle && <span className="muted">{subtitle}</span>}
       </div>
       {withData.length > 0 ? (
