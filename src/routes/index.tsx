@@ -125,7 +125,7 @@ function Home() {
             <p className="muted">No alert rules have fired.</p>
           ) : (
             <ul>
-              {alerts.slice(0, 4).map((a) => (
+              {alerts.slice(0, 5).map((a) => (
                 <li key={a.id} className={`sev-${a.severity}`}>
                   <span className="aside-date">{formatDate(a.triggeredAt)}</span>
                   {a.evidence.params.description ?? a.message}
