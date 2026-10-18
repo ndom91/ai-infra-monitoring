@@ -11,8 +11,9 @@ import {
 import { type Point, resampleAt, snapToCalendarQuarter } from "~/metrics/changes";
 import { ttm } from "~/metrics/fundamentals";
 import { getDb } from "~/storage/db";
-import { recentAlerts, recentRuns } from "~/storage/queries";
+import { recentAlerts } from "~/storage/queries";
 import { withCurrentWording } from "./alert-text";
+import { cacheResponse } from "./cache";
 import { loadSection } from "./data";
 import type { ObsPoint, SeriesView } from "./views";
 
@@ -86,29 +87,31 @@ function divergence(
 const pts = (obs: ObsPoint[] | undefined): Point[] =>
   (obs ?? []).map((p) => ({ periodEnd: p.periodEnd, value: p.value }));
 
+// Exactly the series this page reads, so an uncached render touches a few
+// thousand rows instead of every series of every indicator.
+const CREDIT_IDS = ["fred.BAMLH0A0HYM2", "fred.BAMLH0A3HYC"];
+const STORY_IDS = [
+  ...HYPERSCALERS.flatMap((t) => [`sec.${t}.capex`, `sec.${t}.ocf`]),
+  ...["capex", "ocf", "debt", "rpo"].map((c) => `sec.CRWV.${c}`),
+  ...HYPERSCALERS.map((t) => `depreciation.${t}.server_useful_life`),
+  "aws.h100.us-east-1.ondemand",
+  "azure.h100.eastus2.ondemand",
+  "gpu_resale.amcompute.basket_index",
+  "cbre.na_primary.under_construction_mw",
+  "cbre.na_primary.preleased_pct",
+  "cbre.na_primary.vacancy",
+];
+
 export const getOverviewData = createServerFn({ method: "GET" }).handler(async () => {
+  cacheResponse();
   const now = new Date();
-  const [credit, rest, alerts, runs] = await Promise.all([
-    loadSection({ indicators: ["credit"], range: "3y", fullHistory: false }, now),
+  const [credit, rest, alerts] = await Promise.all([
     loadSection(
-      {
-        indicators: [
-          "gpu_rental",
-          "gpu_resale",
-          "capex_cashflow",
-          "contract_conversion",
-          "customer_concentration",
-          "construction",
-          "vacancy",
-          "depreciation",
-        ],
-        range: "max",
-        fullHistory: true,
-      },
+      { indicators: ["credit"], range: "3y", fullHistory: false, seriesIds: CREDIT_IDS },
       now,
     ),
+    loadSection({ indicators: [], range: "max", fullHistory: true, seriesIds: STORY_IDS }, now),
     recentAlerts(getDb(), 6),
-    recentRuns(getDb(), 1),
   ]);
   const raw = new Map([...credit.raw, ...rest.raw]);
   const get = (id: string) => pts(raw.get(id));
@@ -271,7 +274,6 @@ export const getOverviewData = createServerFn({ method: "GET" }).handler(async (
   const constructionMw = get("cbre.na_primary.under_construction_mw");
   const preleasedPct = get("cbre.na_primary.preleased_pct");
   const story = {
-    lastCollected: runs[0]?.finishedAt ?? runs[0]?.startedAt ?? null,
     credit: { story: creditStory(hy, ccc), hy, ccc },
     capex: {
       story: capexStory(hyperCapexTtm, hyperFcfTtm),
@@ -293,17 +295,8 @@ export const getOverviewData = createServerFn({ method: "GET" }).handler(async (
   };
 
   return {
-    now: now.toISOString(),
     story,
     alerts: withCurrentWording(alerts),
     divergences,
-    lifeChanges: lifeSteps.flatMap((s) =>
-      (raw.get(s.id) ?? []).map((p) => ({
-        entity: s.entity ?? s.label,
-        periodEnd: p.periodEnd,
-        value: p.value,
-        sourceUrl: p.sourceUrl ?? s.sourceUrl,
-      })),
-    ),
   };
 });

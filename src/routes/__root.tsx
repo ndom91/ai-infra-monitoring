@@ -1,6 +1,7 @@
 import { createRootRoute, HeadContent, Link, Outlet, Scripts } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { formatDate } from "~/lib/format";
+import { CACHE_CONTROL } from "~/server/cache-control";
 import { getLastUpdated } from "~/server/data";
 import styles from "~/styles.css?url";
 
@@ -19,6 +20,7 @@ export const Route = createRootRoute({
       },
     ],
   }),
+  headers: () => ({ "Cache-Control": CACHE_CONTROL }),
   // Cheap single-row query; cached briefly so client navigation doesn't refetch it.
   loader: () => getLastUpdated(),
   staleTime: 5 * 60_000,

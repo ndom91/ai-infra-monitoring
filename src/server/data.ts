@@ -4,15 +4,16 @@ import { RANGE_KEYS, rangeStart } from "~/domain/ranges";
 import { INDICATOR_IDS } from "~/domain/types";
 import { getDb } from "~/storage/db";
 import {
-  allSeries,
   lastRuns,
   lastSuccessfulRun,
   latestObservations,
   recentAlerts,
   recentRuns,
-  seriesForIndicators,
+  seriesCountsByIndicator,
+  seriesFor,
 } from "~/storage/queries";
 import { withCurrentWording } from "./alert-text";
+import { cacheResponse } from "./cache";
 import { deriveCompanySeries, TICKERS } from "./derived";
 import { buildView, groupBySeries, type ObsPoint, type SeriesView } from "./views";
 
@@ -23,6 +24,8 @@ export const SectionInput = v.object({
   range: v.picklist(RANGE_KEYS),
   // Load the full history (for TTM/YoY-derived metrics on quarterly data).
   fullHistory: v.optional(v.boolean(), false),
+  // Only these series, instead of every series of the indicators.
+  seriesIds: v.optional(v.array(v.string())),
 });
 
 // Extra history beyond the visible range so YoY comparisons always work.
@@ -48,13 +51,13 @@ export const loadSection = createServerOnlyFn(async function loadSection(
   const loadFrom =
     input.fullHistory || !visibleFrom ? undefined : visibleFrom < lookback ? visibleFrom : lookback;
 
-  const [defs, runs] = await Promise.all([seriesForIndicators(db, input.indicators), lastRuns(db)]);
-  const rows = await latestObservations(
-    db,
-    defs.map((d) => d.id),
-    loadFrom,
-  );
-  const raw = groupBySeries(rows.map(({ collectedAt: _, ...r }) => r));
+  // One parallel batch: one DB round trip of latency.
+  const [defs, runs, rows] = await Promise.all([
+    seriesFor(db, input),
+    lastRuns(db),
+    latestObservations(db, input, loadFrom),
+  ]);
+  const raw = groupBySeries(rows);
   const runStatus = new Map(runs.map((r) => [r.collector, r.status]));
   const series = defs.map(({ updatedAt: _, ...def }) =>
     buildView(def, raw.get(def.id) ?? [], {
@@ -69,6 +72,7 @@ export const loadSection = createServerOnlyFn(async function loadSection(
 export const getSectionData = createServerFn({ method: "GET" })
   .validator(SectionInput)
   .handler(async ({ data }) => {
+    cacheResponse();
     const now = new Date();
     const { series, visibleFrom } = await loadSection(data, now);
     return { series, now: now.toISOString(), visibleFrom };
@@ -77,6 +81,7 @@ export const getSectionData = createServerFn({ method: "GET" })
 export const getFundamentalsData = createServerFn({ method: "GET" })
   .validator(v.object({ range: v.picklist(RANGE_KEYS) }))
   .handler(async ({ data }) => {
+    cacheResponse();
     const now = new Date();
     const { series, raw, runStatus, visibleFrom } = await loadSection(
       {
@@ -99,23 +104,27 @@ export const getFundamentalsData = createServerFn({ method: "GET" })
     return { series: [...series, ...derived], now: now.toISOString(), visibleFrom };
   });
 
-export const getStatusData = createServerFn({ method: "GET" }).handler(async () => {
+export const getAlertsData = createServerFn({ method: "GET" }).handler(async () => {
+  cacheResponse();
+  return withCurrentWording(await recentAlerts(getDb(), 200));
+});
+
+export const getCoverageData = createServerFn({ method: "GET" }).handler(async () => {
+  cacheResponse();
   const db = getDb();
-  const [series, runs, latest, alerts] = await Promise.all([
-    allSeries(db),
+  const [counts, runs, latest] = await Promise.all([
+    seriesCountsByIndicator(db),
     recentRuns(db, 100),
     lastRuns(db),
-    recentAlerts(db, 200),
   ]);
   return {
-    series,
+    seriesCounts: Object.fromEntries(counts.map((c) => [c.indicator, c.n])),
     runs,
     latest,
-    alerts: withCurrentWording(alerts),
-    now: new Date().toISOString(),
   };
 });
 
-export const getLastUpdated = createServerFn({ method: "GET" }).handler(async () =>
-  lastSuccessfulRun(getDb()),
-);
+export const getLastUpdated = createServerFn({ method: "GET" }).handler(async () => {
+  cacheResponse();
+  return lastSuccessfulRun(getDb());
+});

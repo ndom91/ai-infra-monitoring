@@ -1,15 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { SectionHeader } from "~/components/SectionHeader";
 import { formatDate, formatValue } from "~/lib/format";
-import { getStatusData } from "~/server/data";
+import { getAlertsData } from "~/server/data";
 
 export const Route = createFileRoute("/alerts")({
-  loader: () => getStatusData(),
+  loader: () => getAlertsData(),
   component: AlertsPage,
 });
 
 function AlertsPage() {
-  const { alerts } = Route.useLoaderData();
+  const alerts = Route.useLoaderData();
   return (
     <>
       <SectionHeader

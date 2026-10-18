@@ -3,7 +3,7 @@ on:
   schedule:
     # Daily check; data only changes after 10-Q/10-K filings, and unchanged
     # values are not re-inserted.
-    - cron: "15 12 * * *"
+    - cron: "15 12 * * 1-5"
   workflow_dispatch:
 jobs:
   sec:

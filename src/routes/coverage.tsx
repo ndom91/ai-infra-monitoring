@@ -4,15 +4,15 @@ import { SectionHeader } from "~/components/SectionHeader";
 import { COVERAGE, COVERAGE_LABEL } from "~/domain/coverage";
 import { INDICATORS } from "~/domain/indicators";
 import { formatDateTime } from "~/lib/format";
-import { getStatusData } from "~/server/data";
+import { getCoverageData } from "~/server/data";
 
 export const Route = createFileRoute("/coverage")({
-  loader: () => getStatusData(),
+  loader: () => getCoverageData(),
   component: CoveragePage,
 });
 
 function CoveragePage() {
-  const { series, runs, latest } = Route.useLoaderData();
+  const { seriesCounts, runs, latest } = Route.useLoaderData();
   return (
     <>
       <SectionHeader
@@ -34,7 +34,7 @@ function CoveragePage() {
             <tbody>
               {INDICATORS.map((i) => {
                 const c = COVERAGE[i.id];
-                const n = series.filter((s) => s.indicator === i.id).length;
+                const n = seriesCounts[i.id] ?? 0;
                 return (
                   <tr key={i.id}>
                     <td>

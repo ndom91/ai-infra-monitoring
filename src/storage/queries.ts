@@ -1,4 +1,4 @@
-import { and, desc, eq, gte, inArray, max } from "drizzle-orm";
+import { and, count, desc, eq, gte, inArray, max, type SQL } from "drizzle-orm";
 import type { IndicatorId } from "~/domain/types";
 import type { Db } from "./db";
 import { alertEvents, collectorRuns, observations, series } from "./schema";
@@ -6,13 +6,33 @@ import { alertEvents, collectorRuns, observations, series } from "./schema";
 export type SeriesRow = typeof series.$inferSelect;
 export type RunRow = typeof collectorRuns.$inferSelect;
 
-export function seriesForIndicators(db: Db, indicators: IndicatorId[]) {
-  return db.select().from(series).where(inArray(series.indicator, indicators)).orderBy(series.id);
+// What to load: whole indicators, or an exact list of series.
+export type SeriesSelection = { indicators: IndicatorId[]; seriesIds?: string[] };
+
+// Indicator selection uses a subquery, so observations come back in the same
+// round trip as the series definitions instead of waiting for them.
+function seriesIdFilter(db: Db, sel: SeriesSelection): SQL {
+  return sel.seriesIds
+    ? inArray(observations.seriesId, sel.seriesIds)
+    : inArray(
+        observations.seriesId,
+        db.select({ id: series.id }).from(series).where(inArray(series.indicator, sel.indicators)),
+      );
+}
+
+export function seriesFor(db: Db, sel: SeriesSelection) {
+  return db
+    .select()
+    .from(series)
+    .where(
+      sel.seriesIds ? inArray(series.id, sel.seriesIds) : inArray(series.indicator, sel.indicators),
+    )
+    .orderBy(series.id);
 }
 
 // Latest vintage only; uses the (series_id, is_latest, period_end) index.
-export function latestObservations(db: Db, seriesIds: string[], since?: string) {
-  if (seriesIds.length === 0) return Promise.resolve([]);
+export function latestObservations(db: Db, sel: SeriesSelection, since?: string) {
+  if ((sel.seriesIds ?? sel.indicators).length === 0) return Promise.resolve([]);
   return db
     .select({
       id: observations.id,
@@ -25,12 +45,11 @@ export function latestObservations(db: Db, seriesIds: string[], since?: string) 
       sourceUrl: observations.sourceUrl,
       note: observations.note,
       quote: observations.quote,
-      collectedAt: observations.collectedAt,
     })
     .from(observations)
     .where(
       and(
-        inArray(observations.seriesId, seriesIds),
+        seriesIdFilter(db, sel),
         eq(observations.isLatest, true),
         since ? gte(observations.periodEnd, since) : undefined,
       ),
@@ -38,15 +57,20 @@ export function latestObservations(db: Db, seriesIds: string[], since?: string) 
     .orderBy(observations.seriesId, observations.periodEnd);
 }
 
-// Most recent run per collector.
-export async function lastRuns(db: Db) {
-  const latest = await db
-    .select({ collector: collectorRuns.collector, id: max(collectorRuns.id) })
+// Most recent run per collector, in one query.
+export function lastRuns(db: Db) {
+  const latestIds = db
+    .select({ id: max(collectorRuns.id) })
     .from(collectorRuns)
     .groupBy(collectorRuns.collector);
-  const ids = latest.flatMap((r) => (r.id == null ? [] : [r.id]));
-  if (ids.length === 0) return [];
-  return db.select().from(collectorRuns).where(inArray(collectorRuns.id, ids));
+  return db.select().from(collectorRuns).where(inArray(collectorRuns.id, latestIds));
+}
+
+export function seriesCountsByIndicator(db: Db) {
+  return db
+    .select({ indicator: series.indicator, n: count() })
+    .from(series)
+    .groupBy(series.indicator);
 }
 
 export function recentRuns(db: Db, limit = 50) {
@@ -59,10 +83,6 @@ export function recentAlerts(db: Db, limit = 100) {
     .from(alertEvents)
     .orderBy(desc(alertEvents.triggeredAt), desc(alertEvents.id))
     .limit(limit);
-}
-
-export function allSeries(db: Db) {
-  return db.select().from(series).orderBy(series.indicator, series.id);
 }
 
 // When data last landed: the newest run that wrote something (ok or partial).

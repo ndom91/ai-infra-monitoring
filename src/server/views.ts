@@ -15,10 +15,15 @@ export type ObsPoint = {
   quote?: string | null;
 };
 
+// What charts need. Provenance fields (quote, source, note) ship only where the
+// UI shows them per point: manual series (TermsTable rows) and `latest`.
+export type ChartPoint = Pick<ObsPoint, "periodEnd" | "value" | "kind"> &
+  Partial<Omit<ObsPoint, "periodEnd" | "value" | "kind">>;
+
 export type SeriesDefView = Omit<SeriesRow, "updatedAt">;
 
 export type SeriesView = SeriesDefView & {
-  points: ObsPoint[];
+  points: ChartPoint[];
   latest: ObsPoint | null;
   freshness: Freshness;
   changes: {
@@ -36,9 +41,13 @@ export function buildView(
   ctx: { now: Date; visibleFrom?: string; lastRunStatus?: "running" | "ok" | "partial" | "failed" },
 ): SeriesView {
   const latest = all.at(-1) ?? null;
+  const visible = ctx.visibleFrom ? all.filter((p) => p.periodEnd >= (ctx.visibleFrom ?? "")) : all;
   return {
     ...def,
-    points: ctx.visibleFrom ? all.filter((p) => p.periodEnd >= (ctx.visibleFrom ?? "")) : all,
+    points:
+      def.collector === "manual"
+        ? visible
+        : visible.map(({ periodEnd, value, kind }) => ({ periodEnd, value, kind })),
     latest,
     freshness: freshness({
       cadence: def.cadence as Cadence,
