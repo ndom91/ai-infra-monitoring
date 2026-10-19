@@ -8,6 +8,7 @@ src/routeTree.gen.ts
 ai-*.zip
 instructions.md
 .env
+.dev.vars
 .env.*
 !.env.example
 data/*.db*
