@@ -67,8 +67,9 @@ pnpm build && pnpm check:bundle   # fails if server-only code reaches the browse
 3. **Frontend:** create a Cloudflare Worker connected to this repository. Use
    `pnpm build` as its build command and `pnpm deploy` as its deploy command.
    Add `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` as encrypted runtime
-   variables for both Production and Preview deployments. The app is rendered
-   by a Worker, not exported as a static site.
+   variables for both Production and Preview deployments. They remain managed
+   in the Cloudflare dashboard and are preserved by the deploy command. The app
+   is rendered by a Worker, not exported as a static site.
    **Keep the deployment private** (for example, with Cloudflare Access):
    Microsoft's API terms forbid redistributing Azure price data.
 

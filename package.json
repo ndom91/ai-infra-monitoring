@@ -8,7 +8,7 @@
     "build": "vite build",
     "start": "node --env-file-if-exists=.env .output/server/index.mjs",
     "preview": "vite preview",
-    "deploy": "pnpm build && wrangler deploy",
+    "deploy": "pnpm build && wrangler deploy --keep-vars",
     "typecheck": "tsc --noEmit",
     "lint": "biome check .",
     "format": "biome check --write .",
