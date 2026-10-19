@@ -210,14 +210,6 @@ h2 {
   letter-spacing: -0.6px;
 }
 
-.topbar-updated {
-  margin-left: auto;
-  font: 11px var(--mono);
-  color: var(--muted);
-  letter-spacing: 0.3px;
-  white-space: nowrap;
-}
-
 .nav {
   display: flex;
   gap: 2px;
@@ -949,7 +941,7 @@ h3,
 
 .story-intro p.story-updated {
   font: 12px var(--mono);
-  color: var(--muted);
+  color: #7f8d91;
   margin-top: 18px;
 }
 

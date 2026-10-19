@@ -9,6 +9,7 @@ import { monthYear, shortDate, usd } from "~/domain/narrative";
 import { formatDate } from "~/lib/format";
 import { changeOver, type Point } from "~/metrics/changes";
 import { getOverviewData } from "~/server/overview";
+import { Route as RootRoute } from "./__root";
 
 const DIVERGENCE_INFO: Record<string, Explainer> = {
   rental_vs_capex: EXPLAINERS.divRentalCapex,
@@ -85,6 +86,7 @@ const SECTIONS = [
 
 function Home() {
   const { story, alerts, divergences } = Route.useLoaderData();
+  const lastUpdated = RootRoute.useLoaderData();
   const capexNow = story.capex.capexTtm.at(-1);
 
   return (
@@ -109,7 +111,15 @@ function Home() {
             This page tracks the early warning signs. Every figure links to its public source, and
             nothing is estimated to fill gaps.
           </p>
-          <p className="story-updated">Research, not investment advice</p>
+          <p className="story-updated">
+            Research, not investment advice
+            {lastUpdated && (
+              <>
+                <br />
+                Updated {formatDate(lastUpdated)}
+              </>
+            )}
+          </p>
           <nav className="story-jump" aria-label="Sections">
             {SECTIONS.map((s) => (
               <a key={s.id} href={`#${s.id}`}>

@@ -1,6 +1,5 @@
 import { createRootRoute, HeadContent, Link, Outlet, Scripts } from "@tanstack/react-router";
 import type { ReactNode } from "react";
-import { formatDate } from "~/lib/format";
 import { CACHE_CONTROL } from "~/server/cache-control";
 import { getLastUpdated } from "~/server/data";
 import styles from "~/styles.css?url";
@@ -43,7 +42,6 @@ const NAV = [
 ] as const;
 
 function RootComponent() {
-  const lastUpdated = Route.useLoaderData();
   return (
     <RootDocument>
       <div className="wrap">
@@ -57,7 +55,6 @@ function RootComponent() {
               Artificial Liabilities<span className="accent">.</span>
             </span>
           </Link>
-          {lastUpdated && <span className="topbar-updated">Updated {formatDate(lastUpdated)}</span>}
           <nav className="nav">
             {NAV.map((n) => (
               <Link
