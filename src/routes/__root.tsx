@@ -10,7 +10,11 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Infrastructure Risk Monitor" },
+      { title: "Artificial Liabilities | AI Infrastructure Risk Research" },
+      {
+        name: "description",
+        content: "Tracking the balance sheet behind the AI build-out.",
+      },
     ],
     links: [
       { rel: "stylesheet", href: styles },
@@ -44,9 +48,9 @@ function RootComponent() {
       <div className="wrap">
         <header className="topbar">
           <Link to="/" className="brand">
-            <span className="kicker">AI capital cycle</span>
+            <span className="kicker">Tracking the balance sheet behind the AI build-out</span>
             <span className="brand-name">
-              Infrastructure Risk Monitor<span className="accent">.</span>
+              Artificial Liabilities<span className="accent">.</span>
             </span>
           </Link>
           {lastUpdated && <span className="topbar-updated">Updated {formatDate(lastUpdated)}</span>}

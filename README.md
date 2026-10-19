@@ -1,4 +1,6 @@
-# AI Infrastructure Risk Monitor
+# Artificial Liabilities
+
+Tracking the balance sheet behind the AI build-out.
 
 A research dashboard for one question: is the AI infrastructure build-out
 creating unsustainable overcapacity, leverage, and credit risk? It tracks nine
