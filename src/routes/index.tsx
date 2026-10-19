@@ -115,7 +115,9 @@ function Home() {
             Research, not investment advice
             {lastUpdated && (
               <>
-                <br />
+                <span className="story-meta-separator" aria-hidden="true">
+                  ·
+                </span>
                 Updated {formatDate(lastUpdated)}
               </>
             )}

@@ -945,6 +945,10 @@ h3,
   margin-top: 18px;
 }
 
+.story-meta-separator {
+  margin: 0 8px;
+}
+
 .story-jump {
   display: flex;
   flex-wrap: wrap;
