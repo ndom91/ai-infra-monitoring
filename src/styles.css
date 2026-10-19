@@ -1129,25 +1129,35 @@ h3,
 }
 
 .story-section {
-  margin-top: 76px;
+  display: grid;
+  grid-template-columns: minmax(210px, 0.7fr) minmax(0, 2.2fr);
+  column-gap: clamp(40px, 5vw, 88px);
+  margin-top: 104px;
   scroll-margin-top: 20px;
 }
 
-.story-section > h2 {
+.story-section-intro {
+  padding-top: 4px;
+}
+
+.story-section-intro > h2 {
   font-size: 32px;
   font-weight: 720;
   letter-spacing: -0.8px;
-  margin: 0 0 12px;
+  margin: 0 0 14px;
   text-wrap: balance;
 }
 
 .story-lede {
   color: var(--reading);
-  font-size: 16px;
-  line-height: 1.65;
-  max-width: 760px;
-  margin: 0 0 34px;
+  font-size: 15px;
+  line-height: 1.6;
+  margin: 0;
   text-wrap: pretty;
+}
+
+.story-section-content {
+  min-width: 0;
 }
 
 .story-grid {
@@ -1160,8 +1170,9 @@ h3,
   grid-template-columns: minmax(0, 1fr);
 }
 
-.story-grid.one .story-body {
-  max-width: 760px;
+.story-grid.one .story-analysis {
+  column-count: 2;
+  column-gap: clamp(32px, 4vw, 64px);
 }
 
 .story-chart {
@@ -1207,7 +1218,8 @@ h3,
   color: var(--reading);
   font-size: 15px;
   line-height: 1.65;
-  margin: 0 0 10px;
+  break-inside: avoid;
+  margin: 0 0 14px;
 }
 
 .story-source {
@@ -1216,12 +1228,21 @@ h3,
   margin-top: 10px;
 }
 
-.story-section > .more {
+.story-section-content > .more {
   margin-top: 26px;
   font-size: 13px;
 }
 
 @media (max-width: 1000px) {
+  .story-section {
+    display: block;
+    margin-top: 76px;
+  }
+
+  .story-section-intro {
+    margin-bottom: 32px;
+  }
+
   .story-hero {
     grid-template-columns: minmax(0, 1fr);
     gap: 32px;
@@ -1297,8 +1318,16 @@ h3,
     margin-top: 56px;
   }
 
-  .story-section > h2 {
+  .story-section-intro {
+    margin-bottom: 24px;
+  }
+
+  .story-section-intro > h2 {
     font-size: 26px;
+  }
+
+  .story-grid.one .story-analysis {
+    column-count: 1;
   }
 
   .story-chart-head h3 {

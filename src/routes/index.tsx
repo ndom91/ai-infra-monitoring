@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import type { ReactNode } from "react";
 import { DivergenceChart } from "~/components/DivergenceChart";
 import { InfoTip } from "~/components/InfoTip";
 import { type KeyFigure, KeyFigures } from "~/components/KeyFigures";
@@ -84,6 +85,28 @@ const SECTIONS = [
   { id: "warnings", label: "Warning signs" },
 ];
 
+function StorySection({
+  id,
+  title,
+  lede,
+  children,
+}: {
+  id: string;
+  title: string;
+  lede: ReactNode;
+  children: ReactNode;
+}) {
+  return (
+    <section id={id} className="story-section">
+      <div className="story-section-intro">
+        <h2>{title}</h2>
+        <p className="story-lede">{lede}</p>
+      </div>
+      <div className="story-section-content">{children}</div>
+    </section>
+  );
+}
+
 function Home() {
   const { story, alerts, divergences } = Route.useLoaderData();
   const lastUpdated = RootRoute.useLoaderData();
@@ -152,13 +175,17 @@ function Home() {
 
       <KeyFigures items={keyFigures(story)} />
 
-      <section id="borrowing" className="story-section">
-        <h2>Borrowing costs</h2>
-        <p className="story-lede">
-          Most AI data centers are built at least partly with borrowed money. The key number is the
-          "spread": the extra interest a company pays over the US government. When lenders get
-          nervous, spreads widen, and the most indebted companies feel it first.
-        </p>
+      <StorySection
+        id="borrowing"
+        title="Borrowing costs"
+        lede={
+          <>
+            Most AI data centers are built at least partly with borrowed money. The key number is
+            the "spread": the extra interest a company pays over the US government. When lenders get
+            nervous, spreads widen, and the most indebted companies feel it first.
+          </>
+        }
+      >
         <div className="story-grid one">
           <StoryChart
             story={story.credit.story}
@@ -180,16 +207,20 @@ function Home() {
         <Link to="/credit" search={{ range: "3y" }} className="more">
           More on credit →
         </Link>
-      </section>
+      </StorySection>
 
-      <section id="spending" className="story-section">
-        <h2>The spending</h2>
-        <p className="story-lede">
-          Data centers and the chips inside them are paid for out of "capital expenditure", or
-          capex. The big tech companies fund it mostly from their own cash. Newer specialist AI
-          clouds, or neoclouds, fund it mostly with debt. Both are worth watching, for different
-          reasons.
-        </p>
+      <StorySection
+        id="spending"
+        title="The spending"
+        lede={
+          <>
+            Data centers and the chips inside them are paid for out of "capital expenditure", or
+            capex. The big tech companies fund it mostly from their own cash. Newer specialist AI
+            clouds, or neoclouds, fund it mostly with debt. Both are worth watching, for different
+            reasons.
+          </>
+        }
+      >
         <div className="story-grid">
           <StoryChart
             story={story.capex.story}
@@ -227,15 +258,19 @@ function Home() {
         <Link to="/fundamentals" search={{ range: "5y", company: "CRWV" }} className="more">
           More on company finances →
         </Link>
-      </section>
+      </StorySection>
 
-      <section id="compute" className="story-section">
-        <h2>The price of computing</h2>
-        <p className="story-lede">
-          If too much capacity gets built, the price of renting a GPU, and of reselling a used one,
-          should fall. Both matter: rental prices are what these data centers earn, and used-chip
-          values are what lenders can recover if a borrower fails.
-        </p>
+      <StorySection
+        id="compute"
+        title="The price of computing"
+        lede={
+          <>
+            If too much capacity gets built, the price of renting a GPU, and of reselling a used
+            one, should fall. Both matter: rental prices are what these data centers earn, and
+            used-chip values are what lenders can recover if a borrower fails.
+          </>
+        }
+      >
         <div className="story-grid">
           <StoryChart
             story={story.rental.story}
@@ -269,14 +304,18 @@ function Home() {
         <Link to="/market" search={{ range: "3y" }} className="more">
           More on GPU prices →
         </Link>
-      </section>
+      </StorySection>
 
-      <section id="buildings" className="story-section">
-        <h2>The buildings</h2>
-        <p className="story-lede">
-          The final test is whether finished data centers fill up. Real-estate brokers report how
-          much space is empty, how much is being built, and how much of it is already leased.
-        </p>
+      <StorySection
+        id="buildings"
+        title="The buildings"
+        lede={
+          <>
+            The final test is whether finished data centers fill up. Real-estate brokers report how
+            much space is empty, how much is being built, and how much of it is already leased.
+          </>
+        }
+      >
         <div className="story-grid one">
           <StoryChart
             story={story.buildings.story}
@@ -300,15 +339,20 @@ function Home() {
         <Link to="/infrastructure" search={{ range: "max" }} className="more">
           More on data-center supply →
         </Link>
-      </section>
+      </StorySection>
 
-      <section id="warnings" className="story-section">
-        <h2>Warning signs</h2>
-        <p className="story-lede">
-          One chart alone rarely tells you much. The pattern to watch is two things pulling apart:
-          spending still rising while prices fall, or debt growing while what backs it loses value.
-          Each pair below shows two lines, each on its own scale. They show what happened, not why.
-        </p>
+      <StorySection
+        id="warnings"
+        title="Warning signs"
+        lede={
+          <>
+            One chart alone rarely tells you much. The pattern to watch is two things pulling apart:
+            spending still rising while prices fall, or debt growing while what backs it loses
+            value. Each pair below shows two lines, each on its own scale. They show what happened,
+            not why.
+          </>
+        }
+      >
         <div className="story-grid">
           {divergences.map((d) => (
             <figure key={d.id} className="story-chart">
@@ -332,7 +376,7 @@ function Home() {
         <Link to="/coverage" className="more">
           What this monitor can and cannot see →
         </Link>
-      </section>
+      </StorySection>
     </div>
   );
 }

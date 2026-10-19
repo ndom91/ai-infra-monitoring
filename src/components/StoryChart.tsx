@@ -36,11 +36,15 @@ export function StoryChart({
           <span>This finding appears once the monitor has enough history to compare.</span>
         </div>
       )}
-      {story?.body.map((para) => (
-        <p key={para} className="story-body">
-          {para}
-        </p>
-      ))}
+      {story?.body.length ? (
+        <div className="story-analysis">
+          {story.body.map((para) => (
+            <p key={para} className="story-body">
+              {para}
+            </p>
+          ))}
+        </div>
+      ) : null}
       <figcaption className="story-source">{source}</figcaption>
     </figure>
   );
