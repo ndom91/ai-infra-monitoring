@@ -15,11 +15,17 @@
   --reading: #c9d2d3;
 }
 
+html {
+  background: var(--bg);
+  -webkit-tap-highlight-color: color-mix(in srgb, var(--teal) 24%, transparent);
+}
+
 * {
   box-sizing: border-box;
 }
 
 body {
+  min-width: 320px;
   margin: 0;
   background: var(--bg);
   color: var(--text);
@@ -39,6 +45,37 @@ a {
 
 a:hover {
   text-decoration: underline;
+}
+
+:where(a, button, [role="button"]):focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 3px;
+}
+
+.skip-link {
+  position: fixed;
+  z-index: 100;
+  top: 12px;
+  left: 12px;
+  padding: 8px 12px;
+  background: var(--teal);
+  color: var(--bg);
+  font: 600 12px var(--mono);
+  transform: translateY(-160%);
+  transition: transform 140ms ease;
+}
+
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+.sr-only {
+  position: absolute;
+  clip-path: inset(50%);
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 p {
@@ -74,6 +111,7 @@ h2 {
   color: var(--text);
   border-radius: 5px;
   padding: 6px 12px;
+  touch-action: manipulation;
 }
 
 .toolbar-btn:hover {
@@ -191,6 +229,7 @@ h2 {
   padding: 6px 11px;
   border-radius: 6px;
   font-size: 13px;
+  touch-action: manipulation;
 }
 
 .nav a:hover {
@@ -202,6 +241,20 @@ h2 {
 .nav a.active {
   color: var(--teal);
   background: var(--panel2);
+}
+
+.nav a.nav-github {
+  display: grid;
+  min-width: 30px;
+  min-height: 30px;
+  place-items: center;
+  padding: 4px;
+}
+
+.nav-github svg {
+  width: 17px;
+  height: 17px;
+  fill: currentColor;
 }
 
 .section-head {
@@ -218,6 +271,7 @@ h2 {
   font-weight: 650;
   letter-spacing: -0.8px;
   margin: 0 0 4px;
+  text-wrap: balance;
 }
 
 .section-head .toolbar {
@@ -487,7 +541,7 @@ h2 {
 .alert {
   background: var(--panel);
   border: 1px solid var(--line);
-  border-left: 3px solid var(--muted);
+  border-top: 2px solid var(--muted);
   border-radius: 8px;
   padding: 14px 16px;
 }
@@ -508,11 +562,11 @@ h2 {
 }
 
 .sev-warning {
-  border-left-color: var(--orange);
+  border-top-color: var(--orange);
 }
 
 .sev-critical {
-  border-left-color: #ffa49e;
+  border-top-color: #ffa49e;
 }
 
 .sev-critical .badge {
@@ -817,7 +871,6 @@ code {
 .infotip-btn[aria-expanded="true"] {
   color: var(--teal);
   border-color: var(--teal);
-  outline: none;
 }
 
 .infotip-body {
@@ -881,7 +934,7 @@ h3,
   font-weight: 760;
   letter-spacing: -1.6px;
   line-height: 1.04;
-  text-wrap: pretty;
+  text-wrap: balance;
   margin: 0 0 20px;
 }
 
@@ -891,6 +944,7 @@ h3,
   line-height: 1.65;
   margin: 0 0 14px;
   max-width: 680px;
+  text-wrap: pretty;
 }
 
 .story-intro p.story-updated {
@@ -945,6 +999,7 @@ h3,
   color: var(--reading);
   padding: 14px 0 14px 14px;
   border-bottom: 1px solid #222a2c;
+  text-wrap: pretty;
 }
 
 .story-aside li:first-child {
@@ -1087,6 +1142,7 @@ h3,
   font-weight: 720;
   letter-spacing: -0.8px;
   margin: 0 0 12px;
+  text-wrap: balance;
 }
 
 .story-lede {
@@ -1095,6 +1151,7 @@ h3,
   line-height: 1.65;
   max-width: 760px;
   margin: 0 0 34px;
+  text-wrap: pretty;
 }
 
 .story-grid {
@@ -1127,6 +1184,7 @@ h3,
   letter-spacing: -0.4px;
   line-height: 1.2;
   margin: 0 0 6px;
+  text-wrap: balance;
 }
 
 .story-chart-head .infotip {
@@ -1208,6 +1266,28 @@ h3,
 }
 
 @media (max-width: 640px) {
+  .kicker {
+    font-size: 10px;
+    letter-spacing: 1.4px;
+  }
+
+  .brand-name {
+    font-size: 20px;
+  }
+
+  .topbar-updated {
+    margin-left: auto;
+  }
+
+  .nav {
+    gap: 2px 4px;
+  }
+
+  .nav a {
+    min-block-size: 32px;
+    padding: 6px 8px;
+  }
+
   .story-intro h1 {
     font-size: 34px;
     letter-spacing: -1px;
