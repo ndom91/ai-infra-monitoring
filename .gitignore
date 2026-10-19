@@ -13,3 +13,4 @@ instructions.md
 data/*.db*
 .claude
 .vercel
+.wrangler

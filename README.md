@@ -64,10 +64,17 @@ pnpm build && pnpm check:bundle   # fails if server-only code reaches the browse
    - `collect-prices.yml`: weekly
    - `backup.yml`: weekly DB export, kept 90 days as an artifact
    - `ci.yml`: build, bundle check, typecheck, lint, tests
-3. **Frontend:** import the repo in Vercel, add `TURSO_DATABASE_URL` and
-   `TURSO_AUTH_TOKEN`, and deploy. Nitro selects the Vercel preset automatically.
-   **Keep the deployment private** (e.g. Vercel Deployment Protection):
+3. **Frontend:** create a Cloudflare Pages project connected to this repository.
+   Use `pnpm build:pages` as its build command and `dist` as its build output
+   directory. Add `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` as encrypted
+   variables for both Production and Preview deployments. The app is rendered by
+   Pages Functions, not exported as a static site.
+   **Keep the deployment private** (for example, with Cloudflare Access):
    Microsoft's API terms forbid redistributing Azure price data.
+
+   To deploy from a machine instead, authenticate with `pnpm wrangler login` and
+   run `pnpm deploy:pages`. The first deploy creates the `artificial-liabilities`
+   Pages project if it does not already exist.
 
 Locally, `pnpm build && pnpm start` runs the production server.
 
