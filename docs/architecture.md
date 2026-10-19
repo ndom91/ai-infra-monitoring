@@ -60,6 +60,6 @@ observed period plus the last run status (`src/domain/freshness.ts`):
 ## Scheduling and hosting
 
 - Collectors run in GitHub Actions (`.github/workflows/collect-*.yml`) and write directly to Turso.
-- The UI runs on Cloudflare Pages. Production builds use Nitro's `cloudflare_pages`
-  preset, which produces static assets plus a Pages Function for server rendering.
+- The UI runs on Cloudflare Workers. The Cloudflare Vite plugin builds the TanStack
+  Start server entry for edge rendering alongside the site's static assets.
 - `backup.yml` exports every table weekly as a 90-day artifact.
