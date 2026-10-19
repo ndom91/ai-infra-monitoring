@@ -16,12 +16,12 @@ export const COVERAGE: Record<
 > = {
   gpu_rental: {
     status: "partial",
-    collectors: ["azure", "aws"],
+    collectors: ["azure", "aws", "salad"],
     summary:
-      "AWS and Azure list prices for H100 and H200 GPUs: Azure on-demand and spot (US East 2), AWS on-demand (US East 1). Collected weekly.",
+      "AWS and Azure list prices for H100 and H200 GPUs, plus Salad Community Cloud's published RTX 4090 and RTX 5090 prices by priority tier. Collected weekly.",
     gaps: [
-      "No marketplace prices. Vast.ai (Sep 2026) and Shadeform (Aug 2026) terms forbid building price indexes or databases without written permission.",
-      "List prices say nothing about how much capacity is in use.",
+      "Salad is a single managed community-cloud price schedule, not a host-by-host marketplace. Vast.ai (Sep 2026) and Shadeform (Aug 2026) terms forbid building price indexes or databases without written permission.",
+      "Prices do not show how much capacity is in use. Salad priority tiers differ in preemption risk.",
       "Microsoft's API terms forbid sharing the data, so keep this dashboard private.",
       "Google Cloud's pricing API needs an API key and isn't used.",
     ],

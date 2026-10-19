@@ -1,21 +1,33 @@
-import type { ObservationInput, SeriesDef } from "~/domain/types";
+import type { ObservationInput, ObservationKind, SeriesDef } from "~/domain/types";
 
-// Shared vocabulary for hyperscaler GPU list-price collectors (Azure, AWS).
+// Shared vocabulary for GPU price collectors.
 // Each series is one (provider, GPU cohort, region, price type) combination, so
 // on-demand, spot and commitment prices are never mixed in one series.
 
-export type GpuCohort = "h100" | "h200";
+export type GpuCohort = "h100" | "h200" | "rtx4090" | "rtx5090";
 
 export const COHORT_LABELS: Record<GpuCohort, string> = {
   h100: "H100 80GB SXM",
   h200: "H200 141GB SXM",
+  rtx4090: "RTX 4090 24GB",
+  rtx5090: "RTX 5090 32GB",
 };
 
-export type PriceType = "ondemand" | "spot";
+export type PriceType =
+  | "ondemand"
+  | "spot"
+  | "priority_high"
+  | "priority_medium"
+  | "priority_low"
+  | "priority_lowest";
 
 export const PRICE_TYPE_LABELS: Record<PriceType, string> = {
   ondemand: "on-demand",
   spot: "spot",
+  priority_high: "high priority",
+  priority_medium: "medium priority",
+  priority_low: "low priority",
+  priority_lowest: "lowest priority",
 };
 
 export const LIST_PRICE_CAVEAT =
@@ -32,7 +44,7 @@ export function utcDate(d: Date) {
 
 // One price point as read from the source, before it becomes observations.
 export type ListPrice = {
-  provider: "azure" | "aws";
+  provider: "azure" | "aws" | "salad";
   cohort: GpuCohort;
   region: string;
   priceType: PriceType;
@@ -41,6 +53,7 @@ export type ListPrice = {
   // Instance price per hour as listed; recorded in the observation note.
   instancePerHour?: number;
   perGpuHour: number;
+  observationKind?: ObservationKind;
   // Where the per-GPU value came from, for the observation note.
   derivation: string;
 };
@@ -55,6 +68,8 @@ type SeriesContext = {
   sourceUrl: string;
   // Provider-specific filters, e.g. "Linux, shared tenancy".
   filters: string;
+  priceTerm?: string;
+  caveat?: string;
 };
 
 export function perGpuSeriesDef(p: ListPrice, ctx: SeriesContext): SeriesDef {
@@ -67,7 +82,7 @@ export function perGpuSeriesDef(p: ListPrice, ctx: SeriesContext): SeriesDef {
     sourceUrl: ctx.sourceUrl,
     unit: "USD/GPU-hr",
     currency: "USD",
-    methodology: `${PRICE_TYPE_LABELS[p.priceType]} list price of ${p.sku} (${p.gpus}x ${COHORT_LABELS[p.cohort]}) in ${p.region}, ${ctx.filters}, divided by the ${p.gpus} GPUs in the instance. ${LIST_PRICE_CAVEAT}`,
+    methodology: `${PRICE_TYPE_LABELS[p.priceType]} ${ctx.priceTerm ?? "list price"} of ${p.sku} (${p.gpus}x ${COHORT_LABELS[p.cohort]}) in ${p.region}, ${ctx.filters}, divided by the ${p.gpus} GPUs in the instance. ${ctx.caveat ?? LIST_PRICE_CAVEAT}`,
     // List prices change rarely; weekly collection is enough and keeps the
     // ~300 MB AWS offer-file download infrequent.
     cadence: "weekly",
@@ -94,7 +109,7 @@ export function toObservations(
       ...base,
       seriesId: seriesId(p),
       value: p.perGpuHour,
-      kind: "calculated",
+      kind: p.observationKind ?? "calculated",
       note: `${p.derivation}.${suffix}`,
     });
   }

@@ -2,6 +2,7 @@ import { awsCollector } from "./aws";
 import { azureCollector } from "./azure";
 import { fredCollector } from "./fred";
 import { manualCollector } from "./manual";
+import { saladCollector } from "./salad";
 import { secCollector } from "./sec";
 import type { Collector } from "./types";
 
@@ -10,5 +11,6 @@ export const COLLECTORS: Collector[] = [
   secCollector,
   azureCollector,
   awsCollector,
+  saladCollector,
   manualCollector,
 ];

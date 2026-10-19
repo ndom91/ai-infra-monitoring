@@ -26,7 +26,8 @@ function MarketPage() {
   const resale = series.filter((s) => s.indicator === "gpu_resale");
   const shortLabel = (s: SeriesView) => {
     const [provider, , region, type] = s.id.split(".");
-    return `${provider === "aws" ? "AWS" : "Azure"} ${type === "ondemand" ? "on-demand" : type} (${region})`;
+    const name = provider === "aws" ? "AWS" : provider === "azure" ? "Azure" : "Salad";
+    return `${name} ${(type ?? "").replaceAll("_", " ")} (${region})`;
   };
 
   return (
@@ -41,18 +42,27 @@ function MarketPage() {
           {[
             ["h100", "H100 80GB"],
             ["h200", "H200 141GB"],
-          ].map(([cohort, label]) => (
-            <ChartBlock
-              key={cohort}
-              title={`${label}: list price per GPU-hour`}
-              info={EXPLAINERS.gpuListPrice}
-              subtitle="Machine list price divided by the GPUs in it"
-              series={rental.filter((s) => cohortOf(s) === cohort)}
-              labelOf={shortLabel}
-              stepped
-              emptyReason="No price data collected yet."
-            />
-          ))}
+            ["rtx4090", "RTX 4090 24GB"],
+            ["rtx5090", "RTX 5090 32GB"],
+          ].map(([cohort, label]) => {
+            const isConsumer = cohort?.startsWith("rtx");
+            return (
+              <ChartBlock
+                key={cohort}
+                title={`${label}: price per GPU-hour`}
+                info={EXPLAINERS.gpuListPrice}
+                subtitle={
+                  isConsumer
+                    ? "Published hourly price; priority tiers remain separate"
+                    : "Machine list price divided by the GPUs in it"
+                }
+                series={rental.filter((s) => cohortOf(s) === cohort)}
+                labelOf={shortLabel}
+                stepped
+                emptyReason="No price data collected yet."
+              />
+            );
+          })}
         </div>
       </IndicatorPanel>
       <IndicatorPanel def={indicatorById("gpu_resale")}>
