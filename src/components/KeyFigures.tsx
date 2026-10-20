@@ -2,6 +2,8 @@ export type KeyFigure = {
   label: string;
   value: string;
   note: string;
+  signal: "worsening" | "reassuring" | "mixed";
+  interpretation: string;
   // Fractional change over a year; null when no comparable point exists.
   change: number | null;
 };
@@ -30,11 +32,12 @@ export function KeyFigures({ items }: { items: KeyFigure[] }) {
   return (
     <div className="key-figures">
       {items.map((k) => (
-        <div key={k.label} className="key-figure">
+        <div key={k.label} className={`key-figure signal-${k.signal}`}>
           <div className="kf-main">
             <span className="kf-label">{k.label}</span>
             <span className="kf-value">{k.value}</span>
             <span className="kf-note">{k.note}</span>
+            <span className="kf-interpretation">{k.interpretation}</span>
           </div>
           <Change change={k.change} />
         </div>

@@ -15,6 +15,7 @@ import { recentAlerts } from "~/storage/queries";
 import { withCurrentWording } from "./alert-text";
 import { cacheResponse } from "./cache";
 import { loadSection } from "./data";
+import { riskReadFromAlerts } from "./overview-signals";
 import type { ObsPoint, SeriesView } from "./views";
 
 export type DivergenceLine = { label: string; unit: string; points: Point[] };
@@ -294,9 +295,11 @@ export const getOverviewData = createServerFn({ method: "GET" }).handler(async (
     },
   };
 
+  const alertHistory = withCurrentWording(alerts);
   return {
     story,
-    alerts: withCurrentWording(alerts),
+    alerts: alertHistory,
+    riskRead: riskReadFromAlerts(alertHistory),
     divergences,
   };
 });

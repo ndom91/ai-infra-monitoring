@@ -12,6 +12,7 @@ export function StoryChart({
   source,
   info,
   fallbackTitle,
+  signal,
   children,
 }: {
   story: Story | null;
@@ -19,6 +20,7 @@ export function StoryChart({
   source: string;
   info?: Explainer;
   fallbackTitle: string;
+  signal: string;
   children: ReactNode;
 }) {
   return (
@@ -28,6 +30,9 @@ export function StoryChart({
         {info && <InfoTip label={story?.headline ?? fallbackTitle} info={info} />}
       </div>
       <p className="story-dek">{dek}</p>
+      <p className="chart-signal">
+        <b>Read:</b> {signal}
+      </p>
       {story ? (
         children
       ) : (

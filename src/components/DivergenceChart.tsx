@@ -69,6 +69,7 @@ export function DivergenceChart({ lines }: { lines: DivergenceLine[] }) {
           },
         }}
       />
+      <p className="dual-axis-note">Different scales: compare direction, not distance.</p>
     </div>
   );
 }
