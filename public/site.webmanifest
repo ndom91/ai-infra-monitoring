@@ -1,0 +1,9 @@
+{
+  "name": "Artificial Liabilities",
+  "short_name": "Artificial Liabilities",
+  "description": "Research on the balance sheet behind the AI build-out.",
+  "icons": [{ "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" }],
+  "theme_color": "#0e1113",
+  "background_color": "#0e1113",
+  "display": "browser"
+}

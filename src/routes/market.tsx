@@ -5,9 +5,16 @@ import { SectionHeader } from "~/components/SectionHeader";
 import { EXPLAINERS } from "~/domain/explainers";
 import { indicatorById, SECTIONS } from "~/domain/indicators";
 import { parseRange } from "~/domain/ranges";
+import { pageHead } from "~/lib/seo";
 import { getSectionData, type SeriesView } from "~/server/data";
 
 export const Route = createFileRoute("/market")({
+  head: () =>
+    pageHead(
+      "/market",
+      "GPU Market",
+      "Track public GPU rental and resale prices across major cloud providers.",
+    ),
   validateSearch: (s) => ({ range: parseRange(s.range, "3y") }),
   loaderDeps: ({ search }) => ({ range: search.range }),
   loader: ({ deps }) =>

@@ -1,5 +1,6 @@
 import { createRootRoute, HeadContent, Link, Outlet, Scripts } from "@tanstack/react-router";
 import type { ReactNode } from "react";
+import { DEFAULT_IMAGE, SITE_NAME, SITE_URL } from "~/lib/seo";
 import { CACHE_CONTROL } from "~/server/cache-control";
 import { getLastUpdated } from "~/server/data";
 import styles from "~/styles.css?url";
@@ -14,14 +15,45 @@ export const Route = createRootRoute({
         name: "description",
         content: "Tracking the balance sheet behind the AI build-out.",
       },
+      { name: "robots", content: "index, follow" },
       { name: "theme-color", content: "#0e1113" },
+      { property: "og:title", content: "Artificial Liabilities | AI Infrastructure Risk Research" },
+      {
+        property: "og:description",
+        content: "Tracking the balance sheet behind the AI build-out.",
+      },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: SITE_URL },
+      { property: "og:site_name", content: SITE_NAME },
+      { property: "og:image", content: DEFAULT_IMAGE },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      { property: "og:image:alt", content: SITE_NAME },
+      { name: "twitter:card", content: "summary_large_image" },
+      {
+        name: "twitter:title",
+        content: "Artificial Liabilities | AI Infrastructure Risk Research",
+      },
+      {
+        name: "twitter:description",
+        content: "Tracking the balance sheet behind the AI build-out.",
+      },
+      { name: "twitter:image", content: DEFAULT_IMAGE },
+      { name: "twitter:image:alt", content: SITE_NAME },
+      {
+        "script:ld+json": {
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          name: SITE_NAME,
+          url: SITE_URL,
+          description: "Research on the balance sheet behind the AI build-out.",
+        },
+      },
     ],
     links: [
       { rel: "stylesheet", href: styles },
-      {
-        rel: "icon",
-        href: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' rx='3' fill='%23b5e1cd'/></svg>",
-      },
+      { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
+      { rel: "manifest", href: "/site.webmanifest" },
     ],
   }),
   headers: () => ({ "Cache-Control": CACHE_CONTROL }),

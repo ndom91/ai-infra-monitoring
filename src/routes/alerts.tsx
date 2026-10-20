@@ -1,9 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { SectionHeader } from "~/components/SectionHeader";
 import { formatDate, formatValue } from "~/lib/format";
+import { pageHead } from "~/lib/seo";
 import { getAlertsData } from "~/server/data";
 
 export const Route = createFileRoute("/alerts")({
+  head: () =>
+    pageHead(
+      "/alerts",
+      "Risk Alerts",
+      "Review data-backed warning flags for the AI infrastructure build-out.",
+    ),
   loader: () => getAlertsData(),
   component: AlertsPage,
 });

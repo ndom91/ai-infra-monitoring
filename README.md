@@ -70,8 +70,9 @@ pnpm build && pnpm check:bundle   # fails if server-only code reaches the browse
    variables for both Production and Preview deployments. They remain managed
    in the Cloudflare dashboard and are preserved by the deploy command. The app
    is rendered by a Worker, not exported as a static site.
-   **Keep the deployment private** (for example, with Cloudflare Access):
-   Microsoft's API terms forbid redistributing Azure price data.
+    Production is public at [artificialliabilities.com](https://artificialliabilities.com).
+    Ensure the deployed data remains consistent with the source terms for each
+    collector.
 
    To deploy from a machine instead, authenticate with `pnpm wrangler login` and
    run `pnpm deploy`.

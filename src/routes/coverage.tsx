@@ -4,9 +4,16 @@ import { SectionHeader } from "~/components/SectionHeader";
 import { COVERAGE, COVERAGE_LABEL } from "~/domain/coverage";
 import { INDICATORS } from "~/domain/indicators";
 import { formatDateTime } from "~/lib/format";
+import { pageHead } from "~/lib/seo";
 import { getCoverageData } from "~/server/data";
 
 export const Route = createFileRoute("/coverage")({
+  head: () =>
+    pageHead(
+      "/coverage",
+      "Coverage & Data Health",
+      "See the monitor's data coverage, sources, freshness, and known gaps.",
+    ),
   loader: () => getCoverageData(),
   component: CoveragePage,
 });

@@ -8,11 +8,18 @@ import { SEC_COMPANIES } from "~/domain/companies";
 import { EXPLAINERS } from "~/domain/explainers";
 import { indicatorById, SECTIONS } from "~/domain/indicators";
 import { parseRange } from "~/domain/ranges";
+import { pageHead } from "~/lib/seo";
 import { getFundamentalsData, type SeriesView } from "~/server/data";
 
 const TICKERS = SEC_COMPANIES.map((c) => c.ticker);
 
 export const Route = createFileRoute("/fundamentals")({
+  head: () =>
+    pageHead(
+      "/fundamentals",
+      "Company Fundamentals",
+      "Compare AI infrastructure companies' spending, cash flow, debt, and customer concentration.",
+    ),
   validateSearch: (s) => ({
     range: parseRange(s.range, "5y"),
     company: TICKERS.includes(String(s.company)) ? String(s.company) : "CRWV",

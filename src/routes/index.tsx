@@ -9,6 +9,7 @@ import { TimeChart } from "~/components/TimeChart";
 import { EXPLAINERS, type Explainer } from "~/domain/explainers";
 import { monthYear, shortDate, usd } from "~/domain/narrative";
 import { formatDate } from "~/lib/format";
+import { pageHead } from "~/lib/seo";
 import { changeOver, type Point } from "~/metrics/changes";
 import { getOverviewData } from "~/server/overview";
 import { Route as RootRoute } from "./__root";
@@ -22,6 +23,12 @@ const DIVERGENCE_INFO: Record<string, Explainer> = {
 };
 
 export const Route = createFileRoute("/")({
+  head: () =>
+    pageHead(
+      "/",
+      "AI Infrastructure Risk Research",
+      "Tracking the balance sheet behind the AI build-out.",
+    ),
   loader: () => getOverviewData(),
   component: Home,
 });

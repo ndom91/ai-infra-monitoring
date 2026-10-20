@@ -6,9 +6,16 @@ import { infraExplainer } from "~/domain/explainers";
 import { indicatorById, SECTIONS } from "~/domain/indicators";
 import { parseRange } from "~/domain/ranges";
 import type { IndicatorId } from "~/domain/types";
+import { pageHead } from "~/lib/seo";
 import { getSectionData, type SeriesView } from "~/server/data";
 
 export const Route = createFileRoute("/infrastructure")({
+  head: () =>
+    pageHead(
+      "/infrastructure",
+      "Data Center Infrastructure",
+      "Track data-center construction, vacancy, and pre-leasing in North America.",
+    ),
   validateSearch: (s) => ({ range: parseRange(s.range, "max") }),
   loaderDeps: ({ search }) => ({ range: search.range }),
   loader: ({ deps }) =>

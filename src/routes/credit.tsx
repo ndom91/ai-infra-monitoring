@@ -6,9 +6,16 @@ import { TermsTable } from "~/components/TermsTable";
 import { EXPLAINERS } from "~/domain/explainers";
 import { indicatorById, SECTIONS } from "~/domain/indicators";
 import { parseRange } from "~/domain/ranges";
+import { pageHead } from "~/lib/seo";
 import { getSectionData, type SeriesView } from "~/server/data";
 
 export const Route = createFileRoute("/credit")({
+  head: () =>
+    pageHead(
+      "/credit",
+      "Credit Risk",
+      "Follow borrowing costs, leverage, and refinancing pressure across AI infrastructure companies.",
+    ),
   validateSearch: (s) => ({ range: parseRange(s.range, "3y") }),
   loaderDeps: ({ search }) => ({ range: search.range }),
   loader: ({ deps }) => getSectionData({ data: { indicators: ["credit"], range: deps.range } }),
