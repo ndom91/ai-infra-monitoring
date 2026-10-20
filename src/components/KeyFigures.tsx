@@ -37,7 +37,10 @@ export function KeyFigures({ items }: { items: KeyFigure[] }) {
             <span className="kf-label">{k.label}</span>
             <span className="kf-value">{k.value}</span>
             <span className="kf-note">{k.note}</span>
-            <span className="kf-interpretation">{k.interpretation}</span>
+            <span className="kf-interpretation">
+              <span className="kf-status">{k.signal}</span>
+              {k.interpretation}
+            </span>
           </div>
           <Change change={k.change} />
         </div>

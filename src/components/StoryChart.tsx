@@ -43,11 +43,17 @@ export function StoryChart({
       )}
       {story?.body.length ? (
         <div className="story-analysis">
-          {story.body.map((para) => (
-            <p key={para} className="story-body">
-              {para}
-            </p>
-          ))}
+          <p className="story-body">{story.body[0]}</p>
+          {story.body.length > 1 ? (
+            <details className="story-details">
+              <summary>Evidence and context ({story.body.length - 1} notes)</summary>
+              {story.body.slice(1).map((para) => (
+                <p key={para} className="story-body">
+                  {para}
+                </p>
+              ))}
+            </details>
+          ) : null}
         </div>
       ) : null}
       <figcaption className="story-source">{source}</figcaption>
