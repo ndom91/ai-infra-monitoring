@@ -1140,10 +1140,8 @@ h3,
 }
 
 .key-figure {
-  display: grid;
-  /* Indicator column is only as wide as its text; the rest goes to the figure. */
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 12px;
+  position: relative;
+  display: flex;
   padding: 15px 16px 16px;
   background: var(--bg);
   border-left: 0;
@@ -1156,9 +1154,15 @@ h3,
 
 .kf-main {
   display: flex;
+  flex: 1;
   flex-direction: column;
   gap: 4px;
   min-width: 0;
+}
+
+.kf-label,
+.kf-value {
+  padding-right: 62px;
 }
 
 .kf-label {
@@ -1185,18 +1189,23 @@ h3,
 }
 
 .kf-interpretation {
-  display: flex;
-  align-items: baseline;
-  gap: 6px;
+  display: block;
   color: var(--muted);
   font-size: 11.5px;
   line-height: 1.4;
+  text-align: left;
 }
 
 .kf-status {
+  display: inline;
   font: 10px var(--mono);
   letter-spacing: 0.4px;
   text-transform: uppercase;
+}
+
+.kf-status::after {
+  color: var(--muted);
+  content: " · ";
 }
 
 .signal-worsening .kf-status {
@@ -1212,10 +1221,12 @@ h3,
 }
 
 .kf-change {
+  position: absolute;
+  top: 16px;
+  right: 16px;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  justify-content: center;
   gap: 2px;
   font-family: var(--mono);
   text-align: right;
@@ -1503,5 +1514,15 @@ h3,
 
   .key-figure {
     padding: 12px;
+  }
+
+  .kf-label,
+  .kf-value {
+    padding-right: 52px;
+  }
+
+  .kf-change {
+    top: 12px;
+    right: 12px;
   }
 }
