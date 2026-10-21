@@ -68,7 +68,11 @@ function InfrastructurePage() {
               <ChartBlock
                 title="No series yet"
                 series={[]}
-                emptyReason="Broker reports are added by hand when they come out."
+                emptyReason={
+                  indicator === "power_grid"
+                    ? "The EIA collector has not published any selected-state observations yet."
+                    : "Broker reports are added by hand when they come out."
+                }
               />
             ) : (
               <div className="grid-2">
