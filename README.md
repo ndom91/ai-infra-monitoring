@@ -2,8 +2,6 @@
 
 ![hero screenshot](./.github/screenshot_001.png)
 
-Tracking the balance sheet behind the AI build-out.
-
 A research dashboard for one question: is the AI infrastructure build-out
 creating unsustainable overcapacity, leverage, and credit risk? It tracks nine
 indicators across GPU economics, credit, physical supply, and company
@@ -12,9 +10,6 @@ fundamentals, with source-level provenance and freshness on every series.
 **Rules it follows:** values are never invented or interpolated. Derived
 figures are labeled "calculated". Stale data is never shown as current.
 Sources whose terms forbid automated collection are not used.
-
-Stack: TanStack Start (React, Vite 8, Cloudflare Workers), TypeScript 7, Drizzle
-+ libSQL (Turso), valibot, Chart.js, Vitest, Biome, pnpm.
 
 ## Setup
 
