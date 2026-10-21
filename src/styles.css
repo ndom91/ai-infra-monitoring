@@ -1102,6 +1102,10 @@ h3,
   font: 10px var(--mono);
 }
 
+.story-aside .risk-signal-list li:last-child {
+  border-bottom: 0;
+}
+
 .data-timing {
   border-top: 1px solid var(--line);
   color: var(--muted);
@@ -1338,9 +1342,17 @@ h3,
   grid-template-columns: minmax(0, 1fr);
 }
 
+/* Grid, not CSS columns: column balancing reflowed the summary into the
+   first column when the details opened. */
 .story-grid.one .story-analysis {
-  column-count: 2;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: start;
   column-gap: clamp(32px, 4vw, 64px);
+}
+
+.story-grid.one .story-details {
+  margin-top: 0;
 }
 
 .story-chart {
@@ -1541,7 +1553,11 @@ h3,
   }
 
   .story-grid.one .story-analysis {
-    column-count: 1;
+    grid-template-columns: 1fr;
+  }
+
+  .story-grid.one .story-details {
+    margin-top: 14px;
   }
 
   .story-chart-head h3 {
