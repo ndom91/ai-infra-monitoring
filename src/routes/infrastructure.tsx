@@ -9,6 +9,11 @@ import type { IndicatorId } from "~/domain/types";
 import { pageHead } from "~/lib/seo";
 import { getSectionData, type SeriesView } from "~/server/data";
 
+const HISTORICAL_JLL_FAMILIES: Record<string, string> = {
+  "jll.us_colo": "JLL's U.S. colocation coverage ended after Midyear 2024.",
+  "jll.na_colo": "JLL's North America colocation coverage ended after Midyear 2025.",
+};
+
 export const Route = createFileRoute("/infrastructure")({
   head: () =>
     pageHead(
@@ -27,12 +32,12 @@ export const Route = createFileRoute("/infrastructure")({
 // unit, and cadence. Publishers and coverage changes never share a chart, and
 // annual totals never sit next to half-year figures.
 function groups(series: SeriesView[], indicator: IndicatorId) {
-  const map = new Map<string, { title: string; list: SeriesView[] }>();
+  const map = new Map<string, { family: string; title: string; list: SeriesView[] }>();
   for (const s of series.filter((x) => x.indicator === indicator)) {
     const family = s.id.split(".").slice(0, 2).join(".");
     const key = `${family}|${s.unit}|${s.cadence}`;
     const title = `${s.source}${s.entity ? ` · ${s.entity}` : ""} (${s.unit}${s.cadence === "annual" ? ", annual" : ""})`;
-    const g = map.get(key) ?? { title, list: [] };
+    const g = map.get(key) ?? { family, title, list: [] };
     g.list.push(s);
     map.set(key, g);
   }
@@ -53,9 +58,11 @@ function InfrastructurePage() {
       />
       {(["construction", "vacancy"] as const).map((indicator) => {
         const g = groups(series, indicator);
+        const active = g.filter((group) => !HISTORICAL_JLL_FAMILIES[group.family]);
+        const historical = g.filter((group) => HISTORICAL_JLL_FAMILIES[group.family]);
         return (
           <IndicatorPanel key={indicator} def={indicatorById(indicator)}>
-            {g.length === 0 ? (
+            {active.length === 0 ? (
               <ChartBlock
                 title="No series yet"
                 series={[]}
@@ -63,7 +70,7 @@ function InfrastructurePage() {
               />
             ) : (
               <div className="grid-2">
-                {g.map(({ title, list }) => (
+                {active.map(({ title, list }) => (
                   <ChartBlock
                     key={title}
                     title={title}
@@ -72,6 +79,26 @@ function InfrastructurePage() {
                   />
                 ))}
               </div>
+            )}
+            {historical.length > 0 && (
+              <details className="readme infrastructure-history">
+                <summary>Historical JLL coverage ({historical.length})</summary>
+                <p>
+                  JLL changed its market coverage, so these series cannot be joined to the current
+                  North America figures. They are retained for reference only.
+                </p>
+                <div className="grid-2">
+                  {historical.map(({ family, title, list }) => (
+                    <ChartBlock
+                      key={title}
+                      title={title}
+                      subtitle={HISTORICAL_JLL_FAMILIES[family]}
+                      series={list}
+                      info={infraExplainer(list.map((x) => x.id))}
+                    />
+                  ))}
+                </div>
+              </details>
             )}
           </IndicatorPanel>
         );

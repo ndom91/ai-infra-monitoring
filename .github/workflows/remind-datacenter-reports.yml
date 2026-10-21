@@ -1,0 +1,43 @@
+name: Remind about data-center reports
+on:
+  # JLL and CBRE normally publish their North America reports around February and August.
+  schedule:
+    - cron: "0 9 * 2,8 1"
+  workflow_dispatch:
+permissions:
+  issues: write
+jobs:
+  remind:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v8
+        with:
+          script: |
+            const label = "data-update-review";
+            const title = "Review new CBRE and JLL data-center reports";
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: "open",
+              labels: label,
+              per_page: 1,
+            });
+
+            if (issues.length > 0) {
+              core.info(`Review issue already open: #${issues[0].number}`);
+              return;
+            }
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title,
+              labels: [label],
+              body: `Review the latest published North America data-center reports and add verified values to \`data/manual/datacenter_supply.yaml\`.
+
+            - [CBRE data-center insights](https://www.cbre.com/insights/data-center)
+            - [JLL North America Data Center Report](https://www.jll.com/en-us/insights/market-dynamics/north-america-data-centers)
+            - [Manual-data rules](../../blob/main/data/manual/README.md)
+
+            Do not automate retrieval from CBRE or JLL: their terms prohibit scraping and systematic automated collection. Record only values directly supported by a source quote, preserve separate market definitions, run \`pnpm check:manual\`, and close this issue after the data is merged.`,
+            });

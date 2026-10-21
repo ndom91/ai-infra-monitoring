@@ -62,6 +62,8 @@ bundle.
 - `collect-prices.yml`: weekly.
 - `collect-manual.yml`: when `data/manual/**` changes on `main`, or manually.
 - `backup.yml`: weekly database backup, retained for 90 days as an artifact.
+- `remind-datacenter-reports.yml`: weekly during February and August; opens a
+  review issue with the official CBRE and JLL report links.
 - `ci.yml`: build, bundle check, typecheck, lint, and tests.
 
 ## Deployment
