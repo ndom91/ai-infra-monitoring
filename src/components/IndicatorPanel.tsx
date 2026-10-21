@@ -1,6 +1,14 @@
 import type { ReactNode } from "react";
 import type { IndicatorDef } from "~/domain/indicators";
 
+const CLASSIFICATION_HINT: Record<IndicatorDef["classification"], string> = {
+  Leading: "Early indicator of stress.",
+  "Leading / coincident": "Signals stress early or as it emerges.",
+  "Coincident / lagging": "Reflects stress as it happens or afterwards.",
+  Mixed: "Combines early and later signs of stress.",
+  Structural: "Tracks underlying conditions rather than the timing of stress.",
+};
+
 export function IndicatorPanel({ def, children }: { def: IndicatorDef; children: ReactNode }) {
   return (
     <section className="panel" id={def.id}>
@@ -10,7 +18,10 @@ export function IndicatorPanel({ def, children }: { def: IndicatorDef; children:
           <h2>{def.title}</h2>
           <p className="measures">{def.measures}</p>
         </div>
-        <span className={`pill cls-${def.classification.split(" ")[0]?.toLowerCase()}`}>
+        <span
+          className={`pill cls-${def.classification.split(" ")[0]?.toLowerCase()}`}
+          title={CLASSIFICATION_HINT[def.classification]}
+        >
           {def.classification}
         </span>
       </header>

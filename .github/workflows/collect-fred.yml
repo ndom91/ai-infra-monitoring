@@ -1,8 +1,8 @@
 name: Collect FRED credit spreads
 on:
   schedule:
-    # Weekdays after ICE BofA values for the prior day appear on FRED.
-    - cron: "40 9 * * 1-5"
+    # Weekdays at 08:00 GMT.
+    - cron: "0 8 * * 1-5"
   workflow_dispatch:
 jobs:
   fred:

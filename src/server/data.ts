@@ -114,7 +114,7 @@ export const getCoverageData = createServerFn({ method: "GET" }).handler(async (
   const db = getDb();
   const [counts, runs, latest] = await Promise.all([
     seriesCountsByIndicator(db),
-    recentRuns(db, 100),
+    recentRuns(db, 20),
     lastRuns(db),
   ]);
   return {
