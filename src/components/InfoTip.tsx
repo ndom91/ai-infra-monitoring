@@ -68,7 +68,7 @@ export function InfoTip({
       </button>
       {open && (
         <span
-          className="infotip-body"
+          className={`infotip-body${description ? " infotip-body-brief" : ""}`}
           role="tooltip"
           id={id}
           onMouseLeave={(event) => {

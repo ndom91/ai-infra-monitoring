@@ -867,13 +867,31 @@ code {
 .pill.infotip-btn {
   width: auto;
   height: auto;
+  border-color: #446759;
+  background: #233a34;
+  color: var(--teal);
   padding: 3px 9px;
   border-radius: 20px;
+  font: 11px var(--mono);
+  white-space: nowrap;
 }
 
-.infotip-btn:hover,
-.infotip-btn:focus-visible,
-.infotip-btn[aria-expanded="true"] {
+.pill.infotip-btn.cls-structural,
+.pill.infotip-btn.cls-coincident {
+  background: #293239;
+  color: #c0cbd1;
+  border-color: #465861;
+}
+
+.pill.infotip-btn.cls-mixed {
+  background: #3c3329;
+  color: var(--orange);
+  border-color: #75604a;
+}
+
+.infotip-btn:not(.pill):hover,
+.infotip-btn:not(.pill):focus-visible,
+.infotip-btn:not(.pill)[aria-expanded="true"] {
   color: var(--teal);
   border-color: var(--teal);
 }
@@ -902,7 +920,7 @@ code {
   text-align: left;
 }
 
-.infotip-bubble.infotip-brief {
+.infotip-body.infotip-body-brief {
   width: max-content;
   max-width: min(320px, calc(100vw - 40px));
 }
