@@ -116,9 +116,7 @@ function FundamentalsPage() {
         </div>
       </div>
       <CompanyPicker active={company} />
-      <FilingEvents
-        events={filingEvents.filter((event) => event.ticker === company).slice(0, 12)}
-      />
+      <FilingEvents events={filingEvents.slice(0, 12)} />
 
       <IndicatorPanel def={indicatorById("capex_cashflow")}>
         <div className="grid-2">
