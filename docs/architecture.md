@@ -12,7 +12,7 @@ external sources ──► collectors ──► runner ──► SQLite (Turso /
 
 | Layer | Path | Responsibility |
 |---|---|---|
-| Collectors | `src/collectors/<name>/` | Fetch one source, parse, return `SeriesDef[]` + `ObservationInput[]`. Pure parse functions, tested against recorded real responses in `test/fixtures/`. |
+| Collectors | `src/collectors/<name>/` | Fetch one source, parse, return `SeriesDef[]` + `ObservationInput[]`. Parsing helpers are unit-tested alongside each collector. |
 | Runner | `src/collectors/runner.ts` | Validates with valibot, writes append-only in one batch, logs every run to `collector_runs`. |
 | Storage | `src/storage/` | Drizzle schema, migrations (`drizzle/`), libSQL client, indexed queries. |
 | Domain | `src/domain/` | Indicator definitions, freshness rules, coverage matrix, ranges, tracked companies. |
@@ -26,9 +26,10 @@ external sources ──► collectors ──► runner ──► SQLite (Turso /
 | Name | Source | Cadence | Backfill |
 |---|---|---|---|
 | `fred` | FRED graph CSV | weekdays | ICE BofA: rolling 3 years only. Moody's / Treasury: from 2000. |
-| `sec` | SEC XBRL companyfacts | daily check | Full history every run. |
+| `sec` | SEC XBRL companyfacts | weekdays | Full history every run. |
 | `azure` | Azure Retail Prices API | weekly | Only the date the current price took effect. |
 | `aws` | AWS Price List Bulk API | weekly | Monthly price lists for the last 24 months. |
+| `salad` | Salad Community Cloud pricing page | weekly | Current published prices only. |
 | `manual` | `data/manual/*.yaml` | on change | Whatever is cited. |
 
 Each collector is independently runnable (`pnpm collect <name>`), idempotent,

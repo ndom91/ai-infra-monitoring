@@ -46,7 +46,10 @@ labeled "calculated" in the UI.
 
 ## `raw_snapshots`
 
-Gzipped API responses (trimmed to the fields used) from price collectors, deduplicated by SHA-256. They let aggregates be recomputed later.
+Gzipped source material from collectors, deduplicated by source and SHA-256.
+This includes trimmed price-list extracts, the Salad pricing page, and the exact
+manual YAML files used for a run. Snapshots let collected values be traced back
+to the input that produced them.
 
 ## `collector_runs`
 
