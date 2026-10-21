@@ -7,6 +7,15 @@ import { formatDateTime } from "~/lib/format";
 import { pageHead } from "~/lib/seo";
 import { getCoverageData } from "~/server/data";
 
+const COLLECTOR_CADENCE: Record<string, string> = {
+  fred: "weekdays",
+  sec: "weekdays",
+  azure: "weekly",
+  aws: "weekly",
+  salad: "weekly",
+  manual: "on update",
+};
+
 export const Route = createFileRoute("/coverage")({
   head: () =>
     pageHead(
@@ -88,7 +97,10 @@ function CoveragePage() {
               {latest.map((r) => (
                 <tr key={r.id}>
                   <td>
-                    <code>{r.collector}</code>
+                    <code>{r.collector}</code>{" "}
+                    <span className="badge fresh-awaiting">
+                      {COLLECTOR_CADENCE[r.collector] ?? "unscheduled"}
+                    </span>
                   </td>
                   <td className="muted">{formatDateTime(r.startedAt)} UTC</td>
                   <td>
