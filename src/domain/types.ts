@@ -8,6 +8,7 @@ export const INDICATOR_IDS = [
   "customer_concentration",
   "construction",
   "vacancy",
+  "power_grid",
   "contract_conversion",
   "depreciation",
 ] as const;

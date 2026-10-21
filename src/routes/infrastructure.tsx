@@ -24,7 +24,9 @@ export const Route = createFileRoute("/infrastructure")({
   validateSearch: (s) => ({ range: parseRange(s.range, "max") }),
   loaderDeps: ({ search }) => ({ range: search.range }),
   loader: ({ deps }) =>
-    getSectionData({ data: { indicators: ["construction", "vacancy"], range: deps.range } }),
+    getSectionData({
+      data: { indicators: ["construction", "vacancy", "power_grid"], range: deps.range },
+    }),
   component: InfrastructurePage,
 });
 
@@ -56,7 +58,7 @@ function InfrastructurePage() {
         blurb={section?.blurb ?? ""}
         range={range}
       />
-      {(["construction", "vacancy"] as const).map((indicator) => {
+      {(["construction", "vacancy", "power_grid"] as const).map((indicator) => {
         const g = groups(series, indicator);
         const active = g.filter((group) => !HISTORICAL_JLL_FAMILIES[group.family]);
         const historical = g.filter((group) => HISTORICAL_JLL_FAMILIES[group.family]);

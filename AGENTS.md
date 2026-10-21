@@ -61,6 +61,7 @@ bundle.
 - `collect-sec.yml`: weekdays at 08:00 UTC.
 - `collect-sec-filings.yml`: weekdays at 08:00, 13:00, and 18:00 UTC.
 - `collect-prices.yml`: weekly.
+- `collect-eia.yml`: monthly, after EIA's normal monthly publication window.
 - `collect-manual.yml`: when `data/manual/**` changes on `main`, or manually.
 - `backup.yml`: weekly database backup, retained for 90 days as an artifact.
 - `remind-datacenter-reports.yml`: weekly during February and August; opens a

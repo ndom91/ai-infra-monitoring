@@ -1,5 +1,6 @@
 import { awsCollector } from "./aws";
 import { azureCollector } from "./azure";
+import { eiaCollector } from "./eia";
 import { fredCollector } from "./fred";
 import { manualCollector } from "./manual";
 import { saladCollector } from "./salad";
@@ -14,5 +15,6 @@ export const COLLECTORS: Collector[] = [
   azureCollector,
   awsCollector,
   saladCollector,
+  eiaCollector,
   manualCollector,
 ];

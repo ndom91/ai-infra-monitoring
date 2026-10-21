@@ -90,6 +90,16 @@ export const COVERAGE: Record<
       "JLL's 2022–2023 reports couldn't be retrieved.",
     ],
   },
+  power_grid: {
+    status: "partial",
+    collectors: ["eia"],
+    summary:
+      "Monthly commercial electricity sales and average prices for Virginia, Texas, Arizona, Illinois and Georgia, from EIA Form EIA-861M.",
+    gaps: [
+      "State-wide commercial electricity data is not data-center-specific demand.",
+      "The monthly survey is preliminary and can be revised. It does not show local grid capacity or connection availability.",
+    ],
+  },
   contract_conversion: {
     status: "implemented",
     collectors: ["sec"],

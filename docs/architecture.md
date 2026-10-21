@@ -27,9 +27,11 @@ external sources ──► collectors ──► runner ──► SQLite (Turso /
 |---|---|---|---|
 | `fred` | FRED graph CSV | weekdays | ICE BofA: rolling 3 years only. Moody's / Treasury: from 2000. |
 | `sec` | SEC XBRL companyfacts | weekdays | Full history every run. |
+| `sec_filings` | SEC submissions metadata | weekdays, three times daily | Recent filing events only. |
 | `azure` | Azure Retail Prices API | weekly | Only the date the current price took effect. |
 | `aws` | AWS Price List Bulk API | weekly | Monthly price lists for the last 24 months. |
 | `salad` | Salad Community Cloud pricing page | weekly | Current published prices only. |
+| `eia` | EIA Form EIA-861M monthly workbook | monthly | State-level commercial sales and prices from 2010. |
 | `manual` | `data/manual/*.yaml` | on change | Whatever is cited. |
 
 Each collector is independently runnable (`pnpm collect <name>`), idempotent,

@@ -196,6 +196,26 @@ export const INDICATORS: IndicatorDef[] = [
     ],
   },
   {
+    id: "power_grid",
+    number: "10",
+    title: "Power & grid context",
+    section: "infrastructure",
+    classification: "Leading / coincident",
+    measures: "Commercial electricity sales and prices in major data-center-market states.",
+    deterioration:
+      "Commercial electricity demand rising faster than supply, or power prices rising sharply.",
+    caveats: [
+      "State-wide commercial electricity data is not data-center-specific demand.",
+      "Monthly values are preliminary estimates and can be revised by EIA.",
+    ],
+    sources: [
+      {
+        label: "U.S. Energy Information Administration",
+        url: "https://www.eia.gov/electricity/data/eia861m/",
+      },
+    ],
+  },
+  {
     id: "contract_conversion",
     number: "08",
     title: "Contracted vs realized revenue",
