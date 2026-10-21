@@ -841,6 +841,12 @@ code {
   z-index: 5;
 }
 
+.infotip-inline {
+  position: relative;
+  top: auto;
+  right: auto;
+}
+
 .infotip-btn {
   width: 20px;
   height: 20px;
@@ -856,6 +862,13 @@ code {
   transition:
     color 120ms ease,
     border-color 120ms ease;
+}
+
+.pill.infotip-btn {
+  width: auto;
+  height: auto;
+  padding: 3px 9px;
+  border-radius: 20px;
 }
 
 .infotip-btn:hover,
@@ -887,6 +900,11 @@ code {
   line-height: 1.5;
   color: var(--text);
   text-align: left;
+}
+
+.infotip-bubble.infotip-brief {
+  width: max-content;
+  max-width: min(320px, calc(100vw - 40px));
 }
 
 .infotip-row {

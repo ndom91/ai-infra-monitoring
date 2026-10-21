@@ -1,9 +1,23 @@
-import { useEffect, useId, useRef, useState } from "react";
+import { type ReactNode, useEffect, useId, useRef, useState } from "react";
 import type { Explainer } from "~/domain/explainers";
 
 // Opens on hover or keyboard focus. A click/tap pins it open, so it also
 // works on touch screens; tap again, tap outside, or press Escape to close.
-export function InfoTip({ label, info }: { label: string; info: Explainer }) {
+export function InfoTip({
+  label,
+  info,
+  description,
+  children,
+  triggerClassName,
+  inline = false,
+}: {
+  label: string;
+  info?: Explainer;
+  description?: string;
+  children?: ReactNode;
+  triggerClassName?: string;
+  inline?: boolean;
+}) {
   const [open, setOpen] = useState(false);
   const [pinned, setPinned] = useState(false);
   const ref = useRef<HTMLSpanElement>(null);
@@ -30,16 +44,16 @@ export function InfoTip({ label, info }: { label: string; info: Explainer }) {
   }, [open]);
 
   return (
-    <span ref={ref} className="infotip">
+    <span ref={ref} className={`infotip${inline ? " infotip-inline" : ""}`}>
       <button
         type="button"
-        className="infotip-btn"
+        className={`infotip-btn${triggerClassName ? ` ${triggerClassName}` : ""}`}
         aria-label={`About: ${label}`}
         aria-expanded={open}
         aria-describedby={open ? id : undefined}
         onMouseEnter={() => setOpen(true)}
-        onMouseLeave={() => {
-          if (!pinned) setOpen(false);
+        onMouseLeave={(event) => {
+          if (!pinned && !ref.current?.contains(event.relatedTarget as Node)) setOpen(false);
         }}
         onFocus={() => setOpen(true)}
         onBlur={() => {
@@ -50,24 +64,37 @@ export function InfoTip({ label, info }: { label: string; info: Explainer }) {
           setOpen(!pinned);
         }}
       >
-        i
+        {children ?? "i"}
       </button>
       {open && (
-        <span className="infotip-body" role="tooltip" id={id}>
-          <span className="infotip-bubble">
-            <span className="infotip-row">
-              <b>What it shows</b>
-              {info.what}
-            </span>
-            <span className="infotip-row">
-              <b>How to read it</b>
-              {info.read}
-            </span>
-            <span className="infotip-row">
-              <b>Why it matters</b>
-              {info.why}
-            </span>
-          </span>
+        <span
+          className="infotip-body"
+          role="tooltip"
+          id={id}
+          onMouseLeave={(event) => {
+            if (!pinned && !ref.current?.contains(event.relatedTarget as Node)) setOpen(false);
+          }}
+        >
+          {description ? (
+            <span className="infotip-bubble infotip-brief">{description}</span>
+          ) : (
+            info && (
+              <span className="infotip-bubble">
+                <span className="infotip-row">
+                  <b>What it shows</b>
+                  {info.what}
+                </span>
+                <span className="infotip-row">
+                  <b>How to read it</b>
+                  {info.read}
+                </span>
+                <span className="infotip-row">
+                  <b>Why it matters</b>
+                  {info.why}
+                </span>
+              </span>
+            )
+          )}
         </span>
       )}
     </span>

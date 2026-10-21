@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { InfoTip } from "~/components/InfoTip";
 import type { IndicatorDef } from "~/domain/indicators";
 
 const CLASSIFICATION_HINT: Record<IndicatorDef["classification"], string> = {
@@ -18,12 +19,14 @@ export function IndicatorPanel({ def, children }: { def: IndicatorDef; children:
           <h2>{def.title}</h2>
           <p className="measures">{def.measures}</p>
         </div>
-        <span
-          className={`pill cls-${def.classification.split(" ")[0]?.toLowerCase()}`}
-          title={CLASSIFICATION_HINT[def.classification]}
+        <InfoTip
+          label={def.classification}
+          description={CLASSIFICATION_HINT[def.classification]}
+          triggerClassName={`pill infotip-pill cls-${def.classification.split(" ")[0]?.toLowerCase()}`}
+          inline
         >
           {def.classification}
-        </span>
+        </InfoTip>
       </header>
       {children}
       <details className="readme">
