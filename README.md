@@ -31,3 +31,7 @@ and deployment, see [AGENTS.md](AGENTS.md).
 - [Coverage](docs/coverage.md): what each indicator can and cannot show, and why.
 
 Research dashboard, not investment advice.
+
+## License
+
+MIT
