@@ -1,5 +1,7 @@
 # Artificial Liabilities
 
+![hero screenshot](./.github/screenshot_001.png)
+
 Tracking the balance sheet behind the AI build-out.
 
 A research dashboard for one question: is the AI infrastructure build-out
