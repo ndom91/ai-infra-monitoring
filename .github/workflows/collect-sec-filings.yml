@@ -1,0 +1,11 @@
+name: Collect SEC filing events
+on:
+  schedule:
+    - cron: "0 8,13,18 * * 1-5"
+  workflow_dispatch:
+jobs:
+  sec-filings:
+    uses: ./.github/workflows/_collect.yml
+    with:
+      collectors: sec_filings
+    secrets: inherit

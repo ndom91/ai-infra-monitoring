@@ -9,10 +9,10 @@ import {
   SeriesDefSchema,
 } from "~/domain/types";
 import type { Db } from "~/storage/db";
-import { collectorRuns, observations, rawSnapshots, series } from "~/storage/schema";
+import { collectorRuns, filingEvents, observations, rawSnapshots, series } from "~/storage/schema";
 import { type CollectorError, classify, permanent } from "./errors";
 import { fetchWithRetry } from "./http";
-import type { CollectContext, CollectOutput, Collector } from "./types";
+import type { CollectContext, CollectOutput, Collector, FilingEventInput } from "./types";
 
 export type RunSummary = {
   runId: number;
@@ -135,10 +135,23 @@ function validate(output: CollectOutput) {
     seen.add(key);
     obs.push(r.output);
   }
+  const filingEvents: FilingEventInput[] = [];
+  const accessions = new Set<string>();
+  for (const event of output.filingEvents ?? []) {
+    if (!event.accession || !event.ticker || !event.company || !event.form || !event.filedAt) {
+      throw permanent("invalid filing event");
+    }
+    if (accessions.has(event.accession)) {
+      throw permanent(`duplicate filing event ${event.accession}`);
+    }
+    accessions.add(event.accession);
+    filingEvents.push(event);
+  }
   return {
     series: seriesDefs,
     observations: obs,
     snapshots: output.snapshots ?? [],
+    filingEvents,
   };
 }
 
@@ -222,6 +235,14 @@ async function persist(
           body,
           runId,
         })
+        .onConflictDoNothing(),
+    );
+  }
+  for (const event of data.filingEvents) {
+    stmts.push(
+      db
+        .insert(filingEvents)
+        .values({ ...event, runId })
         .onConflictDoNothing(),
     );
   }

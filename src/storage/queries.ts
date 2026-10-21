@@ -1,10 +1,11 @@
 import { and, count, desc, eq, gte, inArray, max, type SQL } from "drizzle-orm";
 import type { IndicatorId } from "~/domain/types";
 import type { Db } from "./db";
-import { alertEvents, collectorRuns, observations, series } from "./schema";
+import { alertEvents, collectorRuns, filingEvents, observations, series } from "./schema";
 
 export type SeriesRow = typeof series.$inferSelect;
 export type RunRow = typeof collectorRuns.$inferSelect;
+export type FilingEventRow = typeof filingEvents.$inferSelect;
 
 // What to load: whole indicators, or an exact list of series.
 export type SeriesSelection = { indicators: IndicatorId[]; seriesIds?: string[] };
@@ -83,6 +84,10 @@ export function recentAlerts(db: Db, limit = 100) {
     .from(alertEvents)
     .orderBy(desc(alertEvents.triggeredAt), desc(alertEvents.id))
     .limit(limit);
+}
+
+export function recentFilingEvents(db: Db, limit = 100) {
+  return db.select().from(filingEvents).orderBy(desc(filingEvents.filedAt)).limit(limit);
 }
 
 // When data last landed: the newest run that wrote something (ok or partial).

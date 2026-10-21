@@ -8,6 +8,7 @@ import {
   lastSuccessfulRun,
   latestObservations,
   recentAlerts,
+  recentFilingEvents,
   recentRuns,
   seriesCountsByIndicator,
   seriesFor,
@@ -83,25 +84,28 @@ export const getFundamentalsData = createServerFn({ method: "GET" })
   .handler(async ({ data }) => {
     cacheResponse();
     const now = new Date();
-    const { series, raw, runStatus, visibleFrom } = await loadSection(
-      {
-        indicators: [
-          "capex_cashflow",
-          "contract_conversion",
-          "customer_concentration",
-          "depreciation",
-        ],
-        range: data.range,
-        fullHistory: true,
-      },
-      now,
-    );
+    const [{ series, raw, runStatus, visibleFrom }, filingEvents] = await Promise.all([
+      loadSection(
+        {
+          indicators: [
+            "capex_cashflow",
+            "contract_conversion",
+            "customer_concentration",
+            "depreciation",
+          ],
+          range: data.range,
+          fullHistory: true,
+        },
+        now,
+      ),
+      recentFilingEvents(getDb(), 100),
+    ]);
     const derived = TICKERS.flatMap((ticker) =>
       deriveCompanySeries(ticker, (concept) => raw.get(`sec.${ticker}.${concept}`) ?? []),
     ).map((d) =>
       buildView(d.def, d.points, { now, visibleFrom, lastRunStatus: runStatus.get("sec") }),
     );
-    return { series: [...series, ...derived], now: now.toISOString(), visibleFrom };
+    return { series: [...series, ...derived], filingEvents, now: now.toISOString(), visibleFrom };
   });
 
 export const getAlertsData = createServerFn({ method: "GET" }).handler(async () => {

@@ -11,10 +11,24 @@ export type CollectContext = {
 
 export type Snapshot = { contentType: string; body: string };
 
+export type FilingEventInput = {
+  accession: string;
+  ticker: string;
+  company: string;
+  form: string;
+  filedAt: string;
+  acceptedAt?: string;
+  reportDate?: string;
+  items?: string;
+  description?: string;
+  sourceUrl: string;
+};
+
 export type CollectOutput = {
   series: SeriesDef[];
   observations: ObservationInput[];
   snapshots?: Snapshot[];
+  filingEvents?: FilingEventInput[];
   // Sub-sources that failed while others succeeded. Makes the run "partial".
   failures?: { key: string; error: CollectorError }[];
 };

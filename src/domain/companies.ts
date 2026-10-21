@@ -17,3 +17,8 @@ export const SEC_COMPANIES: SecCompany[] = [
   { ticker: "IREN", name: "IREN", cik: 1878848, group: "neocloud" },
   { ticker: "APLD", name: "Applied Digital", cik: 1144879, group: "neocloud" },
 ];
+
+export const SEC_FILING_COMPANIES: SecCompany[] = [
+  ...SEC_COMPANIES,
+  { ticker: "NBIS", name: "Nebius", cik: 1513845, group: "neocloud" },
+];

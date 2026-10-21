@@ -95,6 +95,27 @@ export const collectorRuns = sqliteTable(
   (t) => [index("runs_collector_idx").on(t.collector, t.startedAt)],
 );
 
+export const filingEvents = sqliteTable(
+  "filing_events",
+  {
+    id: integer().primaryKey({ autoIncrement: true }),
+    accession: text().notNull().unique(),
+    ticker: text().notNull(),
+    company: text().notNull(),
+    form: text().notNull(),
+    filedAt: text().notNull(),
+    acceptedAt: text(),
+    reportDate: text(),
+    items: text(),
+    description: text(),
+    sourceUrl: text().notNull(),
+    runId: integer()
+      .notNull()
+      .references(() => collectorRuns.id),
+  },
+  (t) => [index("filing_events_time_idx").on(t.acceptedAt, t.filedAt)],
+);
+
 export const alertEvents = sqliteTable(
   "alert_events",
   {

@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ChartBlock } from "~/components/ChartBlock";
 import { CompanyPicker } from "~/components/CompanyPicker";
+import { FilingEvents } from "~/components/FilingEvents";
 import { IndicatorPanel } from "~/components/IndicatorPanel";
 import { SectionHeader } from "~/components/SectionHeader";
 import { TermsTable } from "~/components/TermsTable";
@@ -36,7 +37,7 @@ const concentrationLabel = (s: SeriesView) => {
 };
 
 function FundamentalsPage() {
-  const { series } = Route.useLoaderData();
+  const { series, filingEvents } = Route.useLoaderData();
   const { range, company } = Route.useSearch();
   const section = SECTIONS.find((s) => s.id === "fundamentals");
   const selected = SEC_COMPANIES.find((c) => c.ticker === company);
@@ -115,6 +116,9 @@ function FundamentalsPage() {
         </div>
       </div>
       <CompanyPicker active={company} />
+      <FilingEvents
+        events={filingEvents.filter((event) => event.ticker === company).slice(0, 12)}
+      />
 
       <IndicatorPanel def={indicatorById("capex_cashflow")}>
         <div className="grid-2">
