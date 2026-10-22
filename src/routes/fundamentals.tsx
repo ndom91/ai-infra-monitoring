@@ -100,6 +100,7 @@ function FundamentalsPage() {
           />
         </div>
       </section>
+      <FilingEvents events={filingEvents.slice(0, 12)} />
 
       <div className="section-head company-head">
         <div>
@@ -116,7 +117,6 @@ function FundamentalsPage() {
         </div>
       </div>
       <CompanyPicker active={company} />
-      <FilingEvents events={filingEvents.slice(0, 12)} />
 
       <IndicatorPanel def={indicatorById("capex_cashflow")}>
         <div className="grid-2">
