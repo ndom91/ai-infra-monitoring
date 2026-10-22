@@ -89,6 +89,25 @@ h2 {
   letter-spacing: -0.25px;
 }
 
+.page-lead {
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+  max-width: 920px;
+  margin: -6px 0 24px;
+  padding: 14px 0 15px;
+  border-block: 1px solid var(--line);
+}
+
+.page-lead h2 {
+  margin-top: 1px;
+}
+
+.page-lead p {
+  max-width: 760px;
+}
+
 .wrap {
   max-width: 1450px;
   padding: 32px 34px 70px;
@@ -169,6 +188,11 @@ h2 {
 @media (max-width: 850px) {
   .wrap {
     padding: 22px 16px;
+  }
+
+  .page-lead {
+    grid-template-columns: 1fr;
+    gap: 4px;
   }
 }
 
