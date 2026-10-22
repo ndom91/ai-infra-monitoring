@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ChartBlock } from "~/components/ChartBlock";
 import { IndicatorPanel } from "~/components/IndicatorPanel";
+import { PageLead } from "~/components/PageLead";
 import { SectionHeader } from "~/components/SectionHeader";
 import { infraExplainer } from "~/domain/explainers";
 import { indicatorById, SECTIONS } from "~/domain/indicators";
@@ -58,6 +59,11 @@ function InfrastructurePage() {
         blurb={section?.blurb ?? ""}
         range={range}
       />
+      <PageLead title="Read supply, availability, then the power backdrop">
+        Construction shows the supply being added, vacancy shows how much immediately available
+        space remains, and power data adds state-wide commercial context. Publisher market
+        definitions stay separate; they are not combined into a single North America total.
+      </PageLead>
       {(["construction", "vacancy", "power_grid"] as const).map((indicator) => {
         const g = groups(series, indicator);
         const active = g.filter((group) => !HISTORICAL_JLL_FAMILIES[group.family]);
