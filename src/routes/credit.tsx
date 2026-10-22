@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ChartBlock } from "~/components/ChartBlock";
 import { IndicatorPanel } from "~/components/IndicatorPanel";
+import { PageLead } from "~/components/PageLead";
 import { SectionHeader } from "~/components/SectionHeader";
 import { TermsTable } from "~/components/TermsTable";
 import { EXPLAINERS } from "~/domain/explainers";
@@ -39,6 +40,11 @@ function CreditPage() {
         blurb={section?.blurb ?? ""}
         range={range}
       />
+      <PageLead title="Separate market stress from disclosed debt terms">
+        The charts first show broad credit-market conditions, from riskier borrowers to safer
+        benchmarks and the wider rate backdrop. The table below is different: it records the coupon
+        and terms when AI companies issued debt, not a live market price.
+      </PageLead>
       <IndicatorPanel def={indicatorById("credit")}>
         <div className="grid-2">
           <ChartBlock
