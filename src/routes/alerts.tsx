@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { PageLead } from "~/components/PageLead";
 import { SectionHeader } from "~/components/SectionHeader";
 import { formatDate, formatValue } from "~/lib/format";
 import { pageHead } from "~/lib/seo";
@@ -23,6 +24,10 @@ function AlertsPage() {
         title="Alerts"
         blurb="Simple threshold rules. Each alert lists the exact data points that triggered it. These are flags, not predictions."
       />
+      <PageLead title="Treat alerts as prompts to inspect evidence">
+        Each flag is a mechanical threshold, not a forecast. Read the alert message first, then use
+        its linked observations and sources to verify what changed.
+      </PageLead>
       {alerts.length === 0 ? (
         <div className="no-data">
           <b>No alerts have fired</b>

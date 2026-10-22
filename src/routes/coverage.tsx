@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { FreshnessBadge } from "~/components/FreshnessBadge";
+import { PageLead } from "~/components/PageLead";
 import { SectionHeader } from "~/components/SectionHeader";
 import { COVERAGE, COVERAGE_LABEL } from "~/domain/coverage";
 import { INDICATORS } from "~/domain/indicators";
@@ -10,9 +11,11 @@ import { getCoverageData } from "~/server/data";
 const COLLECTOR_CADENCE: Record<string, string> = {
   fred: "weekdays",
   sec: "weekdays",
+  sec_filings: "weekdays",
   azure: "weekly",
   aws: "weekly",
   salad: "weekly",
+  eia: "monthly",
   manual: "on update",
 };
 
@@ -35,6 +38,11 @@ function CoveragePage() {
         title="Coverage & data health"
         blurb="What each indicator can and can't show, where the data comes from, and how recent data pulls went."
       />
+      <PageLead title="Check scope first, then collection health">
+        Coverage describes what each indicator can support and its known gaps. The collector table
+        shows the latest data pull; open run history only when investigating a failed, partial, or
+        unexpected update.
+      </PageLead>
       <section className="panel">
         <h2>What we cover</h2>
         <div className="table-scroll">
