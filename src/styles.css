@@ -90,8 +90,6 @@ h2 {
 }
 
 .page-lead {
-  display: grid;
-  grid-template-columns: 150px minmax(0, 1fr);
   width: 100%;
   margin: -2px 0 24px;
   padding: 13px 16px;
@@ -102,6 +100,8 @@ h2 {
 }
 
 .page-lead-label {
+  display: block;
+  margin-bottom: 6px;
   color: var(--muted);
   font: 11px var(--mono);
   letter-spacing: 0.04em;
@@ -199,11 +199,6 @@ h2 {
 @media (max-width: 850px) {
   .wrap {
     padding: 22px 16px;
-  }
-
-  .page-lead {
-    grid-template-columns: 1fr;
-    gap: 5px;
   }
 }
 
