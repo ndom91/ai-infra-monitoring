@@ -3,6 +3,7 @@ import { ChartBlock } from "~/components/ChartBlock";
 import { CompanyPicker } from "~/components/CompanyPicker";
 import { FilingEvents } from "~/components/FilingEvents";
 import { IndicatorPanel } from "~/components/IndicatorPanel";
+import { PageLead } from "~/components/PageLead";
 import { SectionHeader } from "~/components/SectionHeader";
 import { TermsTable } from "~/components/TermsTable";
 import { SEC_COMPANIES } from "~/domain/companies";
@@ -60,6 +61,11 @@ function FundamentalsPage() {
         blurb={section?.blurb ?? ""}
         range={range}
       />
+      <PageLead title="Compare the funding behind the build-out">
+        Start with the peer charts: they show which companies are spending against internally
+        generated cash and which carry more debt. Then choose a company for its reported financial
+        detail. Latest filings cover every tracked issuer and do not change with the selector.
+      </PageLead>
       <section className="panel">
         <header className="panel-head">
           <div>
