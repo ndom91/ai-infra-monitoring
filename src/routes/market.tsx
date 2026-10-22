@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ChartBlock } from "~/components/ChartBlock";
 import { IndicatorPanel } from "~/components/IndicatorPanel";
+import { PageLead } from "~/components/PageLead";
 import { SectionHeader } from "~/components/SectionHeader";
 import { EXPLAINERS } from "~/domain/explainers";
 import { indicatorById, SECTIONS } from "~/domain/indicators";
@@ -44,6 +45,11 @@ function MarketPage() {
         blurb={section?.blurb ?? ""}
         range={range}
       />
+      <PageLead title="Start with public rental list prices">
+        Compare like-for-like GPU-hour list prices by accelerator class, provider, region, and tier.
+        These are published offers rather than transaction prices. The separate resale section is
+        limited to cited, permitted secondary-market evidence.
+      </PageLead>
       <IndicatorPanel def={indicatorById("gpu_rental")}>
         <div className="grid-2">
           {[
