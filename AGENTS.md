@@ -57,8 +57,8 @@ bundle.
 
 ## Scheduled workflows
 
-- `collect-fred.yml`: weekdays at 08:00 UTC.
-- `collect-sec.yml`: weekdays at 08:00 UTC.
+- `collect-fred.yml`: weekdays at 08:07 UTC.
+- `collect-sec.yml`: weekdays at 08:13 UTC.
 - `collect-sec-filings.yml`: weekdays at 08:00, 13:00, and 18:00 UTC.
 - `collect-prices.yml`: weekly.
 - `collect-eia.yml`: monthly, after EIA's normal monthly publication window.

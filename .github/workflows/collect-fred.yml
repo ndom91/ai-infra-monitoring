@@ -1,8 +1,8 @@
 name: Collect FRED credit spreads
 on:
   schedule:
-    # Weekdays at 08:00 GMT.
-    - cron: "0 8 * * 1-5"
+    # Weekdays at 08:07 UTC; avoid GitHub's busiest scheduler minute.
+    - cron: "7 8 * * 1-5"
   workflow_dispatch:
 jobs:
   fred:
