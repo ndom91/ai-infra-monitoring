@@ -2,12 +2,12 @@ import type { ReactNode } from "react";
 
 export function PageLead({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <aside className="page-lead" aria-label="How to use this page">
-      <div className="eyebrow">Start here</div>
+    <details className="page-lead">
+      <summary>How to read this page</summary>
       <div>
-        <h2>{title}</h2>
+        <strong>{title}</strong>
         <p>{children}</p>
       </div>
-    </aside>
+    </details>
   );
 }
