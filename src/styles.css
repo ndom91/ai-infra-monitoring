@@ -643,14 +643,20 @@ code {
 
 .picker-group {
   display: flex;
-  gap: 6px;
-  align-items: center;
+  flex-direction: column;
+  gap: 5px;
+  align-items: flex-start;
 }
 
 .picker-label {
   color: var(--muted);
   font-size: 11px;
-  margin-right: 4px;
+}
+
+.picker-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
 }
 
 .more {
