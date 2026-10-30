@@ -129,6 +129,12 @@ function RootDocument({ children }: { children: ReactNode }) {
     <html lang="en">
       <head>
         <HeadContent />
+        <script
+          src="https://stats.ndo.dev/api/script.js"
+          data-site-id="bd9b4d637e04"
+          defer
+          fetchPriority="low"
+        />
       </head>
       <body>
         {children}
