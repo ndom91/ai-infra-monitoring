@@ -11,6 +11,7 @@ import {
 } from "chart.js";
 import { Line } from "react-chartjs-2";
 import { formatValue, PALETTE } from "~/lib/format";
+import { sortTooltipDescending } from "./chartTooltip";
 
 Chart.register(TimeScale, LinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
 
@@ -82,6 +83,7 @@ export function TimeChart({ lines, unit, height = 220, stepped, rebase, minUnit 
               },
             },
             tooltip: {
+              itemSort: sortTooltipDescending,
               callbacks: {
                 label: (ctx) => {
                   const p = lines[ctx.datasetIndex]?.points[ctx.dataIndex];

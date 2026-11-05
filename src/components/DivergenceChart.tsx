@@ -2,6 +2,7 @@ import "chartjs-adapter-date-fns";
 import { Line } from "react-chartjs-2";
 import { formatValue, PALETTE } from "~/lib/format";
 import type { DivergenceLine } from "~/server/overview";
+import { sortTooltipDescending } from "./chartTooltip";
 // Registers the chart.js components shared with TimeChart.
 import "./TimeChart";
 
@@ -51,6 +52,7 @@ export function DivergenceChart({ lines }: { lines: DivergenceLine[] }) {
               labels: { color: TICK, boxWidth: 10, boxHeight: 2, font: { size: 11 } },
             },
             tooltip: {
+              itemSort: sortTooltipDescending,
               callbacks: {
                 label: (ctx) =>
                   ` ${ctx.dataset.label}: ${formatValue(ctx.parsed.y ?? 0, (ctx.datasetIndex === 0 ? a : b).unit)}`,
