@@ -94,7 +94,7 @@ export const COVERAGE: Record<
     status: "partial",
     collectors: ["eia"],
     summary:
-      "Monthly commercial electricity sales and average prices for Virginia, Texas, Arizona, Illinois and Georgia, from EIA Form EIA-861M.",
+      "Monthly commercial electricity sales and average prices for Virginia, Texas, Arizona, Illinois, Georgia and Pennsylvania, from EIA Form EIA-861M.",
     gaps: [
       "State-wide commercial electricity data is not data-center-specific demand.",
       "The monthly survey is preliminary and can be revised. It does not show local grid capacity or connection availability.",

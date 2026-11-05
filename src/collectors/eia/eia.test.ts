@@ -7,6 +7,7 @@ describe("parseSalesRevenue", () => {
     const workbook = XLSX.utils.book_new();
     const rows = Array.from({ length: 4 }, () => [] as unknown[]);
     rows.push([2026, 7, "VA", "Preliminary", 0, 0, 0, 0, 100, 200, 0, 12.5]);
+    rows.push([2026, 7, "PA", "Preliminary", 0, 0, 0, 0, 100, 300, 0, 13.5]);
     rows.push([2026, 7, "NY", "Preliminary", 0, 0, 0, 0, 100, 200, 0, 12.5]);
     XLSX.utils.book_append_sheet(workbook, XLSX.utils.aoa_to_sheet(rows), "Monthly-States");
 
@@ -22,6 +23,12 @@ describe("parseSalesRevenue", () => {
     expect(output.observations).toContainEqual(
       expect.objectContaining({ seriesId: "eia.commercial_price.VA", value: 12.5 }),
     );
-    expect(output.observations).toHaveLength(2);
+    expect(output.observations).toContainEqual(
+      expect.objectContaining({ seriesId: "eia.commercial_sales.PA", value: 300 }),
+    );
+    expect(output.observations).toContainEqual(
+      expect.objectContaining({ seriesId: "eia.commercial_price.PA", value: 13.5 }),
+    );
+    expect(output.observations).toHaveLength(4);
   });
 });

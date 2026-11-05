@@ -11,6 +11,7 @@ const STATES = new Map([
   ["AZ", "Arizona"],
   ["IL", "Illinois"],
   ["GA", "Georgia"],
+  ["PA", "Pennsylvania"],
 ]);
 
 type Row = [number, number, string, string, ...number[]];
