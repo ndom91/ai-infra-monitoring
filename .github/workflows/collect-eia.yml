@@ -1,10 +1,25 @@
 name: Collect EIA electricity data
 on:
   schedule:
-    - cron: "0 12 5 * *"
+    - cron: "0 12 * * 4"
   workflow_dispatch:
 jobs:
+  schedule:
+    runs-on: ubuntu-latest
+    outputs:
+      collect: ${{ steps.check.outputs.collect }}
+    steps:
+      - id: check
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          # Thursdays alternate between day 0 and day 7 of each 14-day epoch cycle.
+          if [[ "$EVENT_NAME" == "workflow_dispatch" ]] || (( $(date -u +%s) / 86400 % 14 == 0 )); then
+            echo "collect=true" >> "$GITHUB_OUTPUT"
+          fi
   eia:
+    needs: schedule
+    if: needs.schedule.outputs.collect == 'true'
     uses: ./.github/workflows/_collect.yml
     with:
       collectors: eia
