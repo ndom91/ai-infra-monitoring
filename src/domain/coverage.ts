@@ -16,9 +16,9 @@ export const COVERAGE: Record<
 > = {
   gpu_rental: {
     status: "partial",
-    collectors: ["azure", "aws", "salad"],
+    collectors: ["azure", "aws", "salad", "runcrate"],
     summary:
-      "AWS and Azure list prices for H100 and H200 GPUs, plus Salad Community Cloud's published RTX 4090 and RTX 5090 prices by priority tier. Collected weekly.",
+      "AWS and Azure list prices for H100 and H200 GPUs, Salad Community Cloud's published RTX 4090 and RTX 5090 prices by priority tier, and Runcrate's published H200, RTX 4090 and RTX 5090 starting rates. Collected weekly.",
     gaps: [
       "Salad is a single managed community-cloud price schedule, not a host-by-host marketplace. Vast.ai (Sep 2026) and Shadeform (Aug 2026) terms forbid building price indexes or databases without written permission.",
       "Prices do not show how much capacity is in use. Salad priority tiers differ in preemption risk.",
