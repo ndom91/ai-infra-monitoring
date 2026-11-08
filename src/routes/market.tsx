@@ -34,7 +34,14 @@ function MarketPage() {
   const resale = series.filter((s) => s.indicator === "gpu_resale");
   const shortLabel = (s: SeriesView) => {
     const [provider, , region, type] = s.id.split(".");
-    const name = provider === "aws" ? "AWS" : provider === "azure" ? "Azure" : "Salad";
+    const name =
+      provider === "aws"
+        ? "AWS"
+        : provider === "azure"
+          ? "Azure"
+          : provider === "runcrate"
+            ? "Runcrate"
+            : "Salad";
     return `${name} ${(type ?? "").replaceAll("_", " ")} (${region})`;
   };
 

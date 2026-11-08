@@ -44,7 +44,7 @@ export function utcDate(d: Date) {
 
 // One price point as read from the source, before it becomes observations.
 export type ListPrice = {
-  provider: "azure" | "aws" | "salad";
+  provider: "azure" | "aws" | "salad" | "runcrate";
   cohort: GpuCohort;
   region: string;
   priceType: PriceType;

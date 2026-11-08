@@ -15,6 +15,7 @@ const COLLECTOR_CADENCE: Record<string, string> = {
   azure: "weekly",
   aws: "weekly",
   salad: "weekly",
+  runcrate: "weekly",
   eia: "monthly",
   manual: "on update",
 };

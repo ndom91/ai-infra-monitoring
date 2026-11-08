@@ -70,6 +70,7 @@ export const INDICATORS: IndicatorDef[] = [
         url: "https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/using-the-aws-price-list-bulk-api.html",
       },
       { label: "Salad Community Cloud pricing", url: "https://salad.com/pricing/" },
+      { label: "Runcrate GPU pricing feed", url: "https://www.runcrate.ai/api/gpu-pricing" },
     ],
   },
   {

@@ -26,7 +26,7 @@ example `"AIInfraMonitor you@example.com"`.
 ## Operating data collection
 
 ```bash
-pnpm collect <fred|sec|azure|aws|manual|all> [--backfill] [--no-alerts]
+pnpm collect <fred|sec|azure|aws|salad|runcrate|manual|all> [--backfill] [--no-alerts]
 pnpm alerts [--backtest]
 pnpm db:backup [dir]
 pnpm db:restore <dir>
