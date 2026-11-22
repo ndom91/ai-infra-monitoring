@@ -796,10 +796,6 @@ code {
     margin-bottom: 18px;
   }
 
-  .nav a {
-    padding: 5px 8px;
-  }
-
   .section-head h1 {
     font-size: 22px;
   }
@@ -1602,17 +1598,38 @@ h3,
     font-size: 20px;
   }
 
-  .topbar-updated {
-    margin-left: auto;
+  /* One swipeable row instead of two wrapped rows. The strip bleeds to the
+     screen edges so tabs scroll under the fade instead of clipping early. */
+  .nav {
+    position: relative;
+    flex: 1 0 100%;
+    flex-wrap: nowrap;
+    gap: 4px;
+    margin-inline: -12px;
+    padding-inline: 12px 32px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    mask-image: linear-gradient(to right, #000 calc(100% - 32px), transparent);
   }
 
-  .nav {
-    gap: 2px 4px;
+  .nav::-webkit-scrollbar {
+    display: none;
   }
 
   .nav a {
-    min-block-size: 32px;
-    padding: 6px 8px;
+    display: flex;
+    flex: none;
+    align-items: center;
+    min-block-size: 40px;
+    padding: 0 12px;
+    font-size: 14px;
+    white-space: nowrap;
+  }
+
+  .nav a.nav-github {
+    min-width: 40px;
+    min-height: 40px;
   }
 
   .story-intro h1 {
