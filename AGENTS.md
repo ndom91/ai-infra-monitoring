@@ -85,5 +85,5 @@ Production is public at [artificialliabilities.com](https://artificialliabilitie
 Ensure deployed data continues to comply with every collector's source terms.
 
 To deploy from a local machine, run `pnpm wrangler login` followed by
-`pnpm deploy`. To run the built production server locally, use
-`pnpm build && pnpm start`.
+`pnpm deploy`. To run the built Worker locally, use
+`pnpm build && pnpm preview`.
