@@ -615,6 +615,10 @@ h2 {
   color: var(--muted);
 }
 
+.coverage-mobile-label {
+  display: none;
+}
+
 .cov-implemented {
   color: var(--teal);
   border-color: #446759;
@@ -728,6 +732,61 @@ code {
 }
 
 @media (max-width: 640px) {
+  .table-scroll .coverage,
+  .table-scroll .coverage tbody {
+    display: block;
+    width: 100%;
+  }
+
+  .table-scroll .coverage thead {
+    display: none;
+  }
+
+  .table-scroll .coverage tr {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 16px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .table-scroll .coverage tr:first-child {
+    padding-top: 4px;
+  }
+
+  .table-scroll .coverage tr:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .table-scroll .coverage tr > td {
+    display: block;
+    padding: 0;
+    border: 0;
+    white-space: normal;
+    text-align: left;
+  }
+
+  .table-scroll .coverage tr > td:first-child,
+  .table-scroll .coverage tr > .coverage-notes {
+    grid-column: 1 / -1;
+  }
+
+  .table-scroll .coverage tr > td:first-child {
+    font-weight: 600;
+  }
+
+  .table-scroll .coverage tr > .coverage-notes {
+    min-width: 0;
+  }
+
+  .coverage-mobile-label {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--muted);
+    font-size: 12px;
+  }
+
   .wrap {
     padding: 18px 12px 48px;
   }
