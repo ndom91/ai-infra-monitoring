@@ -1,0 +1,52 @@
+name: Remind about structured-debt filings
+on:
+  # New DDTL, term loan and data-center ABS deals are announced irregularly, so check monthly.
+  schedule:
+    - cron: "0 9 3 * *"
+  workflow_dispatch:
+permissions:
+  issues: write
+jobs:
+  remind:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v8
+        with:
+          script: |
+            const label = "structured-debt-review";
+            const title = "Review new GPU-backed debt and data-center ABS deals";
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: "open",
+              labels: label,
+              per_page: 1,
+            });
+
+            if (issues.length > 0) {
+              core.info(`Review issue already open: #${issues[0].number}`);
+              return;
+            }
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title,
+              labels: [label],
+              body: `Check for new financings since the last entry in \`data/manual/structured_debt.yaml\` and add verified values.
+
+            SEC filers (look for 8-K Item 1.01/2.03, 424B and exhibit 4.x / 10.x filings):
+            - [CoreWeave 8-K filings](https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001769628&type=8-K) (new DDTL facilities and amendments; margins also go in \`issuer_debt.yaml\`)
+            - [Blue Owl Digital Infrastructure Trust filings](https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0002069692) (STACK Infrastructure ABS series supplements)
+            - [EDGAR full-text search: "delayed draw term loan" GPU](https://efts.sec.gov/LatestSearch/rest/search-index?q=%22delayed%20draw%20term%20loan%22%20GPU&forms=8-K)
+            - [EDGAR full-text search: "Secured Data Center Revenue" notes](https://efts.sec.gov/LatestSearch/rest/search-index?q=%22Secured%20Data%20Center%20Revenue%22&forms=8-K)
+
+            Private issuers (no SEC filings; use the issuer press release or newsroom):
+            - [Vantage Data Centers news](https://vantage-dc.com/news/)
+            - [Switch press releases](https://www.switch.com/category/press-release/)
+            - [Aligned Data Centers press releases](https://aligneddc.com/press-release/)
+            - [STACK Infrastructure press releases](https://www.stackinfra.com/about/news-press/press-releases/)
+            - [Lambda newsroom](https://lambda.ai/blog) and [Crusoe newsroom](https://www.crusoe.ai/resources/newsroom) (GPU-backed and data-center credit facilities)
+
+            Record only what the source states: a verbatim \`quote\` for every value, deal-level series (principal, coupon or SOFR margin, advance rate where stated), and \`kind: calculated\` with a note for anything derived. Follow the [manual-data rules](../../blob/main/data/manual/README.md), run \`pnpm check:manual\`, and close this issue after the data is merged.`,
+            });
