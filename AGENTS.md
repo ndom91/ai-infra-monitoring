@@ -26,7 +26,7 @@ example `"AIInfraMonitor you@example.com"`.
 ## Operating data collection
 
 ```bash
-pnpm collect <fred|sec|sec_debt|sec_filings|sec_insider|azure|aws|salad|runcrate|manual|all> [--backfill] [--no-alerts]
+pnpm collect <fred|sec|sec_debt|sec_filings|sec_insider|azure|aws|salad|runcrate|census|manual|all> [--backfill] [--no-alerts]
 pnpm alerts [--backtest]
 pnpm db:backup [dir]
 pnpm db:restore <dir>
@@ -63,6 +63,9 @@ bundle.
 - `collect-sec-filings.yml`: weekdays at 08:00, 13:00, and 18:00 UTC; runs
   `sec_filings` and `sec_insider` (Form 4 insider sales).
 - `collect-prices.yml`: weekly.
+- `collect-census.yml`: weekdays at 15:23 UTC, shortly after the Census
+  construction spending release (10:00 ET, about the first business day of
+  each month); runs `census`.
 - `collect-eia.yml`: every 14 days on Thursday (with a weekly schedule check).
 - `collect-manual.yml`: when `data/manual/**` changes on `main`, or manually.
 - `backup.yml`: weekly database backup, retained for 90 days as an artifact.

@@ -31,6 +31,10 @@ export const Route = createFileRoute("/infrastructure")({
   component: InfrastructurePage,
 });
 
+// Seasonally adjusted annual rates and monthly amounts have different scales, so
+// each Census series gets its own chart.
+const CHART_PER_SERIES = new Set(["census.c30"]);
+
 // One chart per publisher market definition ("cbre.na_primary", "jll.na_colo"),
 // unit, and cadence. Publishers and coverage changes never share a chart, and
 // annual totals never sit next to half-year figures.
@@ -38,8 +42,10 @@ function groups(series: SeriesView[], indicator: IndicatorId) {
   const map = new Map<string, { family: string; title: string; list: SeriesView[] }>();
   for (const s of series.filter((x) => x.indicator === indicator)) {
     const family = s.id.split(".").slice(0, 2).join(".");
-    const key = `${family}|${s.unit}|${s.cadence}`;
-    const title = `${s.source}${s.entity ? ` · ${s.entity}` : ""} (${s.unit}${s.cadence === "annual" ? ", annual" : ""})`;
+    const key = `${CHART_PER_SERIES.has(family) ? s.id : family}|${s.unit}|${s.cadence}`;
+    const title = CHART_PER_SERIES.has(family)
+      ? s.label
+      : `${s.source}${s.entity ? ` · ${s.entity}` : ""} (${s.unit}${s.cadence === "annual" ? ", annual" : ""})`;
     const g = map.get(key) ?? { family, title, list: [] };
     g.list.push(s);
     map.set(key, g);

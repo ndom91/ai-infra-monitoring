@@ -167,16 +167,21 @@ export const INDICATORS: IndicatorDef[] = [
     section: "infrastructure",
     classification: "Leading",
     measures:
-      "Data-center capacity being built, in megawatts, and how much of it is already leased.",
+      "Data-center capacity being built, in megawatts, and how much of it is already leased. Also the dollars spent on US data-center construction each month (Census).",
     deterioration:
       "Building speeds up while less of it is leased in advance. More capacity is being built on speculation.",
     caveats: [
       "Brokers define markets differently. CBRE and JLL figures are never merged.",
-      "Reports come out twice a year, with a delay.",
+      "Broker reports come out twice a year, with a delay.",
+      "Census spending counts construction work only, not land or servers and GPUs, and covers the US only. Its latest months are preliminary and are often revised.",
     ],
     sources: [
       { label: "CBRE insights", url: "https://www.cbre.com/insights" },
       { label: "JLL insights", url: "https://www.jll.com/en-us/insights" },
+      {
+        label: "Census construction spending",
+        url: "https://www.census.gov/construction/c30/historical_data.html",
+      },
     ],
   },
   {

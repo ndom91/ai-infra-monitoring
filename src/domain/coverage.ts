@@ -73,11 +73,13 @@ export const COVERAGE: Record<
   },
   construction: {
     status: "partial",
-    collectors: ["manual"],
+    collectors: ["manual", "census"],
     summary:
-      "CBRE construction and pre-leasing for main markets (H2 2021 onward), and JLL construction and pre-leasing. Entered by hand from each report.",
+      "CBRE construction and pre-leasing for main markets (H2 2021 onward), and JLL construction and pre-leasing, entered by hand from each report. Also US Census Bureau monthly spending on private data-center construction since January 2014, in dollars, both seasonally adjusted (annual rate) and not adjusted.",
     gaps: [
       "Broker reports aren't published as data, so each release is entered by hand.",
+      "Census spending counts construction work put in place only. It excludes land and equipment such as servers and GPUs, covers the US only, and its latest months are preliminary and often revised.",
+      "Census published data centers as their own category only from July 2024. Its history starts in January 2014.",
       "JLL changed what it covers twice. Its series are split at each change and never joined.",
       "Some CBRE half-years give no pre-leasing figure.",
     ],

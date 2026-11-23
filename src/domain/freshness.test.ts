@@ -14,6 +14,17 @@ describe("freshness", () => {
     expect(freshness({ cadence: "quarterly", latestPeriodEnd: "2026-03-31", now })).toBe("stale");
   });
 
+  it("allows for the monthly publication lag", () => {
+    const nov = new Date("2026-11-23T12:00:00Z");
+    // Census C30 on 23 Nov: September (released 2 Nov) is 54 days past period end.
+    expect(freshness({ cadence: "monthly", latestPeriodEnd: "2026-09-30", now: nov })).toBe(
+      "current",
+    );
+    expect(freshness({ cadence: "monthly", latestPeriodEnd: "2026-08-31", now: nov })).toBe(
+      "stale",
+    );
+  });
+
   it("is unavailable when old data meets a failing collector", () => {
     expect(
       freshness({

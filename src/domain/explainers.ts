@@ -182,6 +182,11 @@ export const EXPLAINERS = {
     read: "Higher means more supply is on the way.",
     why: "Fast-growing construction is fine if it is already leased. If not, it can become future overcapacity.",
   },
+  constructionSpending: {
+    what: "Dollars of private data-center construction work put in place in the US each month (Census Bureau). Excludes land and equipment such as servers and GPUs.",
+    read: "The seasonally adjusted line is a yearly pace, so it is about twelve times a single month; the other line is the actual month. A rising line means more building money is being spent.",
+    why: "Spending that keeps rising shows the build-out is still being funded. A turn down is an early sign builders are pulling back. Latest months are preliminary and often revised.",
+  },
   preleasing: {
     what: "The share of capacity under construction that is already leased before it is finished.",
     read: "High (80%+) means builders have customers lined up. Falling means more speculative building.",
@@ -245,6 +250,7 @@ export function infraExplainer(seriesIds: string[]): Explainer {
   if (/prelease|precommitted|pre-leas/.test(id)) return EXPLAINERS.preleasing;
   if (/absorption/.test(id) && !/inventory/.test(id)) return EXPLAINERS.absorption;
   if (/inventory|active_capacity/.test(id)) return EXPLAINERS.inventory;
+  if (/census\.c30/.test(id)) return EXPLAINERS.constructionSpending;
   if (/under_construction/.test(id)) return EXPLAINERS.construction;
   if (/rent/.test(id)) return EXPLAINERS.rent;
   return EXPLAINERS.infraGeneric;

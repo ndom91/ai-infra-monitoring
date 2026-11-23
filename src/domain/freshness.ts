@@ -4,11 +4,14 @@ export type Freshness = "current" | "stale" | "unavailable" | "historical-only" 
 
 // How old the latest period may be before the series counts as stale.
 // Includes typical publication lag (filings ~45 days, broker reports ~2 months).
+// Monthly is 70 days because Census C30 construction spending is released about a
+// month after the month ends (Sep data on 2 Nov), so a current figure is already
+// ~32-63 days past its period end.
 export const MAX_AGE_DAYS: Record<Cadence, number> = {
   daily: 3,
   weekdays: 5,
   weekly: 10,
-  monthly: 45,
+  monthly: 70,
   quarterly: 140,
   semiannual: 270,
   annual: 460,
