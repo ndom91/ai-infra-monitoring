@@ -1,0 +1,53 @@
+{
+  "gpus": [
+    {
+      "gpu_type": "MI350X",
+      "name": "MI350X",
+      "vram": "288GB",
+      "min_price_hr": 5.72,
+      "available_options": 0
+    },
+    {
+      "gpu_type": "H200",
+      "name": "H200",
+      "vram": "141GB",
+      "min_price_hr": 5.13,
+      "available_options": 10
+    },
+    {
+      "gpu_type": "H200_nvl",
+      "name": "H200 NVL",
+      "vram": "141GB",
+      "min_price_hr": 4.67,
+      "available_options": 4
+    },
+    {
+      "gpu_type": "H100",
+      "name": "H100",
+      "vram": "80GB",
+      "min_price_hr": 3.58,
+      "available_options": 14
+    },
+    {
+      "gpu_type": "RTX5090",
+      "name": "RTX 5090",
+      "vram": "32GB",
+      "min_price_hr": 0.72,
+      "available_options": 33
+    },
+    {
+      "gpu_type": "RTX4090",
+      "name": "RTX 4090",
+      "vram": "24GB",
+      "min_price_hr": 0.58,
+      "available_options": 0
+    },
+    {
+      "gpu_type": "GAUDI2",
+      "name": "GAUDI2",
+      "vram": "\u2014",
+      "min_price_hr": 1.56,
+      "available_options": 0
+    }
+  ]
+}

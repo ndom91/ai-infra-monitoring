@@ -8,5 +8,5 @@ jobs:
   prices:
     uses: ./.github/workflows/_collect.yml
     with:
-      collectors: azure aws salad
+      collectors: azure aws salad runcrate
     secrets: inherit

@@ -31,6 +31,7 @@ external sources ──► collectors ──► runner ──► SQLite (Turso /
 | `azure` | Azure Retail Prices API | weekly | Only the date the current price took effect. |
 | `aws` | AWS Price List Bulk API | weekly | Monthly price lists for the last 24 months. |
 | `salad` | Salad Community Cloud pricing page | weekly | Current published prices only. |
+| `runcrate` | Runcrate public GPU pricing feed | weekly | Current published prices only. |
 | `eia` | EIA Form EIA-861M monthly workbook | monthly | State-level commercial sales and prices from 2010. |
 | `manual` | `data/manual/*.yaml` | on change | Whatever is cited. |
 
