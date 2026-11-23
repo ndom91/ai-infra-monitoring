@@ -118,7 +118,7 @@ export const COVERAGE: Record<
     gaps: [
       "Only sales with a reported price count; sales without one are skipped, not estimated.",
       "The plan flag covers a whole filing and does not exist before 2023, so the planned-sales split is an upper bound and blank for older months.",
-      "Nebius files as a foreign issuer without Form 4s. Backfill reaches only as far back as EDGAR's recent-filings list.",
+      "Backfill reaches only as far back as EDGAR's recent-filings list.",
     ],
   },
   depreciation: {
