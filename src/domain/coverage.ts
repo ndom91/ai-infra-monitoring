@@ -110,6 +110,17 @@ export const COVERAGE: Record<
       "Cancelled contracts and late payments appear only in filing text.",
     ],
   },
+  insider_activity: {
+    status: "implemented",
+    collectors: ["sec_insider"],
+    summary:
+      "Monthly dollar value of open-market insider sales for every tracked SEC company, parsed from Form 4 filings and calculated as shares times price. Sales made under Rule 10b5-1 plans are split out where the filing says so.",
+    gaps: [
+      "Only sales with a reported price count; sales without one are skipped, not estimated.",
+      "The plan flag covers a whole filing and does not exist before 2023, so the planned-sales split is an upper bound and blank for older months.",
+      "Nebius files as a foreign issuer without Form 4s. Backfill reaches only as far back as EDGAR's recent-filings list.",
+    ],
+  },
   depreciation: {
     status: "partial",
     collectors: ["manual", "sec"],

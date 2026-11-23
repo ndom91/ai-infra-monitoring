@@ -7,5 +7,5 @@ jobs:
   sec-filings:
     uses: ./.github/workflows/_collect.yml
     with:
-      collectors: sec_filings
+      collectors: sec_filings sec_insider
     secrets: inherit

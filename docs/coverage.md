@@ -15,6 +15,7 @@ with series counts and collector status, is the **Coverage** page
 | 07 | Vacancy & absorption | Partial | CBRE, JLL, cited manually | Some CBRE absorption only in charts. JLL 2022–23 not retrievable. |
 | 08 | Contracted vs realized revenue | Implemented | SEC XBRL (RPO, revenue, receivables) | META has no RPO; AMZN RPO tag ends 2020. Cancellations only in text. |
 | 09 | Depreciation & useful life | Partial | Filings (8 companies, cited manually); D&A from SEC XBRL | Rarely GPU-specific. Book-vs-resale curve needs per-model resale prices. |
+| 11 | Insider selling | Implemented | SEC Form 4 (open-market sales, code S, priced), all tracked SEC companies | Priced sales only. 10b5-1 split is an upper bound and absent before 2023. Nebius files no Form 4s. |
 
 ## Sources checked and not used
 

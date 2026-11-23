@@ -6,12 +6,14 @@ import { manualCollector } from "./manual";
 import { saladCollector } from "./salad";
 import { secCollector } from "./sec";
 import { secFilingsCollector } from "./sec-filings";
+import { secInsiderCollector } from "./sec-insider";
 import type { Collector } from "./types";
 
 export const COLLECTORS: Collector[] = [
   fredCollector,
   secCollector,
   secFilingsCollector,
+  secInsiderCollector,
   azureCollector,
   awsCollector,
   saladCollector,

@@ -222,6 +222,21 @@ function FundamentalsPage() {
         </div>
       </IndicatorPanel>
 
+      <IndicatorPanel def={indicatorById("insider_activity")}>
+        <div className="grid-2">
+          <ChartBlock
+            title={`${company}: insider open-market sales`}
+            info={EXPLAINERS.insiderSales}
+            subtitle="Calculated monthly: shares x price on Form 4 sales. The second line is sales under 10b5-1 plans"
+            series={pick([
+              `insider.${company}.open_market_sales_usd`,
+              `insider.${company}.open_market_sales_10b5_1_usd`,
+            ])}
+            emptyReason="No priced open-market sales found for this company yet."
+          />
+        </div>
+      </IndicatorPanel>
+
       <IndicatorPanel def={indicatorById("customer_concentration")}>
         <div className="grid-2">
           <ChartBlock

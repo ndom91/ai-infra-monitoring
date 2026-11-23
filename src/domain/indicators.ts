@@ -253,6 +253,29 @@ export const INDICATORS: IndicatorDef[] = [
     ],
     sources: [{ label: "SEC EDGAR", url: "https://www.sec.gov/edgar/search/" }],
   },
+  {
+    id: "insider_activity",
+    number: "11",
+    title: "Insider selling",
+    section: "fundamentals",
+    classification: "Leading / coincident",
+    measures:
+      "Dollars of company stock that directors, officers and large holders sold on the open market each month, from Form 4 filings. Calculated as shares times the reported price.",
+    deterioration:
+      "Sales climb well above a company's own normal level, across many insiders at once, outside of pre-scheduled plans.",
+    caveats: [
+      "Insiders sell for routine reasons: diversification, taxes, house purchases. A single month is weak evidence.",
+      "Many sales run under Rule 10b5-1 plans set months earlier. Those are shown separately and say little about current views. The plan box covers a whole filing, so the split is an upper bound.",
+      "Option exercises, tax withholding, gifts and grants are excluded. Sales that report no price are skipped, not estimated.",
+      "The current month is incomplete until it ends. Filings before 2023 carry no plan flag, so their plan split is left blank.",
+    ],
+    sources: [
+      {
+        label: "SEC EDGAR Form 4",
+        url: "https://www.sec.gov/files/forms-3-4-5.pdf",
+      },
+    ],
+  },
 ];
 
 export function indicatorById(id: IndicatorId) {

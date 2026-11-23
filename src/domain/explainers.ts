@@ -120,6 +120,11 @@ export const EXPLAINERS = {
     read: "Inventory growing much faster than cost of revenue means more stock per dollar sold.",
     why: "Only meaningful for companies that hold inventory, mainly hardware suppliers.",
   },
+  insiderSales: {
+    what: "Dollars of this company's stock that insiders sold on the open market each month, from Form 4 filings. Calculated as shares times the reported price.",
+    read: "Compare with the company's own history. The second line is the part reported under a Rule 10b5-1 plan, a schedule set months ahead.",
+    why: "Heavy selling outside pre-set plans can show insiders taking money off the table. Routine diversification is common, so one month proves little. The latest month is incomplete.",
+  },
   purchaseObligations: {
     what: "Unconditional purchase obligations disclosed in the notes: commitments to buy supply or capacity that are not on the balance sheet.",
     read: "A large and growing figure means the company has committed to buy far ahead of demand it can see.",

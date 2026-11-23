@@ -15,7 +15,11 @@ const RecentFilingsSchema = v.object({
 });
 
 const SubmissionsSchema = v.object({
-  filings: v.object({ recent: RecentFilingsSchema }),
+  filings: v.object({
+    recent: RecentFilingsSchema,
+    // Older filings spill into extra files when `recent` is full.
+    files: v.optional(v.array(v.unknown())),
+  }),
 });
 
 type Submissions = v.InferOutput<typeof SubmissionsSchema>;
