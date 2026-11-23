@@ -1,0 +1,1 @@
+CREATE INDEX `filing_events_filed_idx` ON `filing_events` (`filed_at`);

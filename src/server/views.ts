@@ -15,24 +15,52 @@ export type ObsPoint = {
   quote?: string | null;
 };
 
-// What charts need. Provenance fields (quote, source, note) ship only where the
-// UI shows them per point: manual series (TermsTable rows) and `latest`.
-export type ChartPoint = Pick<ObsPoint, "periodEnd" | "value" | "kind"> &
-  Partial<Omit<ObsPoint, "periodEnd" | "value" | "kind">>;
+// What the UI needs. Provenance fields (quote, source, note) ship only where
+// the UI shows them per point: manual series (TermsTable rows) and `latest`.
+// `kind` is left out when it is "reported", the common case.
+export type ChartPoint = Pick<ObsPoint, "periodEnd" | "value"> &
+  Partial<Omit<ObsPoint, "periodEnd" | "value">>;
+
+// Drops what no component reads (id, periodStart, asOf) and null fields.
+function trimLatest({ id: _i, periodStart: _p, asOf: _a, ...p }: ObsPoint): ChartPoint {
+  return Object.fromEntries(
+    Object.entries(p).filter(([k, v]) => v != null && !(k === "kind" && v === "reported")),
+  ) as ChartPoint;
+}
 
 export type SeriesDefView = Omit<SeriesRow, "updatedAt">;
 
-export type SeriesView = SeriesDefView & {
+// `changes` and `methodology` (a tooltip) are optional: rows that only list a
+// latest value (see slimView) leave them out to keep the payload small.
+export type SeriesView = Omit<SeriesDefView, "methodology"> & {
+  methodology?: string;
   points: ChartPoint[];
-  latest: ObsPoint | null;
+  latest: ChartPoint | null;
   freshness: Freshness;
-  changes: {
+  changes?: {
     m3: Change | null;
     m6: Change | null;
     y1: Change | null;
     prior: Change | null;
   };
 };
+
+// For series shown only as a latest-value row: no points, changes or tooltip text.
+export function slimView({ changes: _c, methodology: _m, ...rest }: SeriesView): SeriesView {
+  return { ...rest, points: [] };
+}
+
+// A change holds its two observations whole (source URLs, notes); the UI reads
+// only their dates and values.
+function trimChange(c: Change | null): Change | null {
+  if (!c) return null;
+  const { from, to } = c;
+  return {
+    ...c,
+    from: { periodEnd: from.periodEnd, value: from.value },
+    to: { periodEnd: to.periodEnd, value: to.value },
+  };
+}
 
 // `all` is the full loaded history (ascending); `points` is what the chart shows.
 export function buildView(
@@ -47,8 +75,10 @@ export function buildView(
     points:
       def.collector === "manual"
         ? visible
-        : visible.map(({ periodEnd, value, kind }) => ({ periodEnd, value, kind })),
-    latest,
+        : visible.map(({ periodEnd, value, kind }) =>
+            kind === "reported" ? { periodEnd, value } : { periodEnd, value, kind },
+          ),
+    latest: latest && trimLatest(latest),
     freshness: freshness({
       cadence: def.cadence as Cadence,
       latestPeriodEnd: latest?.periodEnd,
@@ -56,10 +86,10 @@ export function buildView(
       now: ctx.now,
     }),
     changes: {
-      m3: changeOver(all, 91),
-      m6: changeOver(all, 182),
-      y1: changeOver(all, 365),
-      prior: changeFromPrior(all),
+      m3: trimChange(changeOver(all, 91)),
+      m6: trimChange(changeOver(all, 182)),
+      y1: trimChange(changeOver(all, 365)),
+      prior: trimChange(changeFromPrior(all)),
     },
   };
 }

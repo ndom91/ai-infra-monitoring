@@ -11,7 +11,7 @@ import { EXPLAINERS } from "~/domain/explainers";
 import { indicatorById, SECTIONS } from "~/domain/indicators";
 import { parseRange } from "~/domain/ranges";
 import { pageHead } from "~/lib/seo";
-import { getFundamentalsData, type SeriesView } from "~/server/data";
+import { getCompanySeries, getFundamentalsData, type SeriesView } from "~/server/data";
 
 const TICKERS = SEC_COMPANIES.map((c) => c.ticker);
 const GROUP_BLURBS: Record<CompanyGroup, string> = {
@@ -38,8 +38,16 @@ export const Route = createFileRoute("/fundamentals")({
     range: parseRange(s.range, "5y"),
     company: TICKERS.includes(String(s.company)) ? String(s.company) : "CRWV",
   }),
-  loaderDeps: ({ search }) => ({ range: search.range }),
-  loader: ({ deps }) => getFundamentalsData({ data: { range: deps.range } }),
+  loaderDeps: ({ search }) => ({ range: search.range, company: search.company }),
+  // Peer charts (shared) and the picked company's raw series load separately,
+  // so the shared payload does not carry every company's raw filings.
+  loader: async ({ deps }) => {
+    const [shared, companySeries] = await Promise.all([
+      getFundamentalsData({ data: { range: deps.range } }),
+      getCompanySeries({ data: deps }),
+    ]);
+    return { ...shared, series: [...shared.series, ...companySeries] };
+  },
   component: FundamentalsPage,
 });
 

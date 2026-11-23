@@ -113,7 +113,11 @@ export const filingEvents = sqliteTable(
       .notNull()
       .references(() => collectorRuns.id),
   },
-  (t) => [index("filing_events_time_idx").on(t.acceptedAt, t.filedAt)],
+  (t) => [
+    index("filing_events_time_idx").on(t.acceptedAt, t.filedAt),
+    // recentFilingEvents orders by filed_at; accepted_at can be null.
+    index("filing_events_filed_idx").on(t.filedAt),
+  ],
 );
 
 export const alertEvents = sqliteTable(

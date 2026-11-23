@@ -1,6 +1,7 @@
 import { createServerFn, createServerOnlyFn } from "@tanstack/react-start";
 import * as v from "valibot";
-import { RANGE_KEYS, rangeStart } from "~/domain/ranges";
+import { SEC_DEBT_COMPANIES } from "~/domain/companies";
+import { RANGE_KEYS, type RangeKey, rangeStart } from "~/domain/ranges";
 import { INDICATOR_IDS } from "~/domain/types";
 import { getDb } from "~/storage/db";
 import {
@@ -15,6 +16,7 @@ import {
 } from "~/storage/queries";
 import { withCurrentWording } from "./alert-text";
 import { cacheResponse } from "./cache";
+import { outstandingDebt } from "./credit-debt";
 import { deriveCompanySeries, TICKERS } from "./derived";
 import { buildView, groupBySeries, type ObsPoint, type SeriesView } from "./views";
 
@@ -27,6 +29,10 @@ export const SectionInput = v.object({
   fullHistory: v.optional(v.boolean(), false),
   // Only these series, instead of every series of the indicators.
   seriesIds: v.optional(v.array(v.string())),
+  // Narrow the indicators' series by collector or entity (company ticker).
+  collectors: v.optional(v.array(v.string())),
+  excludeCollectors: v.optional(v.array(v.string())),
+  entity: v.optional(v.string()),
 });
 
 // Extra history beyond the visible range so YoY comparisons always work.
@@ -36,7 +42,7 @@ const CHANGE_LOOKBACK_DAYS = 400;
 // compiler strips it (and the node:fs DB client it imports) from the client
 // bundle; a plain exported function would leak it and break hydration.
 export const loadSection = createServerOnlyFn(async function loadSection(
-  input: v.InferOutput<typeof SectionInput>,
+  input: v.InferInput<typeof SectionInput>,
   now: Date,
 ): Promise<{
   series: SeriesView[];
@@ -79,34 +85,99 @@ export const getSectionData = createServerFn({ method: "GET" })
     return { series, now: now.toISOString(), visibleFrom };
   });
 
+const RangeKeyInput = v.picklist(RANGE_KEYS);
+
+const FUNDAMENTALS_INDICATORS = [
+  "capex_cashflow",
+  "contract_conversion",
+  "customer_concentration",
+  "depreciation",
+  "insider_activity",
+] as const;
+
+// Shared page-wide data: every company's derived metrics and the hand-curated
+// series. Derived metrics are computed from the raw SEC series of every
+// ticker (TTM and YoY need the full history), but only the results ship.
+export const loadFundamentals = createServerOnlyFn(async function loadFundamentals(
+  range: RangeKey,
+  now: Date,
+) {
+  const [{ series, raw, runStatus, visibleFrom }, filingEvents] = await Promise.all([
+    loadSection(
+      {
+        indicators: [...FUNDAMENTALS_INDICATORS],
+        range,
+        fullHistory: true,
+        collectors: ["sec", "manual"],
+      },
+      now,
+    ),
+    recentFilingEvents(getDb(), 100),
+  ]);
+  const derived = TICKERS.flatMap((ticker) =>
+    deriveCompanySeries(ticker, (concept) => raw.get(`sec.${ticker}.${concept}`) ?? []),
+  ).map((d) =>
+    buildView(d.def, d.points, { now, visibleFrom, lastRunStatus: runStatus.get("sec") }),
+  );
+  return {
+    series: [...series.filter((s) => s.collector === "manual"), ...derived],
+    filingEvents,
+    now: now.toISOString(),
+    visibleFrom,
+  };
+});
+
 export const getFundamentalsData = createServerFn({ method: "GET" })
-  .validator(v.object({ range: v.picklist(RANGE_KEYS) }))
+  .validator(v.object({ range: RangeKeyInput }))
   .handler(async ({ data }) => {
     cacheResponse();
-    const now = new Date();
-    const [{ series, raw, runStatus, visibleFrom }, filingEvents] = await Promise.all([
-      loadSection(
-        {
-          indicators: [
-            "capex_cashflow",
-            "contract_conversion",
-            "customer_concentration",
-            "depreciation",
-            "insider_activity",
-          ],
-          range: data.range,
-          fullHistory: true,
-        },
-        now,
-      ),
-      recentFilingEvents(getDb(), 100),
-    ]);
-    const derived = TICKERS.flatMap((ticker) =>
-      deriveCompanySeries(ticker, (concept) => raw.get(`sec.${ticker}.${concept}`) ?? []),
-    ).map((d) =>
-      buildView(d.def, d.points, { now, visibleFrom, lastRunStatus: runStatus.get("sec") }),
-    );
-    return { series: [...series, ...derived], filingEvents, now: now.toISOString(), visibleFrom };
+    return loadFundamentals(data.range, new Date());
+  });
+
+// One company's raw SEC series and insider sales: the charts that change with
+// the company picker. Kept apart so the page-wide payload stays small.
+export const loadCompanySeries = createServerOnlyFn(async function loadCompanySeries(
+  input: { range: RangeKey; company: string },
+  now: Date,
+) {
+  const { series } = await loadSection(
+    {
+      indicators: [...FUNDAMENTALS_INDICATORS],
+      range: input.range,
+      collectors: ["sec", "sec_insider"],
+      entity: input.company,
+    },
+    now,
+  );
+  return series;
+});
+
+export const getCompanySeries = createServerFn({ method: "GET" })
+  .validator(v.object({ range: RangeKeyInput, company: v.picklist(TICKERS) }))
+  .handler(async ({ data }) => {
+    cacheResponse();
+    return loadCompanySeries(data, new Date());
+  });
+
+// Per neocloud / AI lab, the outstanding debt for /credit: carrying-amount
+// series plus latest rates. The full sec_debt history is far larger than the
+// page uses, so the reduction happens here and not in the browser.
+export const loadCreditDebt = createServerOnlyFn(async function loadCreditDebt(
+  range: RangeKey,
+  now: Date,
+) {
+  const { series } = await loadSection(
+    { indicators: ["credit"], range, collectors: ["sec_debt"] },
+    now,
+  );
+  return SEC_DEBT_COMPANIES.map((c) => ({ name: c.name, ...outstandingDebt(series, c.ticker) }));
+});
+
+export const getCreditDebt = createServerFn({ method: "GET" })
+  .validator(v.object({ range: RangeKeyInput }))
+  .handler(async ({ data }) => {
+    cacheResponse();
+    return loadCreditDebt(data.range, new Date());
   });
 
 export const getAlertsData = createServerFn({ method: "GET" }).handler(async () => {

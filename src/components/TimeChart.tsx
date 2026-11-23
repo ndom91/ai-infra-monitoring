@@ -17,7 +17,8 @@ Chart.register(TimeScale, LinearScale, PointElement, LineElement, Filler, Toolti
 
 export type ChartLine = {
   label: string;
-  points: { periodEnd: string; value: number; kind: string }[];
+  // `kind` is left out for reported points to keep payloads small.
+  points: { periodEnd: string; value: number; kind?: string }[];
   color?: string;
 };
 
@@ -53,7 +54,7 @@ export function TimeChart({ lines, unit, height = 220, stepped, rebase, minUnit 
       // mistaken for reported figures.
       pointRadius: sparse ? 3.5 : 0,
       pointBackgroundColor: line.points.map((p) =>
-        p.kind === "reported" || p.kind === "manual" ? color : "#0e1113",
+        !p.kind || p.kind === "manual" ? color : "#0e1113",
       ),
       pointHoverRadius: 4,
       stepped: stepped ? ("before" as const) : false,
@@ -90,7 +91,7 @@ export function TimeChart({ lines, unit, height = 220, stepped, rebase, minUnit 
                   const v = rebase
                     ? `${ctx.parsed.y?.toFixed(1)} (index)`
                     : formatValue(ctx.parsed.y ?? 0, unit);
-                  const kind = p && p.kind !== "reported" ? ` · ${p.kind}` : "";
+                  const kind = p?.kind ? ` · ${p.kind}` : "";
                   return ` ${ctx.dataset.label}: ${v}${kind}`;
                 },
               },

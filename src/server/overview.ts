@@ -8,6 +8,7 @@ import {
   rentalStory,
   resaleStory,
 } from "~/domain/narrative";
+import { rangeStart } from "~/domain/ranges";
 import { type Point, resampleAt, snapToCalendarQuarter } from "~/metrics/changes";
 import { ttm } from "~/metrics/fundamentals";
 import { getDb } from "~/storage/db";
@@ -91,6 +92,8 @@ const pts = (obs: ObsPoint[] | undefined): Point[] =>
 // Exactly the series this page reads, so an uncached render touches a few
 // thousand rows instead of every series of every indicator.
 const CREDIT_IDS = ["fred.BAMLH0A0HYM2", "fred.BAMLH0A3HYC"];
+// The credit story reads only the last three years of these.
+const CREDIT_WINDOW = "3y";
 const STORY_IDS = [
   ...HYPERSCALERS.flatMap((t) => [`sec.${t}.capex`, `sec.${t}.ocf`]),
   ...["capex", "ocf", "debt", "rpo"].map((c) => `sec.CRWV.${c}`),
@@ -106,16 +109,17 @@ const STORY_IDS = [
 export const getOverviewData = createServerFn({ method: "GET" }).handler(async () => {
   cacheResponse();
   const now = new Date();
-  const [credit, rest, alerts] = await Promise.all([
+  const [rest, alerts] = await Promise.all([
     loadSection(
-      { indicators: ["credit"], range: "3y", fullHistory: false, seriesIds: CREDIT_IDS },
+      { indicators: [], range: "max", fullHistory: true, seriesIds: [...CREDIT_IDS, ...STORY_IDS] },
       now,
     ),
-    loadSection({ indicators: [], range: "max", fullHistory: true, seriesIds: STORY_IDS }, now),
     recentAlerts(getDb(), 6),
   ]);
-  const raw = new Map([...credit.raw, ...rest.raw]);
-  const get = (id: string) => pts(raw.get(id));
+  const { raw } = rest;
+  const creditFrom = rangeStart(CREDIT_WINDOW, now) ?? "";
+  const get = (id: string) =>
+    pts(raw.get(id)).filter((p) => !CREDIT_IDS.includes(id) || p.periodEnd >= creditFrom);
 
   // --- Divergence watch ---
   const hyperCapexTtm = sumAligned(HYPERSCALERS.map((t) => ttm(get(`sec.${t}.capex`))));

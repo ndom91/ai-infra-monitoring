@@ -4,12 +4,11 @@ import { IndicatorPanel } from "~/components/IndicatorPanel";
 import { PageLead } from "~/components/PageLead";
 import { SectionHeader } from "~/components/SectionHeader";
 import { TermsTable } from "~/components/TermsTable";
-import { SEC_DEBT_COMPANIES } from "~/domain/companies";
 import { EXPLAINERS } from "~/domain/explainers";
 import { indicatorById, SECTIONS } from "~/domain/indicators";
 import { parseRange } from "~/domain/ranges";
 import { pageHead } from "~/lib/seo";
-import { getSectionData, type SeriesView } from "~/server/data";
+import { getCreditDebt, getSectionData, type SeriesView } from "~/server/data";
 
 export const Route = createFileRoute("/credit")({
   head: () =>
@@ -20,7 +19,16 @@ export const Route = createFileRoute("/credit")({
     ),
   validateSearch: (s) => ({ range: parseRange(s.range, "3y") }),
   loaderDeps: ({ search }) => ({ range: search.range }),
-  loader: ({ deps }) => getSectionData({ data: { indicators: ["credit"], range: deps.range } }),
+  loader: async ({ deps }) => {
+    const [section, debt] = await Promise.all([
+      // Instrument-level debt comes pre-reduced from getCreditDebt.
+      getSectionData({
+        data: { indicators: ["credit"], range: deps.range, excludeCollectors: ["sec_debt"] },
+      }),
+      getCreditDebt({ data: { range: deps.range } }),
+    ]);
+    return { series: section.series, debt };
+  },
   component: CreditPage,
 });
 
@@ -28,50 +36,14 @@ function pick(series: SeriesView[], ids: string[]) {
   return ids.flatMap((id) => series.filter((s) => s.id === id));
 }
 
-const RATE_METRICS = [".stated_rate", ".effective_rate", ".variable_rate_spread"];
-
-// Series ids are sec_debt.TICKER.instrument[.qualifier].metric.
-const instrumentOf = (s: SeriesView) => s.id.split(".")[2];
-
 // Labels are "Instrument (qualifier) — metric"; charts show the instrument part.
 const instrumentLabel = (s: SeriesView) => s.label.split(" — ")[0] ?? s.label;
 
-// Instruments with a balance at the company's latest reported date. Repaid and
-// renamed instruments are left out so the chart stays readable.
-function outstandingDebt(series: SeriesView[], ticker: string) {
-  const carrying = series.filter(
-    (s) => s.collector === "sec_debt" && s.entity === ticker && s.id.endsWith(".carrying_amount"),
-  );
-  const latestEnd = carrying
-    .map((s) => s.latest?.periodEnd ?? "")
-    .sort()
-    .at(-1);
-  const current = carrying.filter(
-    (s) => s.latest?.periodEnd === latestEnd && (s.latest?.value ?? 0) > 0,
-  );
-  const instruments = new Set(current.map(instrumentOf));
-  // Only each rate's latest filed value is listed, not its history.
-  const rates = series
-    .filter(
-      (s) =>
-        s.collector === "sec_debt" &&
-        s.entity === ticker &&
-        RATE_METRICS.some((m) => s.id.endsWith(m)) &&
-        instruments.has(instrumentOf(s)),
-    )
-    .map((s) => ({ ...s, points: [] }));
-  return { current, rates };
-}
-
 function CreditPage() {
-  const { series } = Route.useLoaderData();
+  const { series, debt } = Route.useLoaderData();
   const { range } = Route.useSearch();
   const section = SECTIONS.find((s) => s.id === "credit");
   const issuer = series.filter((s) => s.collector === "manual");
-  const debtByCompany = SEC_DEBT_COMPANIES.map((company) => ({
-    company,
-    ...outstandingDebt(series, company.ticker),
-  }));
 
   return (
     <>
@@ -119,10 +91,10 @@ function CreditPage() {
           series={issuer}
         />
         <h3 className="sub-head">Debt by instrument</h3>
-        {debtByCompany.map(({ company, current, rates }) => (
-          <div className="grid-2" key={company.ticker}>
+        {debt.map(({ ticker, name, current, rates }) => (
+          <div className="grid-2" key={ticker}>
             <ChartBlock
-              title={`${company.name}: debt by instrument`}
+              title={`${name}: debt by instrument`}
               info={EXPLAINERS.instrumentDebt}
               subtitle="Carrying amount at each filing date, for instruments with a balance at the latest one"
               series={current}
@@ -130,7 +102,7 @@ function CreditPage() {
               emptyReason="No instrument-level debt has been collected from this company's filings yet."
             />
             <TermsTable
-              title={`${company.name}: latest rates`}
+              title={`${name}: latest rates`}
               subtitle="Latest figure filed for each instrument. Not today's market price."
               series={rates}
               labelOf={(s) => s.label}

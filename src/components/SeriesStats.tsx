@@ -32,13 +32,13 @@ function SeriesRow({ s }: { s: SeriesView }) {
   // prior report and the same period a year earlier, never to daily windows.
   const deltas: [string, Change | null][] = HIGH_FREQUENCY.has(s.cadence)
     ? [
-        ["3M", s.changes.m3],
-        ["6M", s.changes.m6],
-        ["1Y", s.changes.y1],
+        ["3M", s.changes?.m3 ?? null],
+        ["6M", s.changes?.m6 ?? null],
+        ["1Y", s.changes?.y1 ?? null],
       ]
     : [
-        ["Prior", s.changes.prior],
-        ["YoY", s.changes.y1],
+        ["Prior", s.changes?.prior ?? null],
+        ["YoY", s.changes?.y1 ?? null],
       ];
   return (
     <tr>
@@ -46,7 +46,7 @@ function SeriesRow({ s }: { s: SeriesView }) {
         <a href={s.sourceUrl} target="_blank" rel="noopener noreferrer" title={s.methodology}>
           {s.label}
         </a>
-        {s.latest && s.latest.kind !== "reported" && <span className="kind">{s.latest.kind}</span>}
+        {s.latest?.kind && <span className="kind">{s.latest.kind}</span>}
       </td>
       <td className="num strong c-latest">
         {s.latest ? formatValue(s.latest.value, s.unit) : "—"}

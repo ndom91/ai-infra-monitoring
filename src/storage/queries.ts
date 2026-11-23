@@ -1,4 +1,4 @@
-import { and, count, desc, eq, gte, inArray, max, type SQL } from "drizzle-orm";
+import { and, count, desc, eq, gte, inArray, max, notInArray, type SQL } from "drizzle-orm";
 import type { IndicatorId } from "~/domain/types";
 import type { Db } from "./db";
 import { alertEvents, collectorRuns, filingEvents, observations, series } from "./schema";
@@ -7,28 +7,37 @@ export type SeriesRow = typeof series.$inferSelect;
 export type RunRow = typeof collectorRuns.$inferSelect;
 export type FilingEventRow = typeof filingEvents.$inferSelect;
 
-// What to load: whole indicators, or an exact list of series.
-export type SeriesSelection = { indicators: IndicatorId[]; seriesIds?: string[] };
+// What to load: whole indicators, or an exact list of series. The optional
+// filters narrow the indicators' series.
+export type SeriesSelection = {
+  indicators: IndicatorId[];
+  seriesIds?: string[];
+  collectors?: string[];
+  excludeCollectors?: string[];
+  entity?: string;
+};
 
-// Indicator selection uses a subquery, so observations come back in the same
-// round trip as the series definitions instead of waiting for them.
+function seriesWhere(sel: SeriesSelection): SQL | undefined {
+  if (sel.seriesIds) return inArray(series.id, sel.seriesIds);
+  return and(
+    inArray(series.indicator, sel.indicators),
+    sel.collectors ? inArray(series.collector, sel.collectors) : undefined,
+    sel.excludeCollectors ? notInArray(series.collector, sel.excludeCollectors) : undefined,
+    sel.entity ? eq(series.entity, sel.entity) : undefined,
+  );
+}
+
+// Selection uses a subquery, so observations come back in the same round trip
+// as the series definitions instead of waiting for them.
 function seriesIdFilter(db: Db, sel: SeriesSelection): SQL {
-  return sel.seriesIds
-    ? inArray(observations.seriesId, sel.seriesIds)
-    : inArray(
-        observations.seriesId,
-        db.select({ id: series.id }).from(series).where(inArray(series.indicator, sel.indicators)),
-      );
+  return inArray(
+    observations.seriesId,
+    sel.seriesIds ?? db.select({ id: series.id }).from(series).where(seriesWhere(sel)),
+  );
 }
 
 export function seriesFor(db: Db, sel: SeriesSelection) {
-  return db
-    .select()
-    .from(series)
-    .where(
-      sel.seriesIds ? inArray(series.id, sel.seriesIds) : inArray(series.indicator, sel.indicators),
-    )
-    .orderBy(series.id);
+  return db.select().from(series).where(seriesWhere(sel)).orderBy(series.id);
 }
 
 // Latest vintage only; uses the (series_id, is_latest, period_end) index.
