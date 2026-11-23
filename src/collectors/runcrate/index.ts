@@ -9,7 +9,10 @@ import {
 } from "../gpu-list-price";
 import type { Collector } from "../types";
 
-export const PRICING_URL = "https://www.runcrate.ai/api/gpu-pricing";
+// Source terms, checked 2026-11-23: https://www.runcrate.ai/terms has no clause
+// against automated access. robots.txt disallows /api/, so the collector reads
+// /gpus.json, which https://www.runcrate.ai/llms.txt offers for keyless reads.
+export const PRICING_URL = "https://www.runcrate.ai/gpus.json";
 
 const GpuSchema = v.object({
   gpu_type: v.string(),
@@ -78,7 +81,7 @@ const SERIES_CTX = {
     "starting per-GPU rate for the type across Runcrate's orderable options, pay as you go, all regions",
   priceTerm: "starting published price",
   caveat:
-    "This is Runcrate's own published feed, not a transaction price. The starting option can sit in any listed region and changes as options come and go.",
+    "This is Runcrate's own published feed, not a transaction price. Options come from Runcrate's infrastructure partners, so the feed behaves more like a marketplace than a single rate card. The starting option can sit in any listed region and changes as options come and go.",
 };
 
 export const runcrateCollector: Collector = {

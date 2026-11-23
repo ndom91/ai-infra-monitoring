@@ -45,7 +45,7 @@ describe("runcrateCollector", () => {
     const out = await runcrateCollector.collect({
       backfill: false,
       now,
-      fetch: fakeFetch({ "runcrate.ai/api/gpu-pricing": feed }) as never,
+      fetch: fakeFetch({ "runcrate.ai/gpus.json": feed }) as never,
       log: () => {},
     });
     expect(out.series.map((series) => series.id).sort()).toEqual([
@@ -57,7 +57,7 @@ describe("runcrateCollector", () => {
     const db = await memoryDb();
     const result = await runCollector(db, runcrateCollector, {
       now,
-      fetch: fakeFetch({ "runcrate.ai/api/gpu-pricing": feed }) as never,
+      fetch: fakeFetch({ "runcrate.ai/gpus.json": feed }) as never,
       log: () => {},
     });
     expect(result.status).toBe("ok");
