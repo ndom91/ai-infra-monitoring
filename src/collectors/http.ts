@@ -18,6 +18,18 @@ function userAgentFor(url: string): string {
   return configured;
 }
 
+// SEC allows 10 requests/second. Every SEC request in the process, whichever
+// collector makes it, waits for the next free slot 150 ms after the previous.
+const SEC_MIN_GAP_MS = 150;
+let nextSecSlot = 0;
+
+async function waitForSecSlot(sleep: (ms: number) => Promise<void>) {
+  const now = Date.now();
+  const slot = Math.max(now, nextSecSlot);
+  nextSecSlot = slot + SEC_MIN_GAP_MS;
+  if (slot > now) await sleep(slot - now);
+}
+
 export type FetchOptions = {
   headers?: Record<string, string>;
   timeoutMs?: number;
@@ -32,10 +44,12 @@ export async function fetchWithRetry(
   { headers, timeoutMs = 40_000, retries = 3, sleep = defaultSleep }: FetchOptions = {},
 ): Promise<Response> {
   const userAgent = userAgentFor(url);
+  const throttled = isSecHost(new URL(url).hostname);
   let lastError: Error | undefined;
   for (let attempt = 0; attempt <= retries; attempt++) {
     if (attempt > 0) await sleep(1000 * 2 ** (attempt - 1));
     let res: Response;
+    if (throttled) await waitForSecSlot(sleep);
     try {
       res = await fetch(url, {
         headers: { "User-Agent": userAgent, ...headers },

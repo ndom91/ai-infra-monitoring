@@ -5,11 +5,11 @@ import { fakeFetch, memoryDb } from "../../../test/helpers";
 import { runCollector } from "../runner";
 import {
   type Form4Filing,
-  makeSecInsiderCollector,
   monthlySales,
   parseForm4,
   rawXmlName,
   routineWindowStart,
+  secInsiderCollector,
 } from ".";
 
 const row = (
@@ -159,7 +159,7 @@ describe("sec insider collector", () => {
     for (const { cik } of SEC_FILING_COMPANIES) {
       routes[`CIK${String(cik).padStart(10, "0")}`] = submissions(cik);
     }
-    const result = await runCollector(db, makeSecInsiderCollector(0), {
+    const result = await runCollector(db, secInsiderCollector, {
       fetch: fakeFetch(routes),
       log: () => {},
       now: new Date("2026-11-23T00:00:00Z"),

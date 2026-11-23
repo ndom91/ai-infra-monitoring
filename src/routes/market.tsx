@@ -23,26 +23,22 @@ export const Route = createFileRoute("/market")({
   component: MarketPage,
 });
 
-// Series ids look like "<provider>.<cohort>.<region>.<pricetype>".
-const cohortOf = (s: SeriesView) => s.id.split(".")[1] ?? "";
-
 function MarketPage() {
   const { series } = Route.useLoaderData();
   const { range } = Route.useSearch();
   const section = SECTIONS.find((s) => s.id === "market");
   const rental = series.filter((s) => s.indicator === "gpu_rental");
   const resale = series.filter((s) => s.indicator === "gpu_resale");
+  // Series ids look like "<provider>.<cohort>.<region>.<pricetype>"; the
+  // entity is the GPU cohort and the source names the provider.
+  const cohorts = new Map<string, SeriesView[]>();
+  for (const s of rental) {
+    const key = s.entity ?? "Other";
+    cohorts.set(key, [...(cohorts.get(key) ?? []), s]);
+  }
   const shortLabel = (s: SeriesView) => {
-    const [provider, , region, type] = s.id.split(".");
-    const name =
-      provider === "aws"
-        ? "AWS"
-        : provider === "azure"
-          ? "Azure"
-          : provider === "runcrate"
-            ? "Runcrate"
-            : "Salad";
-    return `${name} ${(type ?? "").replaceAll("_", " ")} (${region})`;
+    const [, , region, type] = s.id.split(".");
+    return `${s.source} ${(type ?? "").replaceAll("_", " ")} (${region})`;
   };
 
   return (
@@ -59,30 +55,27 @@ function MarketPage() {
       </PageLead>
       <IndicatorPanel def={indicatorById("gpu_rental")}>
         <div className="grid-2">
-          {[
-            ["h100", "H100 80GB"],
-            ["h200", "H200 141GB"],
-            ["rtx4090", "RTX 4090 24GB"],
-            ["rtx5090", "RTX 5090 32GB"],
-          ].map(([cohort, label]) => {
-            const isConsumer = cohort?.startsWith("rtx");
-            return (
-              <ChartBlock
-                key={cohort}
-                title={`${label}: price per GPU-hour`}
-                info={EXPLAINERS.gpuListPrice}
-                subtitle={
-                  isConsumer
-                    ? "Published hourly price; priority tiers remain separate"
-                    : "Machine list price divided by the GPUs in it"
-                }
-                series={rental.filter((s) => cohortOf(s) === cohort)}
-                labelOf={shortLabel}
-                stepped
-                emptyReason="No price data collected yet."
-              />
-            );
-          })}
+          {[...cohorts]
+            .sort(([a], [b]) => a.localeCompare(b))
+            .map(([entity, cohortSeries]) => {
+              const isConsumer = entity.startsWith("RTX");
+              return (
+                <ChartBlock
+                  key={entity}
+                  title={`${entity}: price per GPU-hour`}
+                  info={EXPLAINERS.gpuListPrice}
+                  subtitle={
+                    isConsumer
+                      ? "Published hourly price; priority tiers remain separate"
+                      : "Machine list price divided by the GPUs in it"
+                  }
+                  series={cohortSeries}
+                  labelOf={shortLabel}
+                  stepped
+                  emptyReason="No price data collected yet."
+                />
+              );
+            })}
         </div>
       </IndicatorPanel>
       <IndicatorPanel def={indicatorById("gpu_resale")}>

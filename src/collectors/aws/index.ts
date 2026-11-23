@@ -1,5 +1,4 @@
 import * as v from "valibot";
-import type { SeriesDef } from "~/domain/types";
 import { classify, permanent, transient } from "../errors";
 import {
   type GpuCohort,
@@ -7,9 +6,9 @@ import {
   perGpuHour,
   perGpuSeriesDef,
   toObservations,
-  utcDate,
 } from "../gpu-list-price";
 import type { CollectOutput, Collector } from "../types";
+import { isoDay } from "../util";
 
 // AWS Price List Bulk API offer files: public, documented for programmatic download.
 // https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/using-the-aws-price-list-bulk-api-fetching-price-list-files-manually.html
@@ -162,7 +161,6 @@ export function extractAwsPrices(rows: Record<string, string>[], inst: AwsInstan
     out.push({
       ...base,
       priceType: "ondemand",
-      instancePerHour: onDemand,
       perGpuHour: perGpuHour(onDemand, inst.gpus),
       derivation: `Instance list price ${onDemand} USD/hr / ${inst.gpus} GPUs`,
     });
@@ -194,7 +192,7 @@ export function backfillVersions(json: unknown, from: string): BackfillVersion[]
     // The end date is exclusive (the first day of the next month).
     const endExclusive = new Date(info.versionEffectiveEndDate);
     if (Number.isNaN(endExclusive.getTime())) continue;
-    const end = utcDate(new Date(endExclusive.getTime() - 86_400_000));
+    const end = isoDay(new Date(endExclusive.getTime() - 86_400_000));
     if (end < start) continue;
     // Several versions for one period: keep the latest publication.
     const prev = byEnd.get(end);
@@ -243,20 +241,12 @@ export const awsCollector: Collector = {
   name: "aws",
   description: "AWS EC2 on-demand list prices for H100 and H200 instances, per GPU-hour",
   async collect({ backfill, now, fetch, log }) {
-    const today = utcDate(now);
+    const today = isoDay(now);
     const types = AWS_INSTANCES.map((i) => i.instanceType);
     const out: Required<Pick<CollectOutput, "series" | "observations" | "failures" | "snapshots">> =
       { series: [], observations: [], failures: [], snapshots: [] };
-    const seen = new Set<string>();
-    const addSeries = (s: SeriesDef) => {
-      if (seen.has(s.id)) return;
-      seen.add(s.id);
-      out.series.push(s);
-    };
     const record = (prices: ListPrice[]) => {
-      for (const p of prices) {
-        addSeries(perGpuSeriesDef(p, SERIES_CTX));
-      }
+      for (const p of prices) out.series.push(perGpuSeriesDef(p, SERIES_CTX));
     };
 
     // Daily: the current price list, dated today.
@@ -328,9 +318,6 @@ export const awsCollector: Collector = {
       }
     }
 
-    if (out.observations.length === 0) {
-      throw out.failures[0]?.error ?? permanent("no AWS prices collected");
-    }
     return out;
   },
 };

@@ -6,9 +6,9 @@ import {
   type PriceType,
   perGpuSeriesDef,
   toObservations,
-  utcDate,
 } from "../gpu-list-price";
 import type { Collector } from "../types";
+import { isoDay } from "../util";
 
 export const PRICING_URL = "https://salad.com/pricing/";
 
@@ -69,7 +69,6 @@ export function extractPrices(gpus: GpuPrice[]): ListPrice[] {
         priceType: priority.type,
         sku: gpu.name,
         gpus: 1,
-        instancePerHour: price,
         perGpuHour: price,
         observationKind: "reported",
         derivation: `Published ${priority.type.replace("_", " ")} price ${price} USD/GPU-hr`,
@@ -98,7 +97,7 @@ export const saladCollector: Collector = {
     const body = await response.text();
     const prices = extractPrices(parseGpuPrices(body));
     if (prices.length === 0) throw permanent("no tracked Salad GPU prices found");
-    const today = utcDate(now);
+    const today = isoDay(now);
     for (const price of prices)
       log(`${price.sku} ${price.priceType}=${price.perGpuHour.toFixed(3)}`);
     return {

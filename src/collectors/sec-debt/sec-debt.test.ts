@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { observations, series } from "~/storage/schema";
 import { memoryDb } from "../../../test/helpers";
 import { runCollector } from "../runner";
-import { makeSecDebtCollector } from ".";
+import { secDebtCollector } from ".";
 import {
   type DebtFact,
   findFilingFiles,
@@ -237,7 +237,7 @@ function fakeSec(requested: string[] = []) {
 describe("sec_debt collector", () => {
   it("writes one series per instrument, qualifier and metric", async () => {
     const db = await memoryDb();
-    const summary = await runCollector(db, makeSecDebtCollector(0), {
+    const summary = await runCollector(db, secDebtCollector, {
       fetch: fakeSec(),
       backfill: true,
       log: () => {},
@@ -279,7 +279,7 @@ describe("sec_debt collector", () => {
   it("reads only the latest five filings on a routine run", async () => {
     const requested: string[] = [];
     const db = await memoryDb();
-    await runCollector(db, makeSecDebtCollector(0), { fetch: fakeSec(requested), log: () => {} });
+    await runCollector(db, secDebtCollector, { fetch: fakeSec(requested), log: () => {} });
     expect(requested.some((u) => u.includes("000176962826000465"))).toBe(true);
     expect(requested.some((u) => u.includes("000176962825000050"))).toBe(true);
     expect(requested.some((u) => u.includes("000176962825000010"))).toBe(false);
@@ -291,7 +291,7 @@ describe("sec_debt collector", () => {
     const requested: string[] = [];
     const base = fakeSec(requested);
     const db = await memoryDb();
-    const summary = await runCollector(db, makeSecDebtCollector(0), {
+    const summary = await runCollector(db, secDebtCollector, {
       fetch: async (url: string) => {
         if (url.includes("/000176962826000465/index.json")) {
           return new Response(
@@ -302,8 +302,9 @@ describe("sec_debt collector", () => {
       },
       log: () => {},
     });
-    expect(summary.status).toBe("partial");
-    expect(summary.failures.map((f) => f.key)).toEqual(["CRWV"]);
+    // CRWV is the only company the fixture serves, so nothing was collected.
+    expect(summary.status).toBe("failed");
+    expect(summary.error?.message).toMatch(/no XBRL instance document/);
     expect(requested.some((u) => u.endsWith("crwv-20260930_htm.xml"))).toBe(false);
     expect(await db.select().from(series)).toEqual([]);
   });

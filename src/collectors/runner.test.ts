@@ -124,4 +124,48 @@ describe("runCollector", () => {
       message: "other: HTTP 503",
     });
   });
+
+  it("fails the run when there are failures and no output", async () => {
+    const db = await memoryDb();
+    const res = await runCollector(
+      db,
+      collector(() => ({
+        series: [],
+        observations: [],
+        failures: [
+          { key: "a", error: transient("HTTP 503") },
+          { key: "b", error: transient("HTTP 502") },
+        ],
+      })),
+      quiet,
+    );
+    expect(res.status).toBe("failed");
+    expect(res.error?.message).toBe("HTTP 503");
+    const [run] = await db.select().from(collectorRuns);
+    expect(run).toMatchObject({ status: "failed", errorClass: "transient", message: "HTTP 503" });
+  });
+
+  it("stays partial when failures come with filing events only", async () => {
+    const db = await memoryDb();
+    const res = await runCollector(
+      db,
+      collector(() => ({
+        series: [],
+        observations: [],
+        filingEvents: [
+          {
+            accession: "0000000000-26-000001",
+            ticker: "T",
+            company: "Test",
+            form: "8-K",
+            filedAt: "2026-01-01",
+            sourceUrl: "https://example.com",
+          },
+        ],
+        failures: [{ key: "other", error: transient("HTTP 503") }],
+      })),
+      quiet,
+    );
+    expect(res.status).toBe("partial");
+  });
 });

@@ -60,15 +60,16 @@ bundle.
 ## Scheduled workflows
 
 - `collect-fred.yml`: weekdays at 08:07 UTC.
-- `collect-sec.yml`: weekdays at 08:13 UTC; runs `sec` and `sec_debt`
-  (per-instrument debt from each 10-Q and 10-K XBRL instance).
+- `collect-sec.yml`: weekdays at 08:13 UTC; runs `sec`, `sec_debt`
+  (per-instrument debt from each 10-Q and 10-K XBRL instance) and
+  `sec_insider` (Form 4 insider sales).
 - `collect-sec-filings.yml`: weekdays at 08:00, 13:00, and 18:00 UTC; runs
-  `sec_filings` and `sec_insider` (Form 4 insider sales).
+  `sec_filings`.
 - `collect-prices.yml`: weekly.
 - `collect-census.yml`: weekdays at 15:23 UTC, shortly after the Census
   construction spending release (10:00 ET, about the first business day of
   each month); runs `census`.
-- `collect-eia.yml`: every 14 days on Thursday (with a weekly schedule check).
+- `collect-eia.yml`: weekly on Thursday at 12:00 UTC.
 - `collect-manual.yml`: when `data/manual/**` changes on `main`, or manually.
 - `backup.yml`: weekly database backup, retained for 90 days as an artifact.
 - `remind-datacenter-reports.yml`: weekly during February and August; opens a

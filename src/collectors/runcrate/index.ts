@@ -1,13 +1,8 @@
 import * as v from "valibot";
 import { permanent } from "../errors";
-import {
-  type GpuCohort,
-  type ListPrice,
-  perGpuSeriesDef,
-  toObservations,
-  utcDate,
-} from "../gpu-list-price";
+import { type GpuCohort, type ListPrice, perGpuSeriesDef, toObservations } from "../gpu-list-price";
 import type { Collector } from "../types";
+import { isoDay } from "../util";
 
 // Source terms, checked 2026-11-23: https://www.runcrate.ai/terms has no clause
 // against automated access. robots.txt disallows /api/, so the collector reads
@@ -93,7 +88,7 @@ export const runcrateCollector: Collector = {
     const body = await response.text();
     const prices = extractPrices(parseFeed(body));
     if (prices.length === 0) throw permanent("no tracked Runcrate GPU prices found");
-    const today = utcDate(now);
+    const today = isoDay(now);
     for (const price of prices) log(`${price.sku} ${price.perGpuHour.toFixed(3)}`);
     return {
       series: prices.map((price) => perGpuSeriesDef(price, SERIES_CTX)),

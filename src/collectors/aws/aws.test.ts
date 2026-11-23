@@ -63,7 +63,6 @@ describe("extractAwsPrices", () => {
     const p5 = await pricesFrom(current, "p5.48xlarge");
     // The fixture also has reserved-instance rows; only on-demand is tracked.
     expect(Object.keys(p5)).toEqual(["ondemand"]);
-    expect(p5.ondemand?.instancePerHour).toBe(55.04);
     expect(p5.ondemand?.perGpuHour).toBeCloseTo(6.88, 6);
 
     const p5en = await pricesFrom(current, "p5en.48xlarge");
@@ -74,13 +73,13 @@ describe("extractAwsPrices", () => {
     // The fixture has $0.00 capacity-block rows and RHEL/SUSE/dedicated variants.
     for (const type of TYPES) {
       const prices = await pricesFrom(current, type);
-      expect(prices.ondemand?.instancePerHour ?? 0).toBeGreaterThan(10);
+      expect(prices.ondemand?.perGpuHour ?? 0).toBeGreaterThan(1);
     }
   });
 
   it("reads older files that predate the MarketOption column", async () => {
     const p5 = await pricesFrom(aug2023, "p5.48xlarge");
-    expect(p5.ondemand?.instancePerHour).toBe(98.32);
+    expect(p5.ondemand?.perGpuHour).toBeCloseTo(98.32 / 8, 6);
     const h200 = await pricesFrom(aug2023, "p5en.48xlarge");
     expect(h200.ondemand).toBeUndefined();
   });

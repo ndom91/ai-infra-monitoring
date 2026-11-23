@@ -5,6 +5,7 @@ import { parse } from "yaml";
 import { CADENCES, INDICATOR_IDS, type ObservationInput, type SeriesDef } from "~/domain/types";
 import { permanent } from "../errors";
 import type { CollectOutput, Collector } from "../types";
+import { isoDay } from "../util";
 
 // Hand-curated observations from reports and filings that have no API.
 // Format and rules: data/manual/README.md.
@@ -74,7 +75,7 @@ export function toCollectOutput(
   files: { name: string; data: ManualFile }[],
   now: Date,
 ): Required<Pick<CollectOutput, "series" | "observations">> {
-  const today = now.toISOString().slice(0, 10);
+  const today = isoDay(now);
   const out: Required<Pick<CollectOutput, "series" | "observations">> = {
     series: [],
     observations: [],

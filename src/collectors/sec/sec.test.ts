@@ -2,14 +2,7 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { fakeFetch, memoryDb } from "../../../test/helpers";
 import { runCollector } from "../runner";
-import {
-  companyOutput,
-  inferCadence,
-  makeSecCollector,
-  SEC_COMPANIES,
-  secCollector,
-  secSeriesId,
-} from ".";
+import { companyOutput, SEC_COMPANIES, secCollector, secSeriesId } from ".";
 import {
   type Fact,
   filingIndexUrl,
@@ -19,6 +12,7 @@ import {
   quarterlyFlows,
   usdFacts,
 } from "./companyfacts";
+import { inferCadence } from "./edgar";
 
 const fixture = (t: string) => readFileSync(`test/fixtures/sec/${t}.json`, "utf8");
 const msft = parseCompanyFacts(fixture("MSFT"));
@@ -181,7 +175,7 @@ describe("secCollector", () => {
     const db = await memoryDb();
     const log: string[] = [];
     const run = () =>
-      runCollector(db, makeSecCollector(0), {
+      runCollector(db, secCollector, {
         fetch: fakeFetch(routes),
         log: (msg) => log.push(msg),
       });
@@ -206,7 +200,7 @@ describe("secCollector", () => {
       routes[cik] = c.ticker === "MSFT" ? fixture(c.ticker) : fixture("CRWV");
     }
     routes.CIK0001144879 = 503;
-    const res = await runCollector(db, makeSecCollector(0), {
+    const res = await runCollector(db, secCollector, {
       fetch: fakeFetch(routes) as never,
       log: () => {},
     });
@@ -215,7 +209,7 @@ describe("secCollector", () => {
     expect(res.inserted).toBeGreaterThan(50);
 
     // A second identical run must not create new vintages.
-    const again = await runCollector(db, makeSecCollector(0), {
+    const again = await runCollector(db, secCollector, {
       fetch: fakeFetch(routes) as never,
       log: () => {},
     });

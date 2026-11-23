@@ -2,6 +2,7 @@ import * as XLSX from "xlsx";
 import type { ObservationInput, SeriesDef } from "~/domain/types";
 import { permanent } from "../errors";
 import type { CollectOutput, Collector } from "../types";
+import { isoDay, monthEnd, readWorkbook } from "../util";
 
 const BASE_URL = "https://www.census.gov/construction/c30/xlsx";
 
@@ -44,17 +45,13 @@ const clean = (cell: unknown) =>
     .replace(/\s+/g, " ")
     .trim();
 
-function monthEnd(year: number, month: number) {
-  return new Date(Date.UTC(year, month, 0)).toISOString().slice(0, 10);
-}
-
 // Release date printed in the file's "Source: U.S. Census Bureau, Construction
 // Spending, <date>." line. Undefined when absent, in which case asOf stays unset.
 function releaseDate(rows: unknown[][]) {
   for (const row of rows) {
     const match = RELEASE_LINE.exec(clean(row[0]));
     const ms = match ? Date.parse(`${match[1]} UTC`) : Number.NaN;
-    if (!Number.isNaN(ms)) return new Date(ms).toISOString().slice(0, 10);
+    if (!Number.isNaN(ms)) return isoDay(new Date(ms));
   }
   return undefined;
 }
@@ -149,8 +146,7 @@ export const censusCollector: Collector = {
     for (const variant of VARIANTS) {
       const url = `${BASE_URL}/${variant.file}`;
       const response = await fetch(url, { timeoutMs: 60_000 });
-      const data = Buffer.from(await response.arrayBuffer());
-      const observations = parseDataCenter(XLSX.read(data, { type: "buffer" }), variant, url);
+      const observations = parseDataCenter(await readWorkbook(response), variant, url);
       output.series.push(seriesDef(variant, url));
       output.observations.push(...observations);
       log(`${variant.id}: ${observations.length} observations`);

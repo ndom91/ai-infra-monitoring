@@ -1,6 +1,7 @@
 import type { Cadence, IndicatorId, SeriesDef } from "~/domain/types";
 import { classify, permanent } from "../errors";
 import type { CollectOutput, Collector } from "../types";
+import { isoDay } from "../util";
 
 type FredSeries = {
   id: string;
@@ -170,7 +171,7 @@ export const fredCollector: Collector = {
   async collect({ backfill, now, fetch, log }) {
     const start = backfill
       ? BACKFILL_START
-      : new Date(now.getTime() - ROUTINE_LOOKBACK_DAYS * 86_400_000).toISOString().slice(0, 10);
+      : isoDay(new Date(now.getTime() - ROUTINE_LOOKBACK_DAYS * 86_400_000));
     const out: Required<Pick<CollectOutput, "series" | "observations" | "failures">> = {
       series: [],
       observations: [],
@@ -197,9 +198,6 @@ export const fredCollector: Collector = {
       } catch (err) {
         out.failures.push({ key: s.id, error: classify(err) });
       }
-    }
-    if (out.series.length === 0) {
-      throw out.failures[0]?.error ?? permanent("no FRED series collected");
     }
     return out;
   },

@@ -1,5 +1,4 @@
 import * as v from "valibot";
-import type { SeriesDef } from "~/domain/types";
 import { classify, permanent } from "../errors";
 import {
   type GpuCohort,
@@ -7,9 +6,9 @@ import {
   perGpuHour,
   perGpuSeriesDef,
   toObservations,
-  utcDate,
 } from "../gpu-list-price";
 import type { CollectOutput, Collector } from "../types";
+import { isoDay } from "../util";
 
 // Azure Retail Prices API: public and unauthenticated. Microsoft documents it for
 // "your own tools for internal analysis and price comparison across SKUs and regions".
@@ -29,9 +28,7 @@ export const AZURE_SKUS: AzureSku[] = [
 
 // One fixed reference region that offers both SKUs (eastus has no H200). A
 // SKU that disappears from it shows up as a failure instead of silently vanishing.
-export const AZURE_REGIONS: { region: string; skus: string[] }[] = [
-  { region: "eastus2", skus: ["Standard_ND96isr_H100_v5", "Standard_ND96isr_H200_v5"] },
-];
+export const AZURE_REGION = "eastus2";
 
 const MAX_PAGES = 5;
 
@@ -76,24 +73,20 @@ function isLinux(item: AzureItem) {
   return !/\bWindows\b/.test(item.productName);
 }
 
-type Effective = { price: number; effectiveDate: string };
-
 // Picks the row in force on `today`. Azure can publish future-dated rows, and
 // two rows in force on the same date with different prices is ambiguous.
-function current(items: AzureItem[], today: string, value: (i: AzureItem) => number | undefined) {
+function current(items: AzureItem[], today: string) {
   const live = items.filter((i) => i.effectiveStartDate.slice(0, 10) <= today);
   if (live.length === 0) return undefined;
   const latest = live.reduce((a, b) => (b.effectiveStartDate > a.effectiveStartDate ? b : a));
   const sameDay = live.filter((i) => i.effectiveStartDate === latest.effectiveStartDate);
-  const prices = new Set(sameDay.map(value));
+  const prices = new Set(sameDay.map((i) => i.retailPrice));
   if (prices.size > 1) {
     throw permanent(
       `ambiguous Azure prices for ${latest.armSkuName} ${latest.meterName} on ${latest.effectiveStartDate}: ${[...prices].join(", ")}`,
     );
   }
-  const price = value(latest);
-  if (price === undefined) return undefined;
-  return { price, effectiveDate: latest.effectiveStartDate.slice(0, 10) } satisfies Effective;
+  return { price: latest.retailPrice, effectiveDate: latest.effectiveStartDate.slice(0, 10) };
 }
 
 export type AzurePricePoint = ListPrice & { effectiveDate: string };
@@ -123,19 +116,18 @@ export function extractPrices(
   const base = { provider: "azure" as const, cohort: sku.cohort, region, sku: sku.armSkuName };
   const out: AzurePricePoint[] = [];
 
-  const onDemand = current(onDemandRows, today, (i) => i.retailPrice);
+  const onDemand = current(onDemandRows, today);
   if (!onDemand) throw permanent(`no Linux on-demand price for ${sku.armSkuName} in ${region}`);
   out.push({
     ...base,
     priceType: "ondemand",
     gpus: sku.gpus,
-    instancePerHour: onDemand.price,
     perGpuHour: perGpuHour(onDemand.price, sku.gpus),
     derivation: `Instance list price ${onDemand.price} USD/hr / ${sku.gpus} GPUs`,
     effectiveDate: onDemand.effectiveDate,
   });
 
-  const spot = current(spotRows, today, (i) => i.retailPrice);
+  const spot = current(spotRows, today);
   if (spot) {
     // Azure lists some new SKUs (H200, GB200) with a spot meter priced exactly
     // at on-demand. Kept as published, but flagged so nobody reads it as a discount.
@@ -147,7 +139,6 @@ export function extractPrices(
       ...base,
       priceType: "spot",
       gpus: sku.gpus,
-      instancePerHour: spot.price,
       perGpuHour: perGpuHour(spot.price, sku.gpus),
       derivation: `Instance spot list price ${spot.price} USD/hr / ${sku.gpus} GPUs${caveat}`,
       effectiveDate: spot.effectiveDate,
@@ -169,71 +160,58 @@ export const azureCollector: Collector = {
   name: "azure",
   description: "Azure on-demand and spot list prices for H100 and H200 VMs, per GPU-hour",
   async collect({ backfill, now, fetch, log }) {
-    const today = utcDate(now);
+    const today = isoDay(now);
     const out: Required<Pick<CollectOutput, "series" | "observations" | "failures" | "snapshots">> =
       { series: [], observations: [], failures: [], snapshots: [] };
-    const seen = new Set<string>();
-    const addSeries = (s: SeriesDef) => {
-      if (seen.has(s.id)) return;
-      seen.add(s.id);
-      out.series.push(s);
-    };
+    const skus = AZURE_SKUS.map((s) => s.armSkuName);
+    const region = AZURE_REGION;
+    const items: AzureItem[] = [];
+    try {
+      let next: string | null | undefined = regionUrl(region, skus);
+      for (let page = 0; next; page++) {
+        if (page >= MAX_PAGES) throw permanent(`more than ${MAX_PAGES} pages for ${region}`);
+        const res = await fetch(next);
+        const body = await res.text();
+        const parsed = parsePage(JSON.parse(body));
+        items.push(...parsed.Items);
+        out.snapshots.push({ contentType: "application/json", body });
+        next = parsed.NextPageLink;
+      }
+    } catch (err) {
+      out.failures.push({ key: region, error: classify(err) });
+      return out;
+    }
 
-    for (const { region, skus } of AZURE_REGIONS) {
-      let items: AzureItem[];
-      const url = regionUrl(region, skus);
+    for (const sku of AZURE_SKUS) {
+      const name = sku.armSkuName;
       try {
-        items = [];
-        let next: string | null | undefined = url;
-        for (let page = 0; next; page++) {
-          if (page >= MAX_PAGES) throw permanent(`more than ${MAX_PAGES} pages for ${region}`);
-          const res = await fetch(next);
-          const body = await res.text();
-          const parsed = parsePage(JSON.parse(body));
-          items.push(...parsed.Items);
-          out.snapshots.push({ contentType: "application/json", body });
-          next = parsed.NextPageLink;
+        const prices = extractPrices(items, sku, region, today);
+        for (const p of prices) {
+          out.series.push(perGpuSeriesDef(p, SERIES_CTX));
         }
-      } catch (err) {
-        out.failures.push({ key: region, error: classify(err) });
-        continue;
-      }
-
-      for (const name of skus) {
-        const sku = AZURE_SKUS.find((s) => s.armSkuName === name);
-        if (!sku) throw new Error(`unknown Azure SKU in config: ${name}`);
-        try {
-          const prices = extractPrices(items, sku, region, today);
+        out.observations.push(...toObservations(prices, { start: today, end: today }));
+        // effectiveStartDate tells us the price has been unchanged since that
+        // date, so it is a real (single) historical point, not interpolation.
+        if (backfill) {
           for (const p of prices) {
-            addSeries(perGpuSeriesDef(p, SERIES_CTX));
+            if (p.effectiveDate >= today) continue;
+            out.observations.push(
+              ...toObservations([p], {
+                start: p.effectiveDate,
+                end: p.effectiveDate,
+                note: `Price effective from ${p.effectiveDate} per Azure effectiveStartDate; earlier prices are not published by the API.`,
+              }),
+            );
           }
-          out.observations.push(...toObservations(prices, { start: today, end: today }));
-          // effectiveStartDate tells us the price has been unchanged since that
-          // date, so it is a real (single) historical point, not interpolation.
-          if (backfill) {
-            for (const p of prices) {
-              if (p.effectiveDate >= today) continue;
-              out.observations.push(
-                ...toObservations([p], {
-                  start: p.effectiveDate,
-                  end: p.effectiveDate,
-                  note: `Price effective from ${p.effectiveDate} per Azure effectiveStartDate; earlier prices are not published by the API.`,
-                }),
-              );
-            }
-          }
-          log(
-            `${region} ${name}: ${prices.map((p) => `${p.priceType}=${p.perGpuHour.toFixed(3)}`).join(" ")}`,
-          );
-        } catch (err) {
-          out.failures.push({ key: `${region}/${name}`, error: classify(err) });
         }
+        log(
+          `${region} ${name}: ${prices.map((p) => `${p.priceType}=${p.perGpuHour.toFixed(3)}`).join(" ")}`,
+        );
+      } catch (err) {
+        out.failures.push({ key: `${region}/${name}`, error: classify(err) });
       }
     }
 
-    if (out.observations.length === 0) {
-      throw out.failures[0]?.error ?? permanent("no Azure prices collected");
-    }
     return out;
   },
 };

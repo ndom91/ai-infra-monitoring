@@ -1,6 +1,7 @@
 import * as XLSX from "xlsx";
 import { permanent } from "../errors";
 import type { CollectOutput, Collector } from "../types";
+import { monthEnd, readWorkbook } from "../util";
 
 export const EIA_SALES_REVENUE_URL =
   "https://www.eia.gov/electricity/data/eia861m/xls/sales_revenue.xlsx";
@@ -15,10 +16,6 @@ const STATES = new Map([
 ]);
 
 type Row = [number, number, string, string, ...number[]];
-
-function monthEnd(year: number, month: number) {
-  return new Date(Date.UTC(year, month, 0)).toISOString().slice(0, 10);
-}
 
 export function parseSalesRevenue(workbook: XLSX.WorkBook, sourceUrl = EIA_SALES_REVENUE_URL) {
   const sheet = workbook.Sheets["Monthly-States"];
@@ -88,8 +85,7 @@ export const eiaCollector: Collector = {
     "EIA monthly commercial electricity sales and prices in major data-center-market states",
   async collect({ fetch, log }) {
     const response = await fetch(EIA_SALES_REVENUE_URL, { timeoutMs: 120_000 });
-    const data = Buffer.from(await response.arrayBuffer());
-    const output = parseSalesRevenue(XLSX.read(data, { type: "buffer" }));
+    const output = parseSalesRevenue(await readWorkbook(response));
     log(`${output.series.length} series, ${output.observations.length} observations`);
     return output;
   },

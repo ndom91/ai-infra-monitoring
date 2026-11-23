@@ -38,10 +38,6 @@ export function perGpuHour(instancePricePerHour: number, gpus: number) {
   return instancePricePerHour / gpus;
 }
 
-export function utcDate(d: Date) {
-  return d.toISOString().slice(0, 10);
-}
-
 // One price point as read from the source, before it becomes observations.
 export type ListPrice = {
   provider: "azure" | "aws" | "salad" | "runcrate";
@@ -50,8 +46,6 @@ export type ListPrice = {
   priceType: PriceType;
   sku: string;
   gpus: number;
-  // Instance price per hour as listed; recorded in the observation note.
-  instancePerHour?: number;
   perGpuHour: number;
   observationKind?: ObservationKind;
   // Where the per-GPU value came from, for the observation note.

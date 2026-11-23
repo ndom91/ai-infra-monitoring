@@ -49,3 +49,21 @@ describe("fetchWithRetry User-Agent", () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 });
+
+describe("fetchWithRetry SEC throttle", () => {
+  it("spaces consecutive SEC requests, and leaves other hosts alone", async () => {
+    vi.stubEnv("SEC_USER_AGENT", "TestAgent configured-contact");
+    stubFetch();
+    const waits: number[] = [];
+    const sleep = async (ms: number) => {
+      waits.push(ms);
+    };
+    await fetchWithRetry("https://data.sec.gov/a", { sleep });
+    await fetchWithRetry("https://data.sec.gov/b", { sleep });
+    // The second request always waits, whatever ran before in this process.
+    const secWaits = waits.length;
+    expect(secWaits).toBeGreaterThan(0);
+    await fetchWithRetry("https://example.com/c", { sleep });
+    expect(waits).toHaveLength(secWaits);
+  });
+});

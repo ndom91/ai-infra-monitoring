@@ -54,6 +54,11 @@ export async function runCollector(
       fetch: opts.fetch ?? fetchWithRetry,
       log,
     });
+    // Every source failed: report the run as failed rather than partial.
+    const [firstFailure] = output.failures ?? [];
+    if (firstFailure && output.observations.length === 0 && !output.filingEvents?.length) {
+      throw firstFailure.error;
+    }
     const validated = validate(output);
     const counts = await persist(db, collector.name, validated, run.id, now.toISOString());
     const failures = output.failures ?? [];

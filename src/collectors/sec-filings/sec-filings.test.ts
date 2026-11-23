@@ -3,7 +3,8 @@ import { SEC_FILING_COMPANIES } from "~/domain/companies";
 import { filingEvents } from "~/storage/schema";
 import { fakeFetch, memoryDb } from "../../../test/helpers";
 import { runCollector } from "../runner";
-import { filingEventsFor, filingUrl, makeSecFilingsCollector, parseSubmissions } from ".";
+import { filingUrl, parseSubmissions } from "../sec/edgar";
+import { filingEventsFor, secFilingsCollector } from ".";
 
 const body = JSON.stringify({
   filings: {
@@ -39,7 +40,7 @@ describe("SEC filing events", () => {
 
   it("deduplicates filing events across collector runs", async () => {
     const db = await memoryDb();
-    const collector = makeSecFilingsCollector(0);
+    const collector = secFilingsCollector;
     const routes = Object.fromEntries(
       SEC_FILING_COMPANIES.map(({ cik }) => {
         const padded = String(cik).padStart(10, "0");

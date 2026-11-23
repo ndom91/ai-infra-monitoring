@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { fakeFetch, memoryDb } from "../../../test/helpers";
 import { runCollector } from "../runner";
 import {
-  AZURE_REGIONS,
+  AZURE_REGION,
   AZURE_SKUS,
   type AzureItem,
   azureCollector,
@@ -41,11 +41,9 @@ describe("extractPrices", () => {
   const items = parsePage(JSON.parse(eastus2)).Items;
 
   it("finds every configured SKU in the recorded region", () => {
-    for (const { region, skus } of AZURE_REGIONS) {
-      for (const name of skus) {
-        const prices = extractPrices(items, sku(name), region, TODAY);
-        expect(prices.map((p) => p.priceType)).toContain("ondemand");
-      }
+    for (const azureSku of AZURE_SKUS) {
+      const prices = extractPrices(items, azureSku, AZURE_REGION, TODAY);
+      expect(prices.map((p) => p.priceType)).toContain("ondemand");
     }
   });
 
@@ -54,9 +52,7 @@ describe("extractPrices", () => {
     // Linux on-demand is 98.32/hr; Windows, Low Priority and reservation rows
     // in the same response must not leak into either series.
     expect(Object.keys(h100).sort()).toEqual(["ondemand", "spot"]);
-    expect(h100.ondemand?.instancePerHour).toBe(98.32);
     expect(h100.ondemand?.perGpuHour).toBeCloseTo(12.29, 6);
-    expect(h100.spot?.instancePerHour).toBe(18.169536);
     expect(h100.spot?.perGpuHour).toBeCloseTo(18.169536 / 8, 6);
     expect(h100.spot?.derivation).not.toMatch(/on-demand price/);
 
@@ -70,7 +66,7 @@ describe("extractPrices", () => {
     const onDemand = items.find((i) => i.armSkuName === H100 && i.meterName === "ND96isrH100v5");
     if (!onDemand) throw new Error("fixture lacks H100 on-demand row");
     const future = { ...onDemand, retailPrice: 1, effectiveStartDate: "2027-01-01T00:00:00Z" };
-    expect(byType([...items, future], H100).ondemand?.instancePerHour).toBe(98.32);
+    expect(byType([...items, future], H100).ondemand?.perGpuHour).toBeCloseTo(98.32 / 8, 6);
 
     const clash = { ...onDemand, retailPrice: 1 };
     expect(() => extractPrices([...items, clash], sku(H100), "eastus2", TODAY)).toThrow(

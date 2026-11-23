@@ -1,7 +1,6 @@
 import { SEC_COMPANIES, type SecCompany } from "~/domain/companies";
 import type { IndicatorId, ObservationInput, SeriesDef } from "~/domain/types";
 import { classify, permanent } from "../errors";
-import { parseSubmissions, submissionsUrl } from "../sec-filings";
 import type { CollectContext, CollectOutput, Collector } from "../types";
 import {
   type CompanyFacts,
@@ -15,6 +14,7 @@ import {
   tagLabel,
   usdFacts,
 } from "./companyfacts";
+import { inferCadence, parseSubmissions, submissionsUrl } from "./edgar";
 
 export { type CompanyGroup, SEC_COMPANIES, type SecCompany } from "~/domain/companies";
 
@@ -243,19 +243,6 @@ export function pickCandidate(cf: CompanyFacts, concept: Concept) {
   return best;
 }
 
-const DAY_MS = 86_400_000;
-
-// Some items (purchase obligations, cash interest paid) are disclosed only in
-// the 10-K for some companies. Labelling those "quarterly" would mark them
-// stale for most of the year, so cadence follows the recent spacing of data.
-export function inferCadence(points: Pick<Point, "periodEnd">[]): "quarterly" | "annual" {
-  const recent = points.slice(-4).map((p) => Date.parse(p.periodEnd));
-  const gaps = recent.slice(1).map((t, i) => (t - (recent[i] ?? t)) / DAY_MS);
-  if (gaps.length === 0) return "quarterly";
-  const median = gaps.toSorted((a, b) => a - b)[Math.floor(gaps.length / 2)] ?? 0;
-  return median > 200 ? "annual" : "quarterly";
-}
-
 export function companyOutput(cf: CompanyFacts, company: SecCompany, log: (msg: string) => void) {
   const series: SeriesDef[] = [];
   const observations: ObservationInput[] = [];
@@ -305,38 +292,22 @@ export function companyOutput(cf: CompanyFacts, company: SecCompany, log: (msg: 
   return { series, observations };
 }
 
-// SEC allows 10 requests/second; requests are sequential with a small gap.
-const REQUEST_GAP_MS = 150;
+export const secCollector: Collector = {
+  name: "sec",
+  description:
+    "SEC EDGAR XBRL fundamentals (capex, cash flow, debt, leases, RPO, receivables, inventory) for hyperscalers, neoclouds, hardware suppliers, datacenter REITs and AI labs",
+  // companyfacts always returns the full history, so backfill and
+  // routine runs behave the same.
+  collect: collectAll,
+};
 
-export function makeSecCollector(requestGapMs = REQUEST_GAP_MS): Collector {
-  return {
-    name: "sec",
-    description:
-      "SEC EDGAR XBRL fundamentals (capex, cash flow, debt, leases, RPO, receivables, inventory) for hyperscalers, neoclouds, hardware suppliers, datacenter REITs and AI labs",
-    // companyfacts always returns the full history, so backfill and
-    // routine runs behave the same.
-    collect: (ctx) => collectAll(ctx, requestGapMs),
-  };
-}
-
-export const secCollector = makeSecCollector();
-
-async function collectAll(
-  { fetch, log }: CollectContext,
-  requestGapMs: number,
-): Promise<CollectOutput> {
+async function collectAll({ fetch, log }: CollectContext): Promise<CollectOutput> {
   const out: Required<Pick<CollectOutput, "series" | "observations" | "failures">> = {
     series: [],
     observations: [],
     failures: [],
   };
-  let requests = 0;
-  const get = async (url: string) => {
-    if (requests++ > 0 && requestGapMs > 0) {
-      await new Promise((r) => setTimeout(r, requestGapMs));
-    }
-    return (await fetch(url)).text();
-  };
+  const get = async (url: string) => (await fetch(url)).text();
   for (const company of SEC_COMPANIES) {
     try {
       const cf = parseCompanyFacts(await get(companyFactsUrl(company.cik)));
@@ -357,8 +328,8 @@ async function collectAll(
       out.failures.push({ key: company.ticker, error: classify(err) });
     }
   }
-  if (out.series.length === 0) {
-    throw out.failures[0]?.error ?? permanent("no SEC series collected");
+  if (out.series.length === 0 && out.failures.length === 0) {
+    throw permanent("no SEC series collected");
   }
   return out;
 }

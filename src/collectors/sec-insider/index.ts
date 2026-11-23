@@ -1,17 +1,17 @@
 import { SEC_FILING_COMPANIES, type SecCompany } from "~/domain/companies";
 import type { ObservationInput, SeriesDef } from "~/domain/types";
 import { classify, permanent } from "../errors";
-import { filingUrl, parseSubmissions, submissionsUrl } from "../sec-filings";
+import { filingUrl, parseSubmissions, submissionsUrl } from "../sec/edgar";
 import type { CollectContext, CollectOutput, Collector } from "../types";
+import { isoDay } from "../util";
 
 // Open-market insider sales from SEC Form 4 filings.
 //
 // Source terms: SEC EDGAR is public-domain data with a declared User-Agent
 // and a limit of 10 requests per second (https://www.sec.gov/developer). This
-// collector keeps a 150 ms gap, like the other SEC collectors.
+// the shared SEC throttle in http.ts applies.
 
 const ROUTINE_WINDOW_DAYS = 120;
-const REQUEST_GAP_MS = 150;
 const FORMS = new Set(["4", "4/A"]);
 
 export type Sale = {
@@ -158,8 +158,6 @@ export function monthlySales(filings: Form4Filing[], firstMonth?: string): Month
     .sort((a, b) => a.month.localeCompare(b.month));
 }
 
-const isoDay = (d: Date) => d.toISOString().slice(0, 10);
-
 // Routine runs fetch whole calendar months: the month containing "now minus
 // 120 days" through today. A window that starts mid-month would total only
 // part of its oldest month and write a lower value that looks like a revision.
@@ -236,82 +234,68 @@ function observationsFor(company: SecCompany, months: MonthlySales[], now: Date)
   return observations;
 }
 
-export function makeSecInsiderCollector(requestGapMs = REQUEST_GAP_MS): Collector {
-  return {
-    name: "sec_insider",
-    description: "Open-market insider sales parsed from SEC Form 4 filings for tracked companies",
-    async collect({ fetch, log, backfill, now }: CollectContext): Promise<CollectOutput> {
-      const series: SeriesDef[] = [];
-      const observations: ObservationInput[] = [];
-      const failures: NonNullable<CollectOutput["failures"]> = [];
-      const windowStart = routineWindowStart(now);
-      let requests = 0;
-      const pause = async () => {
-        if (requests++ > 0 && requestGapMs > 0)
-          await new Promise((resolve) => setTimeout(resolve, requestGapMs));
-      };
+export const secInsiderCollector: Collector = {
+  name: "sec_insider",
+  description: "Open-market insider sales parsed from SEC Form 4 filings for tracked companies",
+  async collect({ fetch, log, backfill, now }: CollectContext): Promise<CollectOutput> {
+    const series: SeriesDef[] = [];
+    const observations: ObservationInput[] = [];
+    const failures: NonNullable<CollectOutput["failures"]> = [];
+    const windowStart = routineWindowStart(now);
 
-      for (const company of SEC_FILING_COMPANIES) {
-        try {
-          await pause();
-          const body = await (await fetch(submissionsUrl(company.cik))).text();
-          const submissions = parseSubmissions(body);
-          const recent = submissions.filings.recent;
-          // `recent` holds only the latest ~1000 filings of any form. If older
-          // filings sit in extra files, the oldest month it touches may be
-          // incomplete, so a backfill starts at the next whole month.
-          let firstMonth = backfill ? undefined : windowStart.slice(0, 7);
-          if (backfill && (submissions.filings.files?.length ?? 0) > 0) {
-            const oldest = [...recent.filingDate].sort()[0];
-            if (oldest) {
-              const d = new Date(`${oldest}T00:00:00Z`);
-              const next = new Date(
-                Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + (d.getUTCDate() > 1 ? 1 : 0), 1),
-              );
-              firstMonth = isoDay(next).slice(0, 7);
-            }
-          }
-          const filings: Form4Filing[] = [];
-          let skippedNoPrice = 0;
-          for (const [index, accession] of recent.accessionNumber.entries()) {
-            const form = recent.form[index];
-            const filedAt = recent.filingDate[index];
-            if (!form || !filedAt || !FORMS.has(form)) continue;
-            if (firstMonth && filedAt < `${firstMonth}-01`) continue;
-            const name = rawXmlName(recent.primaryDocument?.[index]);
-            if (!name) throw permanent(`no XML document for Form 4 ${accession}`);
-            await pause();
-            const xml = await (await fetch(filingUrl(company.cik, accession, name))).text();
-            const parsed = parseForm4(xml);
-            skippedNoPrice += parsed.skippedNoPrice;
-            filings.push({ accession, form, filedAt, parsed });
-          }
-          const months = monthlySales(filings, firstMonth);
-          const obs = observationsFor(company, months, now);
-          if (obs.length > 0) {
-            series.push(
-              ...seriesDefs(
-                company,
-                obs.some((o) => o.seriesId.endsWith("_10b5_1_usd")),
-              ),
+    for (const company of SEC_FILING_COMPANIES) {
+      try {
+        const body = await (await fetch(submissionsUrl(company.cik))).text();
+        const submissions = parseSubmissions(body);
+        const recent = submissions.filings.recent;
+        // `recent` holds only the latest ~1000 filings of any form. If older
+        // filings sit in extra files, the oldest month it touches may be
+        // incomplete, so a backfill starts at the next whole month.
+        let firstMonth = backfill ? undefined : windowStart.slice(0, 7);
+        if (backfill && (submissions.filings.files?.length ?? 0) > 0) {
+          const oldest = [...recent.filingDate].sort()[0];
+          if (oldest) {
+            const d = new Date(`${oldest}T00:00:00Z`);
+            const next = new Date(
+              Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + (d.getUTCDate() > 1 ? 1 : 0), 1),
             );
-            observations.push(...obs);
+            firstMonth = isoDay(next).slice(0, 7);
           }
-          log(
-            `${company.ticker}: ${filings.length} Form 4 filings, ${months.length} months with sales, ${skippedNoPrice} sales skipped for no price`,
-          );
-        } catch (err) {
-          // A company with any unreadable filing writes nothing, so a missing
-          // filing cannot lower a month's total.
-          failures.push({ key: company.ticker, error: classify(err) });
         }
+        const filings: Form4Filing[] = [];
+        let skippedNoPrice = 0;
+        for (const [index, accession] of recent.accessionNumber.entries()) {
+          const form = recent.form[index];
+          const filedAt = recent.filingDate[index];
+          if (!form || !filedAt || !FORMS.has(form)) continue;
+          if (firstMonth && filedAt < `${firstMonth}-01`) continue;
+          const name = rawXmlName(recent.primaryDocument?.[index]);
+          if (!name) throw permanent(`no XML document for Form 4 ${accession}`);
+          const xml = await (await fetch(filingUrl(company.cik, accession, name))).text();
+          const parsed = parseForm4(xml);
+          skippedNoPrice += parsed.skippedNoPrice;
+          filings.push({ accession, form, filedAt, parsed });
+        }
+        const months = monthlySales(filings, firstMonth);
+        const obs = observationsFor(company, months, now);
+        if (obs.length > 0) {
+          series.push(
+            ...seriesDefs(
+              company,
+              obs.some((o) => o.seriesId.endsWith("_10b5_1_usd")),
+            ),
+          );
+          observations.push(...obs);
+        }
+        log(
+          `${company.ticker}: ${filings.length} Form 4 filings, ${months.length} months with sales, ${skippedNoPrice} sales skipped for no price`,
+        );
+      } catch (err) {
+        // A company with any unreadable filing writes nothing, so a missing
+        // filing cannot lower a month's total.
+        failures.push({ key: company.ticker, error: classify(err) });
       }
-      if (failures.length === SEC_FILING_COMPANIES.length) {
-        throw failures[0]?.error ?? permanent("no insider filings collected");
-      }
-      return { series, observations, failures };
-    },
-  };
-}
-
-export const secInsiderCollector = makeSecInsiderCollector();
+    }
+    return { series, observations, failures };
+  },
+};
