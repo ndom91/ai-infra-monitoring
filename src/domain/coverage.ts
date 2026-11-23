@@ -20,7 +20,7 @@ export const COVERAGE: Record<
     summary:
       "AWS and Azure list prices for H100 and H200 GPUs, plus Salad Community Cloud's published RTX 4090 and RTX 5090 prices by priority tier. Collected weekly.",
     gaps: [
-      "Salad is a single managed community-cloud price schedule, not a host-by-host marketplace. Vast.ai (Sep 2026) and Shadeform (Aug 2026) terms forbid building price indexes or databases without written permission.",
+      "Salad is a single managed community-cloud price schedule, not a host-by-host marketplace. Vast.ai (Sep 2026) and Shadeform (Aug 2026) terms forbid building price indexes or databases without written permission. RunPod (checked Nov 2026) forbids data mining and automated data gathering.",
       "Prices do not show how much capacity is in use. Salad priority tiers differ in preemption risk.",
       "Microsoft's API terms forbid sharing the data, so keep this dashboard private.",
       "Google Cloud's pricing API needs an API key and isn't used.",
