@@ -241,6 +241,19 @@ export function pickCandidate(cf: CompanyFacts, concept: Concept) {
   return best;
 }
 
+const DAY_MS = 86_400_000;
+
+// Some items (purchase obligations, cash interest paid) are disclosed only in
+// the 10-K for some companies. Labelling those "quarterly" would mark them
+// stale for most of the year, so cadence follows the recent spacing of data.
+export function inferCadence(points: Pick<Point, "periodEnd">[]): "quarterly" | "annual" {
+  const recent = points.slice(-4).map((p) => Date.parse(p.periodEnd));
+  const gaps = recent.slice(1).map((t, i) => (t - (recent[i] ?? t)) / DAY_MS);
+  if (gaps.length === 0) return "quarterly";
+  const median = gaps.toSorted((a, b) => a - b)[Math.floor(gaps.length / 2)] ?? 0;
+  return median > 200 ? "annual" : "quarterly";
+}
+
 export function companyOutput(cf: CompanyFacts, company: SecCompany, log: (msg: string) => void) {
   const series: SeriesDef[] = [];
   const observations: ObservationInput[] = [];
@@ -268,7 +281,7 @@ export function companyOutput(cf: CompanyFacts, company: SecCompany, log: (msg: 
         COMMON_RULES,
         `Company group: ${company.group}.`,
       ].join(" "),
-      cadence: "quarterly",
+      cadence: inferCadence(picked.points),
       collector: "sec",
     });
     for (const p of picked.points) {
