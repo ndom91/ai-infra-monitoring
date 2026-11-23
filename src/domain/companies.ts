@@ -1,17 +1,26 @@
 // Companies tracked through SEC filings. Groups matter: hyperscalers fund
 // capex from large cash flows, neoclouds largely with debt, suppliers sell
-// the hardware (and may finance buyers), datacenter REITs own the buildings.
+// the hardware (and may finance buyers), datacenter REITs own the buildings,
+// and AI labs develop and sell access to models.
 // Compare within a group, never across.
-export type CompanyGroup = "hyperscaler" | "neocloud" | "supplier" | "dc_reit";
+export type CompanyGroup = "hyperscaler" | "neocloud" | "supplier" | "dc_reit" | "ai_lab";
 
 export const COMPANY_GROUP_LABELS: Record<CompanyGroup, string> = {
   hyperscaler: "Hyperscalers",
   neocloud: "Neoclouds",
   supplier: "Suppliers",
   dc_reit: "Datacenter REITs",
+  ai_lab: "AI labs",
 };
 
-export type SecCompany = { ticker: string; name: string; cik: number; group: CompanyGroup };
+export type SecCompany = {
+  ticker: string;
+  name: string;
+  cik: number;
+  group: CompanyGroup;
+  // A newly listed issuer may have a prospectus but no periodic reports yet.
+  allowMissingPeriodicFilings?: boolean;
+};
 
 export const SEC_COMPANIES: SecCompany[] = [
   { ticker: "MSFT", name: "Microsoft", cik: 789019, group: "hyperscaler" },
@@ -33,7 +42,18 @@ export const SEC_COMPANIES: SecCompany[] = [
   { ticker: "DELL", name: "Dell Technologies", cik: 1571996, group: "supplier" },
   { ticker: "DLR", name: "Digital Realty", cik: 1297996, group: "dc_reit" },
   { ticker: "EQIX", name: "Equinix", cik: 1101239, group: "dc_reit" },
+  {
+    ticker: "ANT",
+    name: "Anthropic",
+    cik: 2130357,
+    group: "ai_lab",
+    allowMissingPeriodicFilings: true,
+  },
 ];
+
+export const SEC_DEBT_COMPANIES = SEC_COMPANIES.filter(
+  (c) => c.group === "neocloud" || c.group === "ai_lab",
+);
 
 export const SEC_FILING_COMPANIES: SecCompany[] = [
   ...SEC_COMPANIES,

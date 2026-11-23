@@ -1,12 +1,14 @@
 import { SEC_COMPANIES, type SecCompany } from "~/domain/companies";
 import type { IndicatorId, ObservationInput, SeriesDef } from "~/domain/types";
 import { classify, permanent } from "../errors";
+import { parseSubmissions, submissionsUrl } from "../sec-filings";
 import type { CollectContext, CollectOutput, Collector } from "../types";
 import {
   type CompanyFacts,
   filingIndexUrl,
   hasPeriodicFilings,
   instants,
+  isPeriodicForm,
   type Point,
   parseCompanyFacts,
   quarterlyFlows,
@@ -310,7 +312,7 @@ export function makeSecCollector(requestGapMs = REQUEST_GAP_MS): Collector {
   return {
     name: "sec",
     description:
-      "SEC EDGAR XBRL fundamentals (capex, cash flow, debt, leases, RPO, receivables, inventory) for hyperscalers, neoclouds, hardware suppliers and datacenter REITs",
+      "SEC EDGAR XBRL fundamentals (capex, cash flow, debt, leases, RPO, receivables, inventory) for hyperscalers, neoclouds, hardware suppliers, datacenter REITs and AI labs",
     // companyfacts always returns the full history, so backfill and
     // routine runs behave the same.
     collect: (ctx) => collectAll(ctx, requestGapMs),
@@ -328,17 +330,25 @@ async function collectAll(
     observations: [],
     failures: [],
   };
-  for (const [i, company] of SEC_COMPANIES.entries()) {
-    if (i > 0 && requestGapMs > 0) {
+  let requests = 0;
+  const get = async (url: string) => {
+    if (requests++ > 0 && requestGapMs > 0) {
       await new Promise((r) => setTimeout(r, requestGapMs));
     }
+    return (await fetch(url)).text();
+  };
+  for (const company of SEC_COMPANIES) {
     try {
-      const res = await fetch(companyFactsUrl(company.cik));
-      const cf = parseCompanyFacts(await res.text());
+      const cf = parseCompanyFacts(await get(companyFactsUrl(company.cik)));
       if (!hasPeriodicFilings(cf)) {
-        throw permanent(
-          `${cf.entityName} has no USD us-gaap facts from 10-K/10-Q filings (foreign filer on 20-F/40-F: annual only, no quarterly XBRL)`,
-        );
+        if (company.allowMissingPeriodicFilings) {
+          const { filings } = parseSubmissions(await get(submissionsUrl(company.cik)));
+          if (!filings.recent.form.some(isPeriodicForm)) {
+            log(`${company.ticker}: awaiting first 10-K or 10-Q filing`);
+            continue;
+          }
+        }
+        throw permanent(`${cf.entityName} has no USD us-gaap facts from 10-K/10-Q filings`);
       }
       const result = companyOutput(cf, company, log);
       out.series.push(...result.series);

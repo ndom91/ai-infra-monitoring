@@ -1,4 +1,4 @@
-import { SEC_COMPANIES, type SecCompany } from "~/domain/companies";
+import { SEC_DEBT_COMPANIES, type SecCompany } from "~/domain/companies";
 import type { ObservationInput, SeriesDef } from "~/domain/types";
 import { classify, permanent } from "../errors";
 import { inferCadence } from "../sec";
@@ -30,9 +30,6 @@ const FORMS = new Set(["10-Q", "10-K"]);
 // 10-K-only facts two points a year apart. With fewer, inferCadence would see
 // one point, default to quarterly, and those series would be flagged stale.
 const ROUTINE_FILINGS = 5;
-
-// NBIS is excluded with the rest of the 20-F filers: it has no 10-Q or 10-K.
-const COMPANIES = SEC_COMPANIES.filter((c) => c.group === "neocloud");
 
 type Filing = { accession: string; form: string; filedAt: string; primaryDocument?: string };
 
@@ -114,11 +111,12 @@ export function makeSecDebtCollector(requestGapMs = REQUEST_GAP_MS): Collector {
   return {
     name: "sec_debt",
     description:
-      "Per-instrument debt (carrying amount, face amount, stated and effective rates, spreads) from the XBRL filings of neocloud companies",
+      "Per-instrument debt (carrying amount, face amount, stated and effective rates, spreads) from the XBRL filings of neoclouds and AI labs",
     async collect({ fetch, log, backfill }: CollectContext): Promise<CollectOutput> {
       const series: SeriesDef[] = [];
       const observations: ObservationInput[] = [];
       const failures: NonNullable<CollectOutput["failures"]> = [];
+      let awaitingFilings = 0;
       let requests = 0;
       const get = async (url: string) => {
         if (requests++ > 0 && requestGapMs > 0) {
@@ -127,11 +125,17 @@ export function makeSecDebtCollector(requestGapMs = REQUEST_GAP_MS): Collector {
         return (await fetch(url)).text();
       };
 
-      for (const company of COMPANIES) {
+      for (const company of SEC_DEBT_COMPANIES) {
         try {
           const filings = filingsOf(await get(submissionsUrl(company.cik)), backfill);
-          if (filings.length === 0)
+          if (filings.length === 0) {
+            if (company.allowMissingPeriodicFilings) {
+              awaitingFilings += 1;
+              log(`${company.ticker}: awaiting first 10-K or 10-Q filing`);
+              continue;
+            }
             throw permanent(`no 10-Q or 10-K filings for ${company.ticker}`);
+          }
           const acc = new Map<string, Accumulator>();
           let facts = 0;
           let noXbrl = 0;
@@ -196,7 +200,7 @@ export function makeSecDebtCollector(requestGapMs = REQUEST_GAP_MS): Collector {
           failures.push({ key: company.ticker, error: classify(err) });
         }
       }
-      if (failures.length === COMPANIES.length) {
+      if (failures.length > 0 && failures.length === SEC_DEBT_COMPANIES.length - awaitingFilings) {
         throw failures[0]?.error ?? permanent("no SEC debt data collected");
       }
       return { series, observations, failures };

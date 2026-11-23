@@ -48,10 +48,14 @@ export function parseCompanyFacts(json: string): CompanyFacts {
 // filing basis.
 const PERIODIC_FORMS = new Set(["10-K", "10-K/A", "10-KT", "10-KT/A", "10-Q", "10-Q/A"]);
 
+export function isPeriodicForm(form: string) {
+  return PERIODIC_FORMS.has(form);
+}
+
 export function hasPeriodicFilings(cf: CompanyFacts) {
   for (const concept of Object.values(cf.facts["us-gaap"] ?? {})) {
     for (const f of concept.units.USD ?? []) {
-      if (PERIODIC_FORMS.has(f.form)) return true;
+      if (isPeriodicForm(f.form)) return true;
     }
   }
   return false;
@@ -60,7 +64,7 @@ export function hasPeriodicFilings(cf: CompanyFacts) {
 // Non-USD units (e.g. RUB in older Nebius filings) are ignored, never converted.
 export function usdFacts(cf: CompanyFacts, tag: string): Fact[] {
   const concept = cf.facts["us-gaap"]?.[tag];
-  return (concept?.units.USD ?? []).filter((f) => PERIODIC_FORMS.has(f.form));
+  return (concept?.units.USD ?? []).filter((f) => isPeriodicForm(f.form));
 }
 
 export function tagLabel(cf: CompanyFacts, tag: string) {

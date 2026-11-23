@@ -112,7 +112,7 @@ export const INDICATORS: IndicatorDef[] = [
       "Index spreads are broad market proxies, not AI-specific.",
       "A yield is not a spread, and a spread is not a default probability.",
       "ICE BofA history on FRED is limited to a rolling 3 years. Older values exist only if this monitor stored them.",
-      "Instrument-level debt covers only the four neoclouds that file 10-Qs and 10-Ks. Private companies' loans and datacenter ABS are not covered.",
+      "Instrument-level debt requires tagged debt notes in 10-Qs or 10-Ks from tracked neoclouds and AI labs. Private companies' loans and datacenter ABS are not covered.",
     ],
     sources: [
       { label: "FRED", url: "https://fred.stlouisfed.org/" },
@@ -134,7 +134,7 @@ export const INDICATORS: IndicatorDef[] = [
     deterioration:
       "Capex growing faster than operating cash flow, negative free cash flow covered by debt or leases, and interest getting harder to cover. Watch heavily indebted neoclouds most.",
     caveats: [
-      "Hyperscalers pay from huge cash flows; neoclouds rely on debt; suppliers sell the hardware; datacenter REITs own the buildings. Compare within each group, not across.",
+      "Hyperscalers pay from large cash flows, neoclouds rely on debt, suppliers sell hardware, datacenter REITs own buildings, and AI labs sell access to models. Compare companies within their group.",
       "Finance leases and off-balance-sheet commitments hide part of the real spending.",
       "Some quarters are worked out from year-to-date filings, and are marked as calculated.",
     ],

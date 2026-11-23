@@ -199,7 +199,7 @@ const listing = (stem: string) =>
     },
   });
 
-// CRWV serves the real trimmed instance; the other neoclouds serve one filing with no debt facts.
+// CRWV serves the trimmed instance, Anthropic has a prospectus, and the other issuers have no debt facts.
 function fakeSec(requested: string[] = []) {
   const crwvFilings: [string, string, string][] = [
     ["0001769628-26-000465", "2026-11-12", "10-Q"],
@@ -213,6 +213,9 @@ function fakeSec(requested: string[] = []) {
     requested.push(url);
     const body = (() => {
       if (url.includes(`CIK${CRWV}`)) return submissions(CRWV, crwvFilings);
+      if (url.includes("CIK0002130357")) {
+        return submissions("0002130357", [["0001628280-26-074944", "2026-11-19", "424B4"]]);
+      }
       const other = /CIK(\d{10})/.exec(url)?.[1];
       if (other) return submissions(other, [[`${other}-26-000001`, "2026-11-01", "10-Q"]]);
       if (url.includes("/000176962826000465/index.json")) return listing("crwv-20260930");
@@ -280,6 +283,8 @@ describe("sec_debt collector", () => {
     expect(requested.some((u) => u.includes("000176962826000465"))).toBe(true);
     expect(requested.some((u) => u.includes("000176962825000050"))).toBe(true);
     expect(requested.some((u) => u.includes("000176962825000010"))).toBe(false);
+    expect(requested.some((u) => u.endsWith("CIK0002130357.json"))).toBe(true);
+    expect(requested.some((u) => u.includes("000162828026074944"))).toBe(false);
   });
 
   it("fails a company whose filing has no instance document, without guessing a URL", async () => {

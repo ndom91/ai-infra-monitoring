@@ -41,7 +41,7 @@ export const COVERAGE: Record<
     status: "partial",
     collectors: ["fred", "sec_debt", "manual"],
     summary:
-      "Daily borrowing costs by credit rating (ICE BofA via FRED), plus Moody's Baa for long history. Debt instrument by instrument (facilities, notes, loans: carrying amount, face amount, stated and effective rates, spreads) for CoreWeave, Core Scientific, IREN and Applied Digital, from the XBRL data in their 10-Q and 10-K filings. Rates CoreWeave and other neoclouds agreed when they borrowed, from filings, entered by hand (a frozen record).",
+      "Daily borrowing costs by credit rating (ICE BofA via FRED), plus Moody's Baa for long history. Instrument-level debt coverage tracks CoreWeave, Core Scientific, IREN, Applied Digital and Anthropic, using XBRL data from 10-Q and 10-K filings. Rates CoreWeave and other neoclouds agreed when they borrowed, from filings, entered by hand (a frozen record).",
     gaps: [
       "Private companies' GPU-backed loans and datacenter ABS (Lambda, Crusoe, Vantage, Switch, Aligned, STACK) are not covered. Their terms appear only in press releases on sites that block automated access.",
       "Instruments are stored under the name each filing gives them. If a company renames a facility, the old and new names are separate series.",
@@ -54,9 +54,10 @@ export const COVERAGE: Record<
     status: "implemented",
     collectors: ["sec"],
     summary:
-      "Quarterly capex, operating cash flow, depreciation, interest, debt and leases for hyperscalers (MSFT, GOOGL, AMZN, META, ORCL), neoclouds (CRWV, CORZ, IREN, APLD), suppliers (NVDA, AMD, AVGO, SMCI, DELL) and datacenter REITs (DLR, EQIX), from SEC filings. Purchase obligations are included where companies tag them, which is rare. Compare within a group, not across. 12-month ratios are calculated on the fly.",
+      "Quarterly capex, operating cash flow, depreciation, interest, debt and leases from SEC filings. Tracked groups are hyperscalers (MSFT, GOOGL, AMZN, META, ORCL), neoclouds (CRWV, CORZ, IREN, APLD), suppliers (NVDA, AMD, AVGO, SMCI, DELL), datacenter REITs (DLR, EQIX) and AI labs (ANT). Purchase obligations are included where companies tag them, which is rare. Compare companies within their group. 12-month ratios are calculated on the fly.",
     gaps: [
       "Nebius files only annual 20-F reports with no quarterly data, so it's left out.",
+      "Anthropic's IPO prospectus is tracked in the filing feed. Automated financial figures require XBRL data from a 10-K or 10-Q.",
       "Some data labels change over time, and history under an old label isn't joined up. Examples: CRWV debt after Mar 2026, MSFT and ORCL cash interest paid.",
       "Off-balance-sheet commitments and debt due dates appear only in filing text, so they aren't captured.",
     ],

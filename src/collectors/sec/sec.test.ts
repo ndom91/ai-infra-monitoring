@@ -166,6 +166,38 @@ describe("secCollector", () => {
     expect(hasPeriodicFilings(parseCompanyFacts(fixture("MSFT")))).toBe(true);
   });
 
+  it("waits for Anthropic's first periodic report and collects it once tagged facts arrive", async () => {
+    const companyFacts = "companyfacts/CIK0002130357.json";
+    const submissions = "submissions/CIK0002130357.json";
+    const routes = {
+      [companyFacts]: JSON.stringify({ cik: 2130357, entityName: "Anthropic, PBC", facts: {} }),
+      [submissions]: JSON.stringify({
+        filings: {
+          recent: { accessionNumber: ["prospectus"], filingDate: ["2026-11-19"], form: ["424B4"] },
+        },
+      }),
+      "companyfacts/CIK": fixture("MSFT"),
+    };
+    const db = await memoryDb();
+    const log: string[] = [];
+    const run = () =>
+      runCollector(db, makeSecCollector(0), {
+        fetch: fakeFetch(routes),
+        log: (msg) => log.push(msg),
+      });
+
+    expect((await run()).status).toBe("ok");
+    expect(log).toContain("ANT: awaiting first 10-K or 10-Q filing");
+
+    routes[submissions] = routes[submissions].replace("424B4", "10-Q");
+    expect((await run()).failures.map((failure) => failure.key)).toEqual(["ANT"]);
+
+    routes[companyFacts] = fixture("MSFT");
+    const result = await run();
+    expect(result.status).toBe("ok");
+    expect(result.inserted).toBeGreaterThan(0);
+  });
+
   it("persists all companies and records a failing one as partial", async () => {
     const db = await memoryDb();
     const routes: Record<string, string | number> = {};

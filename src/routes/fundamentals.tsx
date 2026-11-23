@@ -19,6 +19,7 @@ const GROUP_BLURBS: Record<CompanyGroup, string> = {
   neocloud: "Neocloud: pays for most of its capex with debt and leases.",
   supplier: "Hardware supplier: sells the chips and servers. Watch receivables and inventory.",
   dc_reit: "Datacenter REIT: owns and leases the buildings, funded mostly with debt and equity.",
+  ai_lab: "AI lab that develops and sells access to models.",
 };
 // The order-book peer chart predates the supplier and REIT groups and stays
 // limited to the companies that disclose comparable backlogs.
@@ -53,6 +54,9 @@ function FundamentalsPage() {
   const { range, company } = Route.useSearch();
   const section = SECTIONS.find((s) => s.id === "fundamentals");
   const selected = SEC_COMPANIES.find((c) => c.ticker === company);
+  const awaitingFundamentals =
+    selected?.allowMissingPeriodicFilings &&
+    !series.some((s) => s.collector === "sec" && s.entity === company);
   const byId = new Map(series.map((s) => [s.id, s]));
   const pick = (ids: string[]) => ids.flatMap((id) => byId.get(id) ?? []);
   const sec = (concepts: string[]) => pick(concepts.map((c) => `sec.${company}.${c}`));
@@ -82,7 +86,8 @@ function FundamentalsPage() {
           <div>
             <h2>Peer comparison</h2>
             <p className="measures">
-              Every company side by side. These charts don't change when you pick a company below.
+              These charts compare peers with available data and stay the same when you pick a
+              company.
             </p>
           </div>
         </header>
@@ -145,6 +150,14 @@ function FundamentalsPage() {
         </div>
       </div>
       <CompanyPicker active={company} />
+      {awaitingFundamentals ? (
+        <p className="measures">
+          Quarterly figures appear here once we collect XBRL data from a 10-K or 10-Q.{" "}
+          <a href={`https://www.sec.gov/edgar/browse/?CIK=${selected.cik}`}>
+            Browse {selected.name}'s SEC filings
+          </a>
+        </p>
+      ) : null}
 
       <IndicatorPanel def={indicatorById("capex_cashflow")}>
         <div className="grid-2">

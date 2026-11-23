@@ -4,7 +4,7 @@ import { IndicatorPanel } from "~/components/IndicatorPanel";
 import { PageLead } from "~/components/PageLead";
 import { SectionHeader } from "~/components/SectionHeader";
 import { TermsTable } from "~/components/TermsTable";
-import { SEC_COMPANIES } from "~/domain/companies";
+import { SEC_DEBT_COMPANIES } from "~/domain/companies";
 import { EXPLAINERS } from "~/domain/explainers";
 import { indicatorById, SECTIONS } from "~/domain/indicators";
 import { parseRange } from "~/domain/ranges";
@@ -28,7 +28,6 @@ function pick(series: SeriesView[], ids: string[]) {
   return ids.flatMap((id) => series.filter((s) => s.id === id));
 }
 
-const NEOCLOUDS = SEC_COMPANIES.filter((c) => c.group === "neocloud");
 const RATE_METRICS = [".stated_rate", ".effective_rate", ".variable_rate_spread"];
 
 // Series ids are sec_debt.TICKER.instrument[.qualifier].metric.
@@ -69,7 +68,7 @@ function CreditPage() {
   const { range } = Route.useSearch();
   const section = SECTIONS.find((s) => s.id === "credit");
   const issuer = series.filter((s) => s.collector === "manual");
-  const debtByCompany = NEOCLOUDS.map((company) => ({
+  const debtByCompany = SEC_DEBT_COMPANIES.map((company) => ({
     company,
     ...outstandingDebt(series, company.ticker),
   }));
@@ -85,7 +84,7 @@ function CreditPage() {
         The charts first show broad credit-market conditions, from riskier borrowers to safer
         benchmarks and the wider rate backdrop. The table below is different: it records the coupon
         and terms when AI companies issued debt, not a live market price. The last section lists
-        each neocloud's debt instrument by instrument, from its SEC filings.
+        debt instrument by instrument for neoclouds and AI labs, from their SEC filings.
       </PageLead>
       <IndicatorPanel def={indicatorById("credit")}>
         <div className="grid-2">
@@ -119,7 +118,7 @@ function CreditPage() {
           subtitle="Rates agreed when the debt was issued, from filings. Not today's market price."
           series={issuer}
         />
-        <h3 className="sub-head">Neocloud debt by instrument</h3>
+        <h3 className="sub-head">Debt by instrument</h3>
         {debtByCompany.map(({ company, current, rates }) => (
           <div className="grid-2" key={company.ticker}>
             <ChartBlock

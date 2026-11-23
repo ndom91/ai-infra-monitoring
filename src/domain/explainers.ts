@@ -31,9 +31,9 @@ export const EXPLAINERS = {
   },
 
   instrumentDebt: {
-    what: "How much each neocloud owes on each loan, facility and bond, as reported in the debt notes of its quarterly and annual SEC filings.",
+    what: "How much each company owes on each loan, facility and bond, as reported in the debt notes of its quarterly and annual SEC filings.",
     read: "Each line is one instrument, measured at the filing's balance-sheet date (carrying amount, which can be below the face amount). A line that steps up is a loan being drawn. The table lists the latest rate filed: the stated coupon or margin and the effective rate.",
-    why: "Neoclouds build with borrowed money. The mix of instruments shows how much debt is secured on GPUs, how much is recourse to the parent, and what each costs.",
+    why: "The mix of instruments shows how much debt is secured on assets, how much is recourse to the parent, and what each costs.",
   },
 
   // ---- Market ----
