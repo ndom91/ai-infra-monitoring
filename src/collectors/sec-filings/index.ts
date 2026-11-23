@@ -90,7 +90,7 @@ const REQUEST_GAP_MS = 150;
 export function makeSecFilingsCollector(requestGapMs = REQUEST_GAP_MS): Collector {
   return {
     name: "sec_filings",
-    description: "SEC EDGAR filing events for tracked hyperscalers and neoclouds",
+    description: "SEC EDGAR filing events for all tracked SEC companies",
     async collect({ fetch, log }: CollectContext): Promise<CollectOutput> {
       const filingEvents: FilingEventInput[] = [];
       const snapshots: NonNullable<CollectOutput["snapshots"]> = [];

@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { SEC_FILING_COMPANIES } from "~/domain/companies";
 import { filingEvents } from "~/storage/schema";
 import { fakeFetch, memoryDb } from "../../../test/helpers";
 import { runCollector } from "../runner";
@@ -40,18 +41,16 @@ describe("SEC filing events", () => {
     const db = await memoryDb();
     const collector = makeSecFilingsCollector(0);
     const routes = Object.fromEntries(
-      [789019, 1652044, 1018724, 1326801, 1341439, 1769628, 1839341, 1878848, 1144879, 1513845].map(
-        (cik) => {
-          const padded = String(cik).padStart(10, "0");
-          return [`CIK${padded}`, body.replaceAll("0000789019", padded)];
-        },
-      ),
+      SEC_FILING_COMPANIES.map(({ cik }) => {
+        const padded = String(cik).padStart(10, "0");
+        return [`CIK${padded}`, body.replaceAll("0000789019", padded)];
+      }),
     );
     const first = await runCollector(db, collector, { fetch: fakeFetch(routes), log: () => {} });
     const second = await runCollector(db, collector, { fetch: fakeFetch(routes), log: () => {} });
     const rows = await db.select().from(filingEvents);
     expect(first.status).toBe("ok");
     expect(second.status).toBe("ok");
-    expect(rows).toHaveLength(10);
+    expect(rows).toHaveLength(SEC_FILING_COMPANIES.length);
   });
 });

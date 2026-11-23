@@ -52,7 +52,7 @@ export const COVERAGE: Record<
     status: "implemented",
     collectors: ["sec"],
     summary:
-      "Quarterly capex, operating cash flow, depreciation, interest, debt and leases for MSFT, GOOGL, AMZN, META, ORCL, CRWV, CORZ, IREN and APLD, from SEC filings. 12-month ratios are calculated on the fly.",
+      "Quarterly capex, operating cash flow, depreciation, interest, debt and leases for hyperscalers (MSFT, GOOGL, AMZN, META, ORCL), neoclouds (CRWV, CORZ, IREN, APLD), suppliers (NVDA, AMD, AVGO, SMCI, DELL) and datacenter REITs (DLR, EQIX), from SEC filings. Purchase obligations are included where companies tag them, which is rare. Compare within a group, not across. 12-month ratios are calculated on the fly.",
     gaps: [
       "Nebius files only annual 20-F reports with no quarterly data, so it's left out.",
       "Some data labels change over time, and history under an old label isn't joined up. Examples: CRWV debt after Mar 2026, MSFT and ORCL cash interest paid.",
@@ -104,7 +104,7 @@ export const COVERAGE: Record<
     status: "implemented",
     collectors: ["sec"],
     summary:
-      "Order book (RPO), revenue and money owed by customers, from SEC filings. How fast the order book turns into revenue, and yearly growth, are calculated on the fly.",
+      "Order book (RPO), revenue, money owed by customers and inventory, from SEC filings. How fast the order book turns into revenue, yearly growth, days sales outstanding and inventory days are calculated on the fly.",
     gaps: [
       "Meta reports no order book. Amazon's order-book data stops in 2020.",
       "Cancelled contracts and late payments appear only in filing text.",

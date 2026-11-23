@@ -100,6 +100,31 @@ export const EXPLAINERS = {
     read: "A falling line means the order book is turning into revenue more slowly than before.",
     why: "If promised demand keeps growing but conversion slows, some of that demand may never arrive.",
   },
+  dsoPeers: {
+    what: "Days sales outstanding for hardware suppliers: how many days of a quarter's revenue are still owed by customers at quarter end.",
+    read: "Calculated as receivables ÷ quarterly revenue × 91. A rising line means customers pay later or the supplier extends more credit.",
+    why: "Suppliers that finance or give long terms to AI buyers show it here before it shows in revenue. Compare within suppliers, not with other groups.",
+  },
+  inventoryDays: {
+    what: "How many days of a quarter's cost of revenue the unsold inventory represents, for hardware suppliers.",
+    read: "Calculated as inventory ÷ quarterly cost of revenue × 91. A rising line means stock is building up faster than it sells.",
+    why: "Inventory piling up ahead of sales can signal demand slowing, or a deliberate stockpile ahead of new products. The filing text tells which.",
+  },
+  dsoInventory: {
+    what: "This company's receivables and inventory, each expressed in days.",
+    read: "Both are calculated from the filings (balance at quarter end ÷ that quarter's flow × 91). Compare with the company's own history; levels differ by business model.",
+    why: "Both rising together while revenue growth slows is a classic stress pattern. Companies with no inventory show only the receivables line.",
+  },
+  inventoryBalance: {
+    what: "Net inventory at quarter end, shown with the quarterly cost of revenue it is measured against.",
+    read: "Inventory growing much faster than cost of revenue means more stock per dollar sold.",
+    why: "Only meaningful for companies that hold inventory, mainly hardware suppliers.",
+  },
+  purchaseObligations: {
+    what: "Unconditional purchase obligations disclosed in the notes: commitments to buy supply or capacity that are not on the balance sheet.",
+    read: "A large and growing figure means the company has committed to buy far ahead of demand it can see.",
+    why: "These commitments are owed whether or not demand shows up. Many companies disclose them only in text or only annually, so this series is often empty.",
+  },
   growth: {
     what: "Growth vs a year ago in the order book, revenue, and money owed by customers.",
     read: "Healthy: all three grow together. Warning: the order book grows much faster than revenue, or money owed outpaces revenue.",

@@ -131,7 +131,7 @@ export const INDICATORS: IndicatorDef[] = [
     deterioration:
       "Capex growing faster than operating cash flow, negative free cash flow covered by debt or leases, and interest getting harder to cover. Watch heavily indebted neoclouds most.",
     caveats: [
-      "Hyperscalers pay from huge cash flows; neoclouds rely on debt. Compare within each group, not across.",
+      "Hyperscalers pay from huge cash flows; neoclouds rely on debt; suppliers sell the hardware; datacenter REITs own the buildings. Compare within each group, not across.",
       "Finance leases and off-balance-sheet commitments hide part of the real spending.",
       "Some quarters are worked out from year-to-date filings, and are marked as calculated.",
     ],
@@ -228,6 +228,7 @@ export const INDICATORS: IndicatorDef[] = [
     caveats: [
       "An order book isn't guaranteed cash. Contracts can be cancelled or renegotiated.",
       "Companies define and time RPO differently.",
+      "Days sales outstanding and inventory days are calculated and depend on each company's business model. Compare a company with its own history, or within its group.",
     ],
     sources: [
       {

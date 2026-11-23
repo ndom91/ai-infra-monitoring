@@ -186,3 +186,22 @@ describe("secCollector", () => {
     expect(secCollector.name).toBe("sec");
   });
 });
+
+describe("late-January fiscal year (DELL)", () => {
+  it("derives quarters from real period dates, not fiscal labels", () => {
+    // FY2026 ends 2026-01-30; Q1 ends 2025-05-02, Q2 08-01, Q3 10-31.
+    const q = quarterlyFlows([
+      fact("2025-02-01", "2025-05-02", 20),
+      fact("2025-02-01", "2025-08-01", 45),
+      fact("2025-02-01", "2025-10-31", 75),
+      fact("2025-02-01", "2026-01-30", 110, "2026-03-20", "fy"),
+    ]);
+    expect(q.map((p) => [p.periodEnd, p.value, p.kind])).toEqual([
+      ["2025-05-02", 20, "reported"],
+      ["2025-08-01", 25, "calculated"],
+      ["2025-10-31", 30, "calculated"],
+      ["2026-01-30", 35, "calculated"],
+    ]);
+    expect(q.at(-1)).toMatchObject({ periodStart: "2025-11-01", asOf: "2026-03-20" });
+  });
+});

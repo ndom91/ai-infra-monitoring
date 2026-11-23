@@ -1,14 +1,12 @@
 import { Link } from "@tanstack/react-router";
-import { SEC_COMPANIES } from "~/domain/companies";
+import { COMPANY_GROUP_LABELS, type CompanyGroup, SEC_COMPANIES } from "~/domain/companies";
 
 export function CompanyPicker({ active }: { active: string }) {
   return (
     <nav className="toolbar picker" aria-label="Company">
-      {(["hyperscaler", "neocloud"] as const).map((group) => (
+      {(Object.keys(COMPANY_GROUP_LABELS) as CompanyGroup[]).map((group) => (
         <div key={group} className="picker-group">
-          <span className="picker-label">
-            {group === "hyperscaler" ? "Hyperscalers" : "Neoclouds"}
-          </span>
+          <span className="picker-label">{COMPANY_GROUP_LABELS[group]}</span>
           <div className="picker-options">
             {SEC_COMPANIES.filter((c) => c.group === group).map((c) => (
               <Link

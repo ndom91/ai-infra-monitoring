@@ -6,7 +6,7 @@ import { IndicatorPanel } from "~/components/IndicatorPanel";
 import { PageLead } from "~/components/PageLead";
 import { SectionHeader } from "~/components/SectionHeader";
 import { TermsTable } from "~/components/TermsTable";
-import { SEC_COMPANIES } from "~/domain/companies";
+import { type CompanyGroup, SEC_COMPANIES } from "~/domain/companies";
 import { EXPLAINERS } from "~/domain/explainers";
 import { indicatorById, SECTIONS } from "~/domain/indicators";
 import { parseRange } from "~/domain/ranges";
@@ -14,6 +14,17 @@ import { pageHead } from "~/lib/seo";
 import { getFundamentalsData, type SeriesView } from "~/server/data";
 
 const TICKERS = SEC_COMPANIES.map((c) => c.ticker);
+const GROUP_BLURBS: Record<CompanyGroup, string> = {
+  hyperscaler: "Hyperscaler: pays for most of its capex from its own cash.",
+  neocloud: "Neocloud: pays for most of its capex with debt and leases.",
+  supplier: "Hardware supplier: sells the chips and servers. Watch receivables and inventory.",
+  dc_reit: "Datacenter REIT: owns and leases the buildings, funded mostly with debt and equity.",
+};
+// The order-book peer chart predates the supplier and REIT groups and stays
+// limited to the companies that disclose comparable backlogs.
+const BACKLOG_PEERS = SEC_COMPANIES.filter(
+  (c) => c.group === "hyperscaler" || c.group === "neocloud",
+).map((c) => c.ticker);
 
 export const Route = createFileRoute("/fundamentals")({
   head: () =>
@@ -101,7 +112,21 @@ function FundamentalsPage() {
             title="How fast the order book turns into revenue"
             info={EXPLAINERS.conversionPeers}
             subtitle="12-month revenue ÷ order book (RPO) a year earlier"
-            series={TICKERS.flatMap((t) => byId.get(`derived.${t}.rpo_conversion`) ?? [])}
+            series={BACKLOG_PEERS.flatMap((t) => byId.get(`derived.${t}.rpo_conversion`) ?? [])}
+            labelOf={tickerLabel}
+          />
+          <ChartBlock
+            title="Suppliers: how long customers take to pay"
+            info={EXPLAINERS.dsoPeers}
+            subtitle="Days sales outstanding: receivables ÷ quarterly revenue × 91. Calculated"
+            series={acrossGroup("supplier", "dso")}
+            labelOf={tickerLabel}
+          />
+          <ChartBlock
+            title="Suppliers: how long stock sits unsold"
+            info={EXPLAINERS.inventoryDays}
+            subtitle="Inventory days: inventory ÷ quarterly cost of revenue × 91. Calculated"
+            series={acrossGroup("supplier", "inventory_days")}
             labelOf={tickerLabel}
           />
         </div>
@@ -115,10 +140,7 @@ function FundamentalsPage() {
             {selected?.name ?? company} <span className="ticker">{company}</span>
           </h1>
           <p>
-            {selected?.group === "hyperscaler"
-              ? "Hyperscaler: pays for most of its capex from its own cash."
-              : "Neocloud: pays for most of its capex with debt and leases."}{" "}
-            Everything below is for this company.
+            {selected ? GROUP_BLURBS[selected.group] : ""} Everything below is for this company.
           </p>
         </div>
       </div>
@@ -156,6 +178,12 @@ function FundamentalsPage() {
             subtitle="Interest on the books vs interest actually paid"
             series={sec(["interest_expense", "interest_paid"])}
           />
+          <ChartBlock
+            title={`${company}: purchase commitments`}
+            info={EXPLAINERS.purchaseObligations}
+            subtitle="Unconditional purchase obligations from the filing notes. Missing for most companies"
+            series={sec(["purchase_obligations"])}
+          />
         </div>
       </IndicatorPanel>
 
@@ -178,6 +206,18 @@ function FundamentalsPage() {
             info={EXPLAINERS.growth}
             subtitle="Watch for the order book growing much faster than revenue"
             series={derived(["rpo_yoy", "revenue_ttm_yoy", "ar_yoy"])}
+          />
+          <ChartBlock
+            title={`${company}: collection and stock days`}
+            info={EXPLAINERS.dsoInventory}
+            subtitle="Calculated: receivables and inventory in days of quarterly revenue and cost of revenue"
+            series={derived(["dso", "inventory_days"])}
+          />
+          <ChartBlock
+            title={`${company}: inventory`}
+            info={EXPLAINERS.inventoryBalance}
+            subtitle="Net inventory and quarterly cost of revenue"
+            series={sec(["inventory", "cogs"])}
           />
         </div>
       </IndicatorPanel>

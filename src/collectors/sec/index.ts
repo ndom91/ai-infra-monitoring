@@ -158,6 +158,37 @@ export const CONCEPTS: Concept[] = [
     definition: "Accounts receivable, net of allowances, current.",
   },
   {
+    id: "inventory",
+    label: "inventory",
+    indicator: "contract_conversion",
+    type: "instant",
+    candidates: [["InventoryNet"]],
+    definition:
+      "Inventory, net of reserves, from the balance sheet. Mostly relevant to hardware suppliers; companies without inventory have no series.",
+  },
+  {
+    id: "cogs",
+    label: "cost of revenue",
+    indicator: "contract_conversion",
+    type: "flow",
+    nonNegative: true,
+    candidates: [["CostOfRevenue"], ["CostOfGoodsAndServicesSold"]],
+    definition:
+      "Cost of revenue (cost of goods and services sold) from the income statement. Used with inventory to compute inventory days.",
+  },
+  {
+    id: "purchase_obligations",
+    label: "purchase obligations",
+    indicator: "capex_cashflow",
+    type: "instant",
+    candidates: [
+      ["PurchaseObligation"],
+      ["UnrecordedUnconditionalPurchaseObligationBalanceSheetAmount"],
+    ],
+    definition:
+      "Unconditional purchase obligations (supply and capacity commitments) not recorded on the balance sheet, as disclosed in the notes. Many companies tag it only annually or not at all, so the series is often missing.",
+  },
+  {
     id: "cash",
     label: "cash & equivalents",
     indicator: "capex_cashflow",
@@ -266,7 +297,7 @@ export function makeSecCollector(requestGapMs = REQUEST_GAP_MS): Collector {
   return {
     name: "sec",
     description:
-      "SEC EDGAR XBRL fundamentals (capex, cash flow, debt, leases, RPO) for hyperscalers and neoclouds",
+      "SEC EDGAR XBRL fundamentals (capex, cash flow, debt, leases, RPO, receivables, inventory) for hyperscalers, neoclouds, hardware suppliers and datacenter REITs",
     // companyfacts always returns the full history, so backfill and
     // routine runs behave the same.
     collect: (ctx) => collectAll(ctx, requestGapMs),

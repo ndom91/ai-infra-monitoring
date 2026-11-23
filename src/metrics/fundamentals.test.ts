@@ -2,9 +2,11 @@ import { describe, expect, it } from "vitest";
 import {
   capexToOcf,
   debtToOcf,
+  dso,
   fcfAfterCapex,
   growthYoY,
   interestCoverage,
+  inventoryDays,
   type QuarterPoint,
   rpoConversion,
   ttm,
@@ -152,5 +154,24 @@ describe("growthYoY", () => {
       { periodEnd: "2026-01-03", value: 150 },
     ];
     expect(growthYoY(pts)).toEqual([{ periodEnd: "2026-01-03", value: 0.5 }]);
+  });
+});
+
+describe("dso and inventoryDays", () => {
+  it("scales the balance by 91 days of quarterly flow, aligned on periodEnd", () => {
+    const ar = series([50, 100, 200]);
+    const rev = series([100, 100, 100]).slice(1);
+    expect(dso(ar, rev)).toEqual([
+      { periodEnd: "2024-06-30", value: 91 },
+      { periodEnd: "2024-09-30", value: 182 },
+    ]);
+    expect(inventoryDays(series([10]), series([91]))).toEqual([
+      { periodEnd: "2024-03-31", value: 10 },
+    ]);
+  });
+
+  it("skips non-positive denominators and missing quarters", () => {
+    expect(dso(series([10, 10]), series([0, -5]))).toEqual([]);
+    expect(inventoryDays(series([10, 10]), [{ periodEnd: "2030-01-01", value: 5 }])).toEqual([]);
   });
 });
