@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--XBRL Document Created with the Workiva Platform-->
+<!--Copyright 2026 Workiva-->
+<!--r:019ffcc8-68eb-7f66-b603-bb578e5e26d9,g:08938156-debe-4f73-b8ef-3a7fa63130f6-->
+<link:linkbase xmlns:link="http://www.xbrl.org/2003/linkbase" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.xbrl.org/2003/linkbase http://www.xbrl.org/2003/xbrl-linkbase-2003-12-31.xsd">
+  <link:roleRef roleURI="http://www.xbrl.org/2009/role/negatedPeriodStartLabel" xlink:type="simple" xlink:href="http://www.xbrl.org/lrr/role/negated-2009-12-16.xsd#negatedPeriodStartLabel"/>
+  <link:roleRef roleURI="http://www.xbrl.org/2009/role/netLabel" xlink:type="simple" xlink:href="http://www.xbrl.org/lrr/role/net-2009-12-16.xsd#netLabel"/>
+  <link:roleRef roleURI="http://www.xbrl.org/2009/role/negatedNetLabel" xlink:type="simple" xlink:href="http://www.xbrl.org/lrr/role/negated-2009-12-16.xsd#negatedNetLabel"/>
+  <link:roleRef roleURI="http://www.xbrl.org/2009/role/negatedTerseLabel" xlink:type="simple" xlink:href="http://www.xbrl.org/lrr/role/negated-2009-12-16.xsd#negatedTerseLabel"/>
+  <link:roleRef roleURI="http://www.xbrl.org/2009/role/negatedPeriodEndLabel" xlink:type="simple" xlink:href="http://www.xbrl.org/lrr/role/negated-2009-12-16.xsd#negatedPeriodEndLabel"/>
+  <link:roleRef roleURI="http://www.xbrl.org/2009/role/negatedLabel" xlink:type="simple" xlink:href="http://www.xbrl.org/lrr/role/negated-2009-12-16.xsd#negatedLabel"/>
+  <link:roleRef roleURI="http://www.xbrl.org/2009/role/negatedTotalLabel" xlink:type="simple" xlink:href="http://www.xbrl.org/lrr/role/negated-2009-12-16.xsd#negatedTotalLabel"/>
+  <link:labelLink xlink:role="http://www.xbrl.org/2003/role/link" xlink:type="extended">
+    <link:labelLink xlink:role="http://www.xbrl.org/2003/role/link" xlink:type="extended">
+<link:label id="lab_us-gaap_RevolvingCreditFacilityMember_label_en-US" xlink:label="lab_us-gaap_RevolvingCreditFacilityMember" xlink:role="http://www.xbrl.org/2003/role/label" xlink:type="resource" xml:lang="en-US">Revolving Credit Facility [Member]</link:label>
+    <link:label id="lab_crwv_A2032EURSeniorNotesMember_label_en-US" xlink:label="lab_crwv_A2032EURSeniorNotesMember" xlink:role="http://www.xbrl.org/2003/role/label" xlink:type="resource" xml:lang="en-US">2032 EUR Senior Notes [Member]</link:label>
+    <link:label id="lab_crwv_A20319.75SeniorNotesMember_label_en-US" xlink:label="lab_crwv_A20319.75SeniorNotesMember" xlink:role="http://www.xbrl.org/2003/role/label" xlink:type="resource" xml:lang="en-US">2031 9.75% Senior Notes [Member]</link:label>
+    <link:label id="lab_us-gaap_SecuredOvernightFinancingRateSofrMember_label_en-US" xlink:label="lab_us-gaap_SecuredOvernightFinancingRateSofrMember" xlink:role="http://www.xbrl.org/2003/role/label" xlink:type="resource" xml:lang="en-US">Secured Overnight Financing Rate (SOFR) [Member]</link:label>
+    <link:label id="lab_us-gaap_LineOfCreditMember_label_en-US" xlink:label="lab_us-gaap_LineOfCreditMember" xlink:role="http://www.xbrl.org/2003/role/label" xlink:type="resource" xml:lang="en-US">Line of Credit [Member]</link:label>
+    <link:label id="lab_crwv_DDTL2.1FacilityMember_label_en-US" xlink:label="lab_crwv_DDTL2.1FacilityMember" xlink:role="http://www.xbrl.org/2003/role/label" xlink:type="resource" xml:lang="en-US">DDTL 2.1 Facility [Member]</link:label>
+    <link:label id="lab_crwv_FixedRateCommitmentsMember_label_en-US" xlink:label="lab_crwv_FixedRateCommitmentsMember" xlink:role="http://www.xbrl.org/2003/role/label" xlink:type="resource" xml:lang="en-US">Fixed-Rate Commitments [Member]</link:label>
+    <link:label id="lab_crwv_OEMFinancingArrangementsMember_label_en-US" xlink:label="lab_crwv_OEMFinancingArrangementsMember" xlink:role="http://www.xbrl.org/2003/role/label" xlink:type="resource" xml:lang="en-US">OEM Financing Arrangements [Member]</link:label>
+    <link:label id="lab_crwv_FloatingRateCommitmentsMember_label_en-US" xlink:label="lab_crwv_FloatingRateCommitmentsMember" xlink:role="http://www.xbrl.org/2003/role/label" xlink:type="resource" xml:lang="en-US">Floating-Rate Commitments [Member]</link:label>
+    <link:label id="lab_us-gaap_RecourseMember_label_en-US" xlink:label="lab_us-gaap_RecourseMember" xlink:role="http://www.xbrl.org/2003/role/label" xlink:type="resource" xml:lang="en-US">Recourse [Member]</link:label>
+    <link:label id="lab_crwv_TreasuryRateMember_label_en-US" xlink:label="lab_crwv_TreasuryRateMember" xlink:role="http://www.xbrl.org/2003/role/label" xlink:type="resource" xml:lang="en-US">Treasury Rate [Member]</link:label>
+    <link:label id="lab_us-gaap_NonrecourseMember_label_en-US" xlink:label="lab_us-gaap_NonrecourseMember" xlink:role="http://www.xbrl.org/2003/role/label" xlink:type="resource" xml:lang="en-US">Nonrecourse [Member]</link:label>
+    <link:label id="lab_us-gaap_BaseRateMember_label_en-US" xlink:label="lab_us-gaap_BaseRateMember" xlink:role="http://www.xbrl.org/2003/role/label" xlink:type="resource" xml:lang="en-US">Base Rate [Member]</link:label>
+    <link:label id="lab_crwv_DDTL4.0FacilityMember_label_en-US" xlink:label="lab_crwv_DDTL4.0FacilityMember" xlink:role="http://www.xbrl.org/2003/role/label" xlink:type="resource" xml:lang="en-US">DDTL 4.0 Facility [Member]</link:label>
+    <link:label id="lab_us-gaap_SeniorNotesMember_label_en-US" xlink:label="lab_us-gaap_SeniorNotesMember" xlink:role="http://www.xbrl.org/2003/role/label" xlink:type="resource" xml:lang="en-US">Senior Notes [Member]</link:label>
+    <link:loc xlink:type="locator" xlink:label="loc_us-gaap_RevolvingCreditFacilityMember" xlink:href="https://xbrl.fasb.org/us-gaap/2026/elts/us-gaap-2026.xsd#us-gaap_RevolvingCreditFacilityMember"/>
+    <link:loc xlink:type="locator" xlink:label="loc_crwv_A2032EURSeniorNotesMember" xlink:href="crwv-20260930.xsd#crwv_A2032EURSeniorNotesMember"/>
+    <link:loc xlink:type="locator" xlink:label="loc_crwv_A20319.75SeniorNotesMember" xlink:href="crwv-20260930.xsd#crwv_A20319.75SeniorNotesMember"/>
+    <link:loc xlink:type="locator" xlink:label="loc_us-gaap_SecuredOvernightFinancingRateSofrMember" xlink:href="https://xbrl.fasb.org/us-gaap/2026/elts/us-gaap-2026.xsd#us-gaap_SecuredOvernightFinancingRateSofrMember"/>
+    <link:loc xlink:type="locator" xlink:label="loc_us-gaap_LineOfCreditMember" xlink:href="https://xbrl.fasb.org/us-gaap/2026/elts/us-gaap-2026.xsd#us-gaap_LineOfCreditMember"/>
+    <link:loc xlink:type="locator" xlink:label="loc_crwv_DDTL2.1FacilityMember" xlink:href="crwv-20260930.xsd#crwv_DDTL2.1FacilityMember"/>
+    <link:loc xlink:type="locator" xlink:label="loc_crwv_FixedRateCommitmentsMember" xlink:href="crwv-20260930.xsd#crwv_FixedRateCommitmentsMember"/>
+    <link:loc xlink:type="locator" xlink:label="loc_crwv_OEMFinancingArrangementsMember" xlink:href="crwv-20260930.xsd#crwv_OEMFinancingArrangementsMember"/>
+    <link:loc xlink:type="locator" xlink:label="loc_crwv_FloatingRateCommitmentsMember" xlink:href="crwv-20260930.xsd#crwv_FloatingRateCommitmentsMember"/>
+    <link:loc xlink:type="locator" xlink:label="loc_us-gaap_RecourseMember" xlink:href="https://xbrl.fasb.org/us-gaap/2026/elts/us-gaap-2026.xsd#us-gaap_RecourseMember"/>
+    <link:loc xlink:type="locator" xlink:label="loc_crwv_TreasuryRateMember" xlink:href="crwv-20260930.xsd#crwv_TreasuryRateMember"/>
+    <link:loc xlink:type="locator" xlink:label="loc_us-gaap_NonrecourseMember" xlink:href="https://xbrl.fasb.org/us-gaap/2026/elts/us-gaap-2026.xsd#us-gaap_NonrecourseMember"/>
+    <link:loc xlink:type="locator" xlink:label="loc_us-gaap_BaseRateMember" xlink:href="https://xbrl.fasb.org/us-gaap/2026/elts/us-gaap-2026.xsd#us-gaap_BaseRateMember"/>
+    <link:loc xlink:type="locator" xlink:label="loc_crwv_DDTL4.0FacilityMember" xlink:href="crwv-20260930.xsd#crwv_DDTL4.0FacilityMember"/>
+    <link:loc xlink:type="locator" xlink:label="loc_us-gaap_SeniorNotesMember" xlink:href="https://xbrl.fasb.org/us-gaap/2026/elts/us-gaap-2026.xsd#us-gaap_SeniorNotesMember"/>
+    <link:labelArc xlink:arcrole="http://www.xbrl.org/2003/arcrole/concept-label" xlink:from="loc_us-gaap_RevolvingCreditFacilityMember" xlink:to="lab_us-gaap_RevolvingCreditFacilityMember" xlink:type="arc" order="1"/>
+    <link:labelArc xlink:arcrole="http://www.xbrl.org/2003/arcrole/concept-label" xlink:from="loc_crwv_A2032EURSeniorNotesMember" xlink:to="lab_crwv_A2032EURSeniorNotesMember" xlink:type="arc" order="1"/>
+    <link:labelArc xlink:arcrole="http://www.xbrl.org/2003/arcrole/concept-label" xlink:from="loc_crwv_A20319.75SeniorNotesMember" xlink:to="lab_crwv_A20319.75SeniorNotesMember" xlink:type="arc" order="1"/>
+    <link:labelArc xlink:arcrole="http://www.xbrl.org/2003/arcrole/concept-label" xlink:from="loc_us-gaap_SecuredOvernightFinancingRateSofrMember" xlink:to="lab_us-gaap_SecuredOvernightFinancingRateSofrMember" xlink:type="arc" order="1"/>
+    <link:labelArc xlink:arcrole="http://www.xbrl.org/2003/arcrole/concept-label" xlink:from="loc_us-gaap_LineOfCreditMember" xlink:to="lab_us-gaap_LineOfCreditMember" xlink:type="arc" order="1"/>
+    <link:labelArc xlink:arcrole="http://www.xbrl.org/2003/arcrole/concept-label" xlink:from="loc_crwv_DDTL2.1FacilityMember" xlink:to="lab_crwv_DDTL2.1FacilityMember" xlink:type="arc" order="1"/>
+    <link:labelArc xlink:arcrole="http://www.xbrl.org/2003/arcrole/concept-label" xlink:from="loc_crwv_FixedRateCommitmentsMember" xlink:to="lab_crwv_FixedRateCommitmentsMember" xlink:type="arc" order="1"/>
+    <link:labelArc xlink:arcrole="http://www.xbrl.org/2003/arcrole/concept-label" xlink:from="loc_crwv_OEMFinancingArrangementsMember" xlink:to="lab_crwv_OEMFinancingArrangementsMember" xlink:type="arc" order="1"/>
+    <link:labelArc xlink:arcrole="http://www.xbrl.org/2003/arcrole/concept-label" xlink:from="loc_crwv_FloatingRateCommitmentsMember" xlink:to="lab_crwv_FloatingRateCommitmentsMember" xlink:type="arc" order="1"/>
+    <link:labelArc xlink:arcrole="http://www.xbrl.org/2003/arcrole/concept-label" xlink:from="loc_us-gaap_RecourseMember" xlink:to="lab_us-gaap_RecourseMember" xlink:type="arc" order="1"/>
+    <link:labelArc xlink:arcrole="http://www.xbrl.org/2003/arcrole/concept-label" xlink:from="loc_crwv_TreasuryRateMember" xlink:to="lab_crwv_TreasuryRateMember" xlink:type="arc" order="1"/>
+    <link:labelArc xlink:arcrole="http://www.xbrl.org/2003/arcrole/concept-label" xlink:from="loc_us-gaap_NonrecourseMember" xlink:to="lab_us-gaap_NonrecourseMember" xlink:type="arc" order="1"/>
+    <link:labelArc xlink:arcrole="http://www.xbrl.org/2003/arcrole/concept-label" xlink:from="loc_us-gaap_BaseRateMember" xlink:to="lab_us-gaap_BaseRateMember" xlink:type="arc" order="1"/>
+    <link:labelArc xlink:arcrole="http://www.xbrl.org/2003/arcrole/concept-label" xlink:from="loc_crwv_DDTL4.0FacilityMember" xlink:to="lab_crwv_DDTL4.0FacilityMember" xlink:type="arc" order="1"/>
+    <link:labelArc xlink:arcrole="http://www.xbrl.org/2003/arcrole/concept-label" xlink:from="loc_us-gaap_SeniorNotesMember" xlink:to="lab_us-gaap_SeniorNotesMember" xlink:type="arc" order="1"/>
+</link:labelLink>
+</link:linkbase>

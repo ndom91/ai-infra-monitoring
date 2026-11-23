@@ -111,9 +111,11 @@ export const INDICATORS: IndicatorDef[] = [
       "Index spreads are broad market proxies, not AI-specific.",
       "A yield is not a spread, and a spread is not a default probability.",
       "ICE BofA history on FRED is limited to a rolling 3 years. Older values exist only if this monitor stored them.",
+      "Instrument-level debt covers only the four neoclouds that file 10-Qs and 10-Ks. Private companies' loans and datacenter ABS are not covered.",
     ],
     sources: [
       { label: "FRED", url: "https://fred.stlouisfed.org/" },
+      { label: "SEC EDGAR (XBRL debt notes)", url: "https://www.sec.gov/edgar" },
       {
         label: "FINRA fixed income",
         url: "https://www.finra.org/finra-data/fixed-income",

@@ -39,10 +39,12 @@ export const COVERAGE: Record<
   },
   credit: {
     status: "partial",
-    collectors: ["fred", "manual"],
+    collectors: ["fred", "sec_debt", "manual"],
     summary:
-      "Daily borrowing costs by credit rating (ICE BofA via FRED), plus Moody's Baa for long history. Rates CoreWeave and other neoclouds agreed when they borrowed, from filings.",
+      "Daily borrowing costs by credit rating (ICE BofA via FRED), plus Moody's Baa for long history. Debt instrument by instrument (facilities, notes, loans: carrying amount, face amount, stated and effective rates, spreads) for CoreWeave, Core Scientific, IREN and Applied Digital, from the XBRL data in their 10-Q and 10-K filings. Rates CoreWeave and other neoclouds agreed when they borrowed, from filings, entered by hand (a frozen record).",
     gaps: [
+      "Private companies' GPU-backed loans and datacenter ABS (Lambda, Crusoe, Vantage, Switch, Aligned, STACK) are not covered. Their terms appear only in press releases on sites that block automated access.",
+      "Instruments are stored under the name each filing gives them. If a company renames a facility, the old and new names are separate series.",
       "FRED only keeps the last 3 years of ICE BofA data. Older values exist only if this monitor saved them.",
       "No market prices for individual AI company bonds. FINRA's free data forbids automated collection, and its TRACE feed needs a paid agreement.",
       "Credit ratings are confirmed for only one CoreWeave note. Rating agency pages need a login.",

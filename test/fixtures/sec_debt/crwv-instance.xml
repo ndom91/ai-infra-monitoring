@@ -1,0 +1,491 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xbrl
+  xml:lang="en-US"
+  xmlns="http://www.xbrl.org/2003/instance"
+  xmlns:country="http://xbrl.sec.gov/country/2026"
+  xmlns:crwv="http://coreweave.com/20260930"
+  xmlns:dei="http://xbrl.sec.gov/dei/2026"
+  xmlns:ecd="http://xbrl.sec.gov/ecd/2026"
+  xmlns:iso4217="http://www.xbrl.org/2003/iso4217"
+  xmlns:link="http://www.xbrl.org/2003/linkbase"
+  xmlns:srt="http://fasb.org/srt/2026"
+  xmlns:us-gaap="http://fasb.org/us-gaap/2026"
+  xmlns:utr="http://www.xbrl.org/2009/utr"
+  xmlns:xbrldi="http://xbrl.org/2006/xbrldi"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <link:schemaRef xlink:href="crwv-20260930.xsd" xlink:type="simple"/>
+    <context id="c-211">
+        <entity>
+            <identifier scheme="http://www.sec.gov/CIK">0001769628</identifier>
+            <segment>
+                <xbrldi:explicitMember dimension="us-gaap:DebtInstrumentAxis">crwv:A2032EURSeniorNotesMember</xbrldi:explicitMember>
+                <xbrldi:explicitMember dimension="us-gaap:LongtermDebtTypeAxis">us-gaap:SeniorNotesMember</xbrldi:explicitMember>
+            </segment>
+        </entity>
+        <period>
+            <instant>2026-06-30</instant>
+        </period>
+    </context>
+    <context id="c-300">
+        <entity>
+            <identifier scheme="http://www.sec.gov/CIK">0001769628</identifier>
+            <segment>
+                <xbrldi:explicitMember dimension="us-gaap:DebtInstrumentAxis">crwv:DDTL2.1FacilityMember</xbrldi:explicitMember>
+                <xbrldi:explicitMember dimension="us-gaap:LongtermDebtTypeAxis">us-gaap:LineOfCreditMember</xbrldi:explicitMember>
+                <xbrldi:explicitMember dimension="us-gaap:RecourseStatusAxis">us-gaap:RecourseMember</xbrldi:explicitMember>
+            </segment>
+        </entity>
+        <period>
+            <instant>2026-09-30</instant>
+        </period>
+    </context>
+    <context id="c-301">
+        <entity>
+            <identifier scheme="http://www.sec.gov/CIK">0001769628</identifier>
+            <segment>
+                <xbrldi:explicitMember dimension="us-gaap:DebtInstrumentAxis">crwv:DDTL2.1FacilityMember</xbrldi:explicitMember>
+                <xbrldi:explicitMember dimension="us-gaap:LongtermDebtTypeAxis">us-gaap:LineOfCreditMember</xbrldi:explicitMember>
+                <xbrldi:explicitMember dimension="us-gaap:RecourseStatusAxis">us-gaap:RecourseMember</xbrldi:explicitMember>
+            </segment>
+        </entity>
+        <period>
+            <instant>2025-12-31</instant>
+        </period>
+    </context>
+    <context id="c-312">
+        <entity>
+            <identifier scheme="http://www.sec.gov/CIK">0001769628</identifier>
+            <segment>
+                <xbrldi:explicitMember dimension="us-gaap:DebtInstrumentAxis">crwv:A20319.75SeniorNotesMember</xbrldi:explicitMember>
+                <xbrldi:explicitMember dimension="us-gaap:LongtermDebtTypeAxis">us-gaap:SeniorNotesMember</xbrldi:explicitMember>
+                <xbrldi:explicitMember dimension="us-gaap:RecourseStatusAxis">us-gaap:RecourseMember</xbrldi:explicitMember>
+            </segment>
+        </entity>
+        <period>
+            <instant>2026-09-30</instant>
+        </period>
+    </context>
+    <context id="c-313">
+        <entity>
+            <identifier scheme="http://www.sec.gov/CIK">0001769628</identifier>
+            <segment>
+                <xbrldi:explicitMember dimension="us-gaap:DebtInstrumentAxis">crwv:A20319.75SeniorNotesMember</xbrldi:explicitMember>
+                <xbrldi:explicitMember dimension="us-gaap:LongtermDebtTypeAxis">us-gaap:SeniorNotesMember</xbrldi:explicitMember>
+                <xbrldi:explicitMember dimension="us-gaap:RecourseStatusAxis">us-gaap:RecourseMember</xbrldi:explicitMember>
+            </segment>
+        </entity>
+        <period>
+            <instant>2025-12-31</instant>
+        </period>
+    </context>
+    <context id="c-316">
+        <entity>
+            <identifier scheme="http://www.sec.gov/CIK">0001769628</identifier>
+            <segment>
+                <xbrldi:explicitMember dimension="us-gaap:DebtInstrumentAxis">crwv:A2032EURSeniorNotesMember</xbrldi:explicitMember>
+                <xbrldi:explicitMember dimension="us-gaap:LongtermDebtTypeAxis">us-gaap:SeniorNotesMember</xbrldi:explicitMember>
+                <xbrldi:explicitMember dimension="us-gaap:RecourseStatusAxis">us-gaap:RecourseMember</xbrldi:explicitMember>
+            </segment>
+        </entity>
+        <period>
+            <instant>2026-09-30</instant>
+        </period>
+    </context>
+    <context id="c-317">
+        <entity>
+            <identifier scheme="http://www.sec.gov/CIK">0001769628</identifier>
+            <segment>
+                <xbrldi:explicitMember dimension="us-gaap:DebtInstrumentAxis">crwv:A2032EURSeniorNotesMember</xbrldi:explicitMember>
+                <xbrldi:explicitMember dimension="us-gaap:LongtermDebtTypeAxis">us-gaap:SeniorNotesMember</xbrldi:explicitMember>
+                <xbrldi:explicitMember dimension="us-gaap:RecourseStatusAxis">us-gaap:RecourseMember</xbrldi:explicitMember>
+            </segment>
+        </entity>
+        <period>
+            <instant>2025-12-31</instant>
+        </period>
+    </context>
+    <context id="c-326">
+        <entity>
+            <identifier scheme="http://www.sec.gov/CIK">0001769628</identifier>
+            <segment>
+                <xbrldi:explicitMember dimension="us-gaap:CreditFacilityAxis">us-gaap:RevolvingCreditFacilityMember</xbrldi:explicitMember>
+                <xbrldi:explicitMember dimension="us-gaap:LongtermDebtTypeAxis">us-gaap:LineOfCreditMember</xbrldi:explicitMember>
+                <xbrldi:explicitMember dimension="us-gaap:RecourseStatusAxis">us-gaap:RecourseMember</xbrldi:explicitMember>
+            </segment>
+        </entity>
+        <period>
+            <instant>2026-09-30</instant>
+        </period>
+    </context>
+    <context id="c-327">
+        <entity>
+            <identifier scheme="http://www.sec.gov/CIK">0001769628</identifier>
+            <segment>
+                <xbrldi:explicitMember dimension="us-gaap:CreditFacilityAxis">us-gaap:RevolvingCreditFacilityMember</xbrldi:explicitMember>
+                <xbrldi:explicitMember dimension="us-gaap:LongtermDebtTypeAxis">us-gaap:LineOfCreditMember</xbrldi:explicitMember>
+                <xbrldi:explicitMember dimension="us-gaap:RecourseStatusAxis">us-gaap:RecourseMember</xbrldi:explicitMember>
+            </segment>
+        </entity>
+        <period>
+            <instant>2025-12-31</instant>
+        </period>
+    </context>
+    <context id="c-328">
+        <entity>
+            <identifier scheme="http://www.sec.gov/CIK">0001769628</identifier>
+            <segment>
+                <xbrldi:explicitMember dimension="us-gaap:DebtInstrumentAxis">crwv:OEMFinancingArrangementsMember</xbrldi:explicitMember>
+                <xbrldi:explicitMember dimension="us-gaap:RecourseStatusAxis">us-gaap:RecourseMember</xbrldi:explicitMember>
+            </segment>
+        </entity>
+        <period>
+            <instant>2026-09-30</instant>
+        </period>
+    </context>
+    <context id="c-329">
+        <entity>
+            <identifier scheme="http://www.sec.gov/CIK">0001769628</identifier>
+            <segment>
+                <xbrldi:explicitMember dimension="us-gaap:DebtInstrumentAxis">crwv:OEMFinancingArrangementsMember</xbrldi:explicitMember>
+                <xbrldi:explicitMember dimension="us-gaap:RecourseStatusAxis">us-gaap:RecourseMember</xbrldi:explicitMember>
+            </segment>
+        </entity>
+        <period>
+            <instant>2025-12-31</instant>
+        </period>
+    </context>
+    <context id="c-334">
+        <entity>
+            <identifier scheme="http://www.sec.gov/CIK">0001769628</identifier>
+            <segment>
+                <xbrldi:explicitMember dimension="us-gaap:DebtInstrumentAxis">crwv:DDTL4.0FacilityMember</xbrldi:explicitMember>
+                <xbrldi:explicitMember dimension="us-gaap:LongtermDebtTypeAxis">us-gaap:LineOfCreditMember</xbrldi:explicitMember>
+                <xbrldi:explicitMember dimension="us-gaap:RecourseStatusAxis">us-gaap:NonrecourseMember</xbrldi:explicitMember>
+            </segment>
+        </entity>
+        <period>
+            <instant>2026-09-30</instant>
+        </period>
+    </context>
+    <context id="c-335">
+        <entity>
+            <identifier scheme="http://www.sec.gov/CIK">0001769628</identifier>
+            <segment>
+                <xbrldi:explicitMember dimension="us-gaap:DebtInstrumentAxis">crwv:DDTL4.0FacilityMember</xbrldi:explicitMember>
+                <xbrldi:explicitMember dimension="us-gaap:LongtermDebtTypeAxis">us-gaap:LineOfCreditMember</xbrldi:explicitMember>
+                <xbrldi:explicitMember dimension="us-gaap:RecourseStatusAxis">us-gaap:NonrecourseMember</xbrldi:explicitMember>
+            </segment>
+        </entity>
+        <period>
+            <instant>2025-12-31</instant>
+        </period>
+    </context>
+    <context id="c-336">
+        <entity>
+            <identifier scheme="http://www.sec.gov/CIK">0001769628</identifier>
+            <segment>
+                <xbrldi:explicitMember dimension="us-gaap:DebtInstrumentAxis">crwv:OEMFinancingArrangementsMember</xbrldi:explicitMember>
+                <xbrldi:explicitMember dimension="us-gaap:RecourseStatusAxis">us-gaap:NonrecourseMember</xbrldi:explicitMember>
+            </segment>
+        </entity>
+        <period>
+            <instant>2026-09-30</instant>
+        </period>
+    </context>
+    <context id="c-337">
+        <entity>
+            <identifier scheme="http://www.sec.gov/CIK">0001769628</identifier>
+            <segment>
+                <xbrldi:explicitMember dimension="us-gaap:DebtInstrumentAxis">crwv:OEMFinancingArrangementsMember</xbrldi:explicitMember>
+                <xbrldi:explicitMember dimension="us-gaap:RecourseStatusAxis">us-gaap:NonrecourseMember</xbrldi:explicitMember>
+            </segment>
+        </entity>
+        <period>
+            <instant>2025-12-31</instant>
+        </period>
+    </context>
+    <context id="c-5">
+        <entity>
+            <identifier scheme="http://www.sec.gov/CIK">0001769628</identifier>
+        </entity>
+        <period>
+            <instant>2026-09-30</instant>
+        </period>
+    </context>
+    <context id="c-343">
+        <entity>
+            <identifier scheme="http://www.sec.gov/CIK">0001769628</identifier>
+            <segment>
+                <xbrldi:explicitMember dimension="us-gaap:DebtInstrumentAxis">crwv:DDTL4.0FacilityMember</xbrldi:explicitMember>
+                <xbrldi:explicitMember dimension="us-gaap:VariableRateAxis">us-gaap:SecuredOvernightFinancingRateSofrMember</xbrldi:explicitMember>
+            </segment>
+        </entity>
+        <period>
+            <instant>2026-09-30</instant>
+        </period>
+    </context>
+    <context id="c-344">
+        <entity>
+            <identifier scheme="http://www.sec.gov/CIK">0001769628</identifier>
+            <segment>
+                <xbrldi:explicitMember dimension="us-gaap:DebtInstrumentAxis">crwv:DDTL4.0FacilityMember</xbrldi:explicitMember>
+                <xbrldi:explicitMember dimension="us-gaap:VariableRateAxis">crwv:TreasuryRateMember</xbrldi:explicitMember>
+            </segment>
+        </entity>
+        <period>
+            <instant>2026-09-30</instant>
+        </period>
+    </context>
+    <context id="c-348">
+        <entity>
+            <identifier scheme="http://www.sec.gov/CIK">0001769628</identifier>
+            <segment>
+                <xbrldi:explicitMember dimension="us-gaap:DebtInstrumentAxis">crwv:A20319.75SeniorNotesMember</xbrldi:explicitMember>
+            </segment>
+        </entity>
+        <period>
+            <instant>2026-09-30</instant>
+        </period>
+    </context>
+    <context id="c-350">
+        <entity>
+            <identifier scheme="http://www.sec.gov/CIK">0001769628</identifier>
+            <segment>
+                <xbrldi:explicitMember dimension="us-gaap:DebtInstrumentAxis">crwv:A2032EURSeniorNotesMember</xbrldi:explicitMember>
+            </segment>
+        </entity>
+        <period>
+            <instant>2026-09-30</instant>
+        </period>
+    </context>
+    <context id="c-353">
+        <entity>
+            <identifier scheme="http://www.sec.gov/CIK">0001769628</identifier>
+            <segment>
+                <xbrldi:explicitMember dimension="us-gaap:CreditFacilityAxis">us-gaap:LineOfCreditMember</xbrldi:explicitMember>
+                <xbrldi:explicitMember dimension="us-gaap:DebtInstrumentAxis">crwv:DDTL4.0FacilityMember</xbrldi:explicitMember>
+            </segment>
+        </entity>
+        <period>
+            <instant>2026-03-31</instant>
+        </period>
+    </context>
+    <context id="c-354">
+        <entity>
+            <identifier scheme="http://www.sec.gov/CIK">0001769628</identifier>
+            <segment>
+                <xbrldi:explicitMember dimension="us-gaap:CreditFacilityAxis">us-gaap:LineOfCreditMember</xbrldi:explicitMember>
+                <xbrldi:explicitMember dimension="us-gaap:DebtInstrumentAxis">crwv:DDTL4.0FacilityMember</xbrldi:explicitMember>
+                <xbrldi:explicitMember dimension="us-gaap:VariableRateAxis">crwv:FloatingRateCommitmentsMember</xbrldi:explicitMember>
+            </segment>
+        </entity>
+        <period>
+            <instant>2026-09-30</instant>
+        </period>
+    </context>
+    <context id="c-355">
+        <entity>
+            <identifier scheme="http://www.sec.gov/CIK">0001769628</identifier>
+            <segment>
+                <xbrldi:explicitMember dimension="us-gaap:CreditFacilityAxis">us-gaap:LineOfCreditMember</xbrldi:explicitMember>
+                <xbrldi:explicitMember dimension="us-gaap:DebtInstrumentAxis">crwv:DDTL4.0FacilityMember</xbrldi:explicitMember>
+                <xbrldi:explicitMember dimension="us-gaap:VariableRateAxis">crwv:FixedRateCommitmentsMember</xbrldi:explicitMember>
+            </segment>
+        </entity>
+        <period>
+            <instant>2026-09-30</instant>
+        </period>
+    </context>
+    <context id="c-356">
+        <entity>
+            <identifier scheme="http://www.sec.gov/CIK">0001769628</identifier>
+            <segment>
+                <xbrldi:explicitMember dimension="us-gaap:CreditFacilityAxis">us-gaap:LineOfCreditMember</xbrldi:explicitMember>
+                <xbrldi:explicitMember dimension="us-gaap:DebtInstrumentAxis">crwv:DDTL4.0FacilityMember</xbrldi:explicitMember>
+                <xbrldi:explicitMember dimension="us-gaap:VariableRateAxis">us-gaap:SecuredOvernightFinancingRateSofrMember</xbrldi:explicitMember>
+            </segment>
+        </entity>
+        <period>
+            <startDate>2026-03-01</startDate>
+            <endDate>2026-03-31</endDate>
+        </period>
+    </context>
+    <context id="c-357">
+        <entity>
+            <identifier scheme="http://www.sec.gov/CIK">0001769628</identifier>
+            <segment>
+                <xbrldi:explicitMember dimension="us-gaap:CreditFacilityAxis">us-gaap:LineOfCreditMember</xbrldi:explicitMember>
+                <xbrldi:explicitMember dimension="us-gaap:DebtInstrumentAxis">crwv:DDTL4.0FacilityMember</xbrldi:explicitMember>
+                <xbrldi:explicitMember dimension="us-gaap:VariableRateAxis">us-gaap:BaseRateMember</xbrldi:explicitMember>
+            </segment>
+        </entity>
+        <period>
+            <startDate>2026-03-01</startDate>
+            <endDate>2026-03-31</endDate>
+        </period>
+    </context>
+    <context id="c-381">
+        <entity>
+            <identifier scheme="http://www.sec.gov/CIK">0001769628</identifier>
+            <segment>
+                <xbrldi:explicitMember dimension="us-gaap:DebtInstrumentAxis">crwv:A20319.75SeniorNotesMember</xbrldi:explicitMember>
+                <xbrldi:explicitMember dimension="us-gaap:LongtermDebtTypeAxis">us-gaap:SeniorNotesMember</xbrldi:explicitMember>
+            </segment>
+        </entity>
+        <period>
+            <instant>2026-04-30</instant>
+        </period>
+    </context>
+    <context id="c-383">
+        <entity>
+            <identifier scheme="http://www.sec.gov/CIK">0001769628</identifier>
+            <segment>
+                <xbrldi:explicitMember dimension="us-gaap:DebtInstrumentAxis">crwv:A20319.75SeniorNotesMember</xbrldi:explicitMember>
+                <xbrldi:explicitMember dimension="us-gaap:LongtermDebtTypeAxis">us-gaap:SeniorNotesMember</xbrldi:explicitMember>
+            </segment>
+        </entity>
+        <period>
+            <instant>2026-06-30</instant>
+        </period>
+    </context>
+    <context id="c-385">
+        <entity>
+            <identifier scheme="http://www.sec.gov/CIK">0001769628</identifier>
+            <segment>
+                <xbrldi:explicitMember dimension="us-gaap:DebtInstrumentAxis">crwv:A20319.75SeniorNotesMember</xbrldi:explicitMember>
+                <xbrldi:explicitMember dimension="us-gaap:LongtermDebtTypeAxis">us-gaap:SeniorNotesMember</xbrldi:explicitMember>
+            </segment>
+        </entity>
+        <period>
+            <instant>2026-09-30</instant>
+        </period>
+    </context>
+    <unit id="usd">
+        <measure>iso4217:USD</measure>
+    </unit>
+    <unit id="number">
+        <measure>pure</measure>
+    </unit>
+    <unit id="eur">
+        <measure>iso4217:EUR</measure>
+    </unit>
+    <us-gaap:DebtInstrumentFaceAmount contextRef="c-211" decimals="-8" id="f-694" unitRef="eur">2000000000.0</us-gaap:DebtInstrumentFaceAmount>
+    <us-gaap:DebtInstrumentFaceAmount contextRef="c-211" decimals="-8" id="f-695" unitRef="eur">2000000000.0</us-gaap:DebtInstrumentFaceAmount>
+    <us-gaap:DebtInstrumentInterestRateEffectivePercentage contextRef="c-300" decimals="2" id="f-988" unitRef="number">0.09</us-gaap:DebtInstrumentInterestRateEffectivePercentage>
+    <us-gaap:DebtInstrumentCarryingAmount contextRef="c-300" decimals="-6" id="f-989" unitRef="usd">2494000000</us-gaap:DebtInstrumentCarryingAmount>
+    <us-gaap:DebtInstrumentCarryingAmount contextRef="c-301" decimals="-6" id="f-990" unitRef="usd">2741000000</us-gaap:DebtInstrumentCarryingAmount>
+    <us-gaap:DebtInstrumentInterestRateStatedPercentage
+      contextRef="c-312"
+      decimals="INF"
+      id="f-1007"
+      unitRef="number">0.0975</us-gaap:DebtInstrumentInterestRateStatedPercentage>
+    <us-gaap:DebtInstrumentInterestRateEffectivePercentage
+      contextRef="c-312"
+      decimals="2"
+      id="f-1008"
+      unitRef="number">0.10</us-gaap:DebtInstrumentInterestRateEffectivePercentage>
+    <us-gaap:DebtInstrumentCarryingAmount contextRef="c-312" decimals="-6" id="f-1009" unitRef="usd">2750000000</us-gaap:DebtInstrumentCarryingAmount>
+    <us-gaap:DebtInstrumentCarryingAmount contextRef="c-313" decimals="-6" id="f-1010" unitRef="usd">0</us-gaap:DebtInstrumentCarryingAmount>
+    <us-gaap:DebtInstrumentInterestRateEffectivePercentage
+      contextRef="c-316"
+      decimals="2"
+      id="f-1015"
+      unitRef="number">0.09</us-gaap:DebtInstrumentInterestRateEffectivePercentage>
+    <us-gaap:DebtInstrumentCarryingAmount contextRef="c-316" decimals="-6" id="f-1016" unitRef="usd">2272000000</us-gaap:DebtInstrumentCarryingAmount>
+    <us-gaap:DebtInstrumentCarryingAmount contextRef="c-317" decimals="-6" id="f-1017" unitRef="usd">0</us-gaap:DebtInstrumentCarryingAmount>
+    <us-gaap:DebtInstrumentInterestRateEffectivePercentage
+      contextRef="c-326"
+      decimals="2"
+      id="f-1030"
+      unitRef="number">0.07</us-gaap:DebtInstrumentInterestRateEffectivePercentage>
+    <us-gaap:DebtInstrumentCarryingAmount contextRef="c-326" decimals="-6" id="f-1031" unitRef="usd">1200000000</us-gaap:DebtInstrumentCarryingAmount>
+    <us-gaap:DebtInstrumentCarryingAmount contextRef="c-327" decimals="-6" id="f-1032" unitRef="usd">1000000000</us-gaap:DebtInstrumentCarryingAmount>
+    <us-gaap:DebtInstrumentInterestRateEffectivePercentage
+      contextRef="c-328"
+      decimals="2"
+      id="f-1033"
+      unitRef="number">0.10</us-gaap:DebtInstrumentInterestRateEffectivePercentage>
+    <us-gaap:DebtInstrumentCarryingAmount contextRef="c-328" decimals="-6" id="f-1034" unitRef="usd">6891000000</us-gaap:DebtInstrumentCarryingAmount>
+    <us-gaap:DebtInstrumentCarryingAmount contextRef="c-329" decimals="-6" id="f-1035" unitRef="usd">3518000000</us-gaap:DebtInstrumentCarryingAmount>
+    <us-gaap:DebtInstrumentInterestRateEffectivePercentage
+      contextRef="c-334"
+      decimals="2"
+      id="f-1047"
+      unitRef="number">0.07</us-gaap:DebtInstrumentInterestRateEffectivePercentage>
+    <us-gaap:DebtInstrumentCarryingAmount contextRef="c-334" decimals="-6" id="f-1048" unitRef="usd">4583000000</us-gaap:DebtInstrumentCarryingAmount>
+    <us-gaap:DebtInstrumentCarryingAmount contextRef="c-335" decimals="-6" id="f-1049" unitRef="usd">0</us-gaap:DebtInstrumentCarryingAmount>
+    <us-gaap:DebtInstrumentInterestRateEffectivePercentage
+      contextRef="c-336"
+      decimals="2"
+      id="f-1050"
+      unitRef="number">0.09</us-gaap:DebtInstrumentInterestRateEffectivePercentage>
+    <us-gaap:DebtInstrumentCarryingAmount contextRef="c-336" decimals="-6" id="f-1051" unitRef="usd">770000000</us-gaap:DebtInstrumentCarryingAmount>
+    <us-gaap:DebtInstrumentCarryingAmount contextRef="c-337" decimals="-6" id="f-1052" unitRef="usd">647000000</us-gaap:DebtInstrumentCarryingAmount>
+    <us-gaap:DebtInstrumentCarryingAmount contextRef="c-5" decimals="-6" id="f-1071" unitRef="usd">47505000000</us-gaap:DebtInstrumentCarryingAmount>
+    <us-gaap:DebtInstrumentInterestRateStatedPercentage
+      contextRef="c-343"
+      decimals="INF"
+      id="f-1089"
+      unitRef="number">0.0225</us-gaap:DebtInstrumentInterestRateStatedPercentage>
+    <us-gaap:DebtInstrumentInterestRateStatedPercentage
+      contextRef="c-344"
+      decimals="INF"
+      id="f-1090"
+      unitRef="number">0.0200</us-gaap:DebtInstrumentInterestRateStatedPercentage>
+    <us-gaap:DebtInstrumentInterestRateStatedPercentage
+      contextRef="c-348"
+      decimals="INF"
+      id="f-1096"
+      unitRef="number">0.0975</us-gaap:DebtInstrumentInterestRateStatedPercentage>
+    <us-gaap:DebtInstrumentInterestRateStatedPercentage
+      contextRef="c-348"
+      decimals="INF"
+      id="f-1097"
+      unitRef="number">0.0975</us-gaap:DebtInstrumentInterestRateStatedPercentage>
+    <us-gaap:DebtInstrumentInterestRateStatedPercentage
+      contextRef="c-350"
+      decimals="INF"
+      id="f-1102"
+      unitRef="number">0.0850</us-gaap:DebtInstrumentInterestRateStatedPercentage>
+    <us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity contextRef="c-353" decimals="-8" id="f-1108" unitRef="usd">8500000000</us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity>
+    <us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity contextRef="c-354" decimals="-8" id="f-1109" unitRef="usd">2200000000</us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity>
+    <us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity contextRef="c-355" decimals="-8" id="f-1110" unitRef="usd">2400000000</us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity>
+    <us-gaap:DebtInstrumentBasisSpreadOnVariableRate1
+      contextRef="c-356"
+      decimals="INF"
+      id="f-1111"
+      unitRef="number">0.0225</us-gaap:DebtInstrumentBasisSpreadOnVariableRate1>
+    <us-gaap:DebtInstrumentBasisSpreadOnVariableRate1
+      contextRef="c-357"
+      decimals="INF"
+      id="f-1112"
+      unitRef="number">0.0125</us-gaap:DebtInstrumentBasisSpreadOnVariableRate1>
+    <us-gaap:DebtInstrumentInterestRateStatedPercentage
+      contextRef="c-353"
+      decimals="INF"
+      id="f-1113"
+      unitRef="number">0.0200</us-gaap:DebtInstrumentInterestRateStatedPercentage>
+    <us-gaap:DebtInstrumentFaceAmount contextRef="c-381" decimals="-8" id="f-1164" unitRef="usd">2800000000</us-gaap:DebtInstrumentFaceAmount>
+    <us-gaap:DebtInstrumentInterestRateStatedPercentage
+      contextRef="c-381"
+      decimals="INF"
+      id="f-1165"
+      unitRef="number">0.0975</us-gaap:DebtInstrumentInterestRateStatedPercentage>
+    <us-gaap:DebtInstrumentInterestRateStatedPercentage
+      contextRef="c-381"
+      decimals="INF"
+      id="f-1166"
+      unitRef="number">0.0975</us-gaap:DebtInstrumentInterestRateStatedPercentage>
+    <us-gaap:DebtInstrumentFaceAmount contextRef="c-211" decimals="-8" id="f-1172" unitRef="eur">2000000000.0</us-gaap:DebtInstrumentFaceAmount>
+    <us-gaap:DebtInstrumentInterestRateStatedPercentage
+      contextRef="c-383"
+      decimals="INF"
+      id="f-1174"
+      unitRef="number">0.0975</us-gaap:DebtInstrumentInterestRateStatedPercentage>
+    <us-gaap:DebtInstrumentInterestRateStatedPercentage
+      contextRef="c-385"
+      decimals="INF"
+      id="f-1177"
+      unitRef="number">0.0975</us-gaap:DebtInstrumentInterestRateStatedPercentage>
+</xbrl>

@@ -1,3 +1,7 @@
+# FROZEN HISTORICAL RECORD. New entries are not needed: debt issued from now on
+# appears per instrument through the automated sec_debt collector (XBRL in each
+# 10-Q and 10-K). This file keeps issue-time terms that XBRL does not carry,
+# such as ratings, issue price and the dates in its quotes.
 # Issue terms of neocloud / AI-infrastructure debt: note coupons at issuance and
 # term-loan SOFR margins at signing. These are contract terms, not market prices.
 # Sources: SEC EDGAR 8-K / 6-K filings and issuer investor-relations releases.

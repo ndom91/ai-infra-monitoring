@@ -30,6 +30,12 @@ export const EXPLAINERS = {
     why: "Rising rates on new deals, or reliance on convertibles and asset-backed notes, show how hard and costly it is for these companies to keep raising money.",
   },
 
+  instrumentDebt: {
+    what: "How much each neocloud owes on each loan, facility and bond, as reported in the debt notes of its quarterly and annual SEC filings.",
+    read: "Each line is one instrument, measured at the filing's balance-sheet date (carrying amount, which can be below the face amount). A line that steps up is a loan being drawn. The table lists the latest rate filed: the stated coupon or margin and the effective rate.",
+    why: "Neoclouds build with borrowed money. The mix of instruments shows how much debt is secured on GPUs, how much is recourse to the parent, and what each costs.",
+  },
+
   // ---- Market ----
   gpuListPrice: {
     what: "What Amazon and Microsoft charge per hour to rent one GPU, from their public price lists. 'Spot' is a discounted price for spare capacity that can be taken back.",

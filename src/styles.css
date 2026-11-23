@@ -701,6 +701,19 @@ code {
   margin-top: 14px;
 }
 
+.panel > .sub-head {
+  margin: 26px 0 0;
+  font-size: 15px;
+}
+
+.panel > .grid-2 ~ .grid-2 {
+  margin-top: 14px;
+}
+
+.panel > .sub-head + .grid-2 {
+  margin-top: 12px;
+}
+
 .company-head {
   margin-top: 34px;
   padding-top: 26px;

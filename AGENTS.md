@@ -26,7 +26,7 @@ example `"AIInfraMonitor you@example.com"`.
 ## Operating data collection
 
 ```bash
-pnpm collect <fred|sec|sec_filings|sec_insider|azure|aws|manual|all> [--backfill] [--no-alerts]
+pnpm collect <fred|sec|sec_debt|sec_filings|sec_insider|azure|aws|manual|all> [--backfill] [--no-alerts]
 pnpm alerts [--backtest]
 pnpm db:backup [dir]
 pnpm db:restore <dir>
@@ -58,7 +58,8 @@ bundle.
 ## Scheduled workflows
 
 - `collect-fred.yml`: weekdays at 08:07 UTC.
-- `collect-sec.yml`: weekdays at 08:13 UTC.
+- `collect-sec.yml`: weekdays at 08:13 UTC; runs `sec` and `sec_debt`
+  (per-instrument debt from each 10-Q and 10-K XBRL instance).
 - `collect-sec-filings.yml`: weekdays at 08:00, 13:00, and 18:00 UTC; runs
   `sec_filings` and `sec_insider` (Form 4 insider sales).
 - `collect-prices.yml`: weekly.
