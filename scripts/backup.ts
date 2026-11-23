@@ -1,30 +1,31 @@
 // Usage: pnpm db:backup [outDir]
 // Writes every table as gzipped NDJSON. Restore with pnpm db:restore <dir>.
-import { mkdir, writeFile } from "node:fs/promises";
+import { createWriteStream } from "node:fs";
+import { mkdir } from "node:fs/promises";
 import { join } from "node:path";
-import { gzipSync } from "node:zlib";
+import { finished } from "node:stream/promises";
+import { createGzip } from "node:zlib";
 import { openDb } from "~/storage/db";
-
-export const TABLES = [
-  "collector_runs",
-  "series",
-  "observations",
-  "raw_snapshots",
-  "alert_events",
-] as const;
+import { BACKUP_TABLES } from "~/storage/tables";
 
 const outDir = process.argv[2] ?? "backup";
 const PAGE = 5000;
 const { client } = openDb();
 await mkdir(outDir, { recursive: true });
 
-for (const table of TABLES) {
-  const lines: string[] = [];
+for (const table of BACKUP_TABLES) {
+  // Stream each page through gzip so a large table (raw_snapshots) is never
+  // held in memory whole.
+  const gzip = createGzip();
+  const file = createWriteStream(join(outDir, `${table}.ndjson.gz`));
+  gzip.pipe(file);
+  let count = 0;
   for (let offset = 0; ; offset += PAGE) {
     const res = await client.execute({
       sql: `select * from ${table} order by rowid limit ? offset ?`,
       args: [PAGE, offset],
     });
+    let chunk = "";
     for (const row of res.rows) {
       const obj: Record<string, unknown> = {};
       for (const col of res.columns) {
@@ -32,11 +33,16 @@ for (const table of TABLES) {
         // Blobs (gzipped snapshots) are stored as base64 so the file stays text.
         obj[col] = v instanceof ArrayBuffer ? { $b64: Buffer.from(v).toString("base64") } : v;
       }
-      lines.push(JSON.stringify(obj));
+      chunk += `${JSON.stringify(obj)}\n`;
+    }
+    count += res.rows.length;
+    if (chunk && !gzip.write(chunk)) {
+      await new Promise<void>((resolve) => gzip.once("drain", resolve));
     }
     if (res.rows.length < PAGE) break;
   }
-  await writeFile(join(outDir, `${table}.ndjson.gz`), gzipSync(`${lines.join("\n")}\n`));
-  console.log(`${table}: ${lines.length} rows`);
+  gzip.end();
+  await finished(file);
+  console.log(`${table}: ${count} rows`);
 }
 client.close();

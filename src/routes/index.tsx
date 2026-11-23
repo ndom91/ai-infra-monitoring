@@ -49,8 +49,6 @@ function keyFigures(story: ReturnType<typeof Route.useLoaderData>["story"]): Key
       label,
       value: `${last.value.toFixed(2)}%`,
       note: `${shortDate(last.periodEnd)}${y ? ` · ${y.delta >= 0 ? "+" : "−"}${Math.round(Math.abs(y.delta) * 100)} bps` : ""}`,
-      signal: "worsening",
-      interpretation: "Higher borrowing costs increase refinancing pressure.",
       change: y?.pct ?? null,
     });
   };
@@ -63,8 +61,6 @@ function keyFigures(story: ReturnType<typeof Route.useLoaderData>["story"]): Key
       label: "Big tech capex, last 12 months",
       value: usd(capex.value).replace(" billion", "B").replace(" trillion", "T"),
       note: `to ${shortDate(capex.periodEnd)}`,
-      signal: "mixed",
-      interpretation: "Spending is accelerating; cash generation still funds it.",
       change: yearChange(story.capex.capexTtm)?.pct ?? null,
     });
   }
@@ -74,8 +70,6 @@ function keyFigures(story: ReturnType<typeof Route.useLoaderData>["story"]): Key
       label: "Nvidia H100 on AWS",
       value: `$${h100.value.toFixed(2)}`,
       note: `per GPU-hour, list price · ${shortDate(h100.periodEnd)}`,
-      signal: "mixed",
-      interpretation: "Cheaper hardware may reflect competition or newer chips.",
       change: yearChange(story.rental.aws)?.pct ?? null,
     });
   }
@@ -85,8 +79,6 @@ function keyFigures(story: ReturnType<typeof Route.useLoaderData>["story"]): Key
       label: "Empty data-center space",
       value: `${vac.value.toFixed(1)}%`,
       note: `Main North American markets · ${monthYear(vac.periodEnd)}`,
-      signal: "reassuring",
-      interpretation: "Low vacancy indicates current supply is still tight.",
       change: yearChange(story.buildings.vacancy)?.pct ?? null,
     });
   }
@@ -194,7 +186,6 @@ function Home() {
             dek="Extra interest over US Treasuries, percentage points"
             source="Source: ICE BofA bond indexes, via FRED. Updated daily."
             info={EXPLAINERS.hySpreads}
-            signal="Worsening: the weakest borrowers are paying sharply more while the broad junk market is near average."
           >
             <TimeChart
               unit="%"
@@ -230,7 +221,6 @@ function Home() {
             dek="Microsoft, Alphabet, Amazon, Meta, Oracle · 12-month totals"
             source="Source: company filings via SEC EDGAR. Quarterly; 12-month totals are calculated."
             info={EXPLAINERS.capexIntensityHyper}
-            signal="Mixed: spending is climbing rapidly, but the group still produces positive free cash flow."
           >
             <TimeChart
               unit="USD"
@@ -247,7 +237,6 @@ function Home() {
             dek="CoreWeave · 12-month totals"
             source="Source: CoreWeave filings via SEC EDGAR. 12-month totals are calculated."
             info={EXPLAINERS.capexIntensityNeo}
-            signal="Worsening: investment exceeds operating cash flow, increasing dependence on lenders."
           >
             <TimeChart
               unit="USD"
@@ -282,7 +271,6 @@ function Home() {
             dek="Nvidia H100, list price per GPU per hour"
             source="Source: AWS and Azure public price lists, US East. List prices exclude negotiated discounts."
             info={EXPLAINERS.gpuListPrice}
-            signal="Mixed: price cuts can point to weaker economics, but newer hardware can produce the same pattern."
           >
             <TimeChart
               unit="USD/GPU-hr"
@@ -299,7 +287,6 @@ function Home() {
             dek="Resale index of used data-center GPUs · early 2025 = 100"
             source="Source: American Compute GPU Resale Index, entered by hand with credit. Monthly."
             info={EXPLAINERS.gpuResale}
-            signal="Worsening: falling resale values reduce the collateral supporting GPU-backed borrowing."
           >
             <TimeChart
               unit="index"
@@ -329,7 +316,6 @@ function Home() {
             dek="Main North American markets · each line has its own scale"
             source="Source: CBRE North America Data Center Trends, half-yearly. Entered by hand with a quote from each report."
             info={EXPLAINERS.vacancy}
-            signal="Reassuring now: vacancy remains low and most new capacity is already leased."
           >
             <DivergenceChart
               lines={[

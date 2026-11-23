@@ -52,13 +52,15 @@ export const INDICATORS: IndicatorDef[] = [
     section: "market",
     classification: "Leading",
     measures:
-      "The extra interest risky companies pay to borrow compared with the US government, by credit rating. Plus the debt terms AI infrastructure companies got.",
+      "What it costs per hour to rent one GPU, from published price lists: AWS and Azure H100 and H200, Salad RTX 4090 and RTX 5090 by priority tier, and Runcrate H200, RTX 4090 and RTX 5090 starting rates.",
     deterioration:
-      "Spreads widening, especially for CCC and single-B, where heavily indebted infrastructure borrowers sit. AI companies paying more than similarly rated peers is a specific warning.",
+      "Published prices falling, especially for chips that are not simply being replaced by a newer generation. Falling rental prices mean data centers earn less per GPU, which makes their debt harder to service.",
     caveats: [
-      "Index spreads cover the whole market, not just AI.",
-      "A yield is not a spread, and a spread is not the chance of default.",
-      "FRED only keeps 3 years of ICE BofA history. Older values exist only if this monitor saved them.",
+      "These are published list or marketplace prices, not transaction prices. They exclude the negotiated discounts most large buyers receive.",
+      "Azure spot and Salad priority tiers can be taken back at short notice, so they carry preemption risk and are kept as separate series from on-demand prices.",
+      "Prices say nothing about how much capacity is rented or sitting idle. There is no inventory data.",
+      "Runcrate is a partner marketplace. Its figure is the lowest starting price across orderable options, not a standard price schedule.",
+      "Salad is one managed community-cloud price schedule, and AWS and Azure are single reference regions. None is a market-wide average.",
     ],
     sources: [
       {

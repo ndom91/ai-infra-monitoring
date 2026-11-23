@@ -1,13 +1,13 @@
 // Usage: pnpm db:restore <dir>
 // Loads a backup into an EMPTY, migrated database (the target of
 // TURSO_DATABASE_URL, or the local file). Refuses to write into a non-empty one.
-import { readFile } from "node:fs/promises";
+import { createReadStream, existsSync } from "node:fs";
 import { join } from "node:path";
-import { gunzipSync } from "node:zlib";
+import { createInterface } from "node:readline";
+import { createGunzip } from "node:zlib";
 import { openDb } from "~/storage/db";
 import { migrateDb } from "~/storage/migrate";
-
-const TABLES = ["collector_runs", "series", "observations", "raw_snapshots", "alert_events"];
+import { BACKUP_TABLES } from "~/storage/tables";
 
 const dir = process.argv[2];
 if (!dir) {
@@ -22,29 +22,50 @@ if (Number(existing.rows[0]?.n ?? 0) > 0) {
   process.exit(2);
 }
 
-for (const table of TABLES) {
-  const text = gunzipSync(await readFile(join(dir, `${table}.ndjson.gz`))).toString("utf8");
-  const rows = text
-    .split("\n")
-    .filter(Boolean)
-    .map((l) => JSON.parse(l) as Record<string, unknown>);
-  for (let i = 0; i < rows.length; i += 200) {
-    await client.batch(
-      rows.slice(i, i + 200).map((row) => {
-        const cols = Object.keys(row);
-        return {
-          sql: `insert into ${table} (${cols.join(",")}) values (${cols.map(() => "?").join(",")})`,
-          args: cols.map((c) => {
-            const v = row[c] as { $b64?: string } | string | number | null;
-            return v && typeof v === "object" && v.$b64
-              ? Buffer.from(v.$b64, "base64")
-              : (v as string | number | null);
-          }),
-        };
-      }),
-      "write",
-    );
+const BATCH = 200;
+
+async function insertRows(table: string, rows: Record<string, unknown>[]) {
+  await client.batch(
+    rows.map((row) => {
+      const cols = Object.keys(row);
+      return {
+        sql: `insert into ${table} (${cols.join(",")}) values (${cols.map(() => "?").join(",")})`,
+        args: cols.map((c) => {
+          const v = row[c] as { $b64?: string } | string | number | null;
+          return v && typeof v === "object" && v.$b64
+            ? Buffer.from(v.$b64, "base64")
+            : (v as string | number | null);
+        }),
+      };
+    }),
+    "write",
+  );
+}
+
+for (const table of BACKUP_TABLES) {
+  const path = join(dir, `${table}.ndjson.gz`);
+  if (!existsSync(path)) {
+    // Backups made before a table was added to BACKUP_TABLES lack its file.
+    console.warn(`${table}: no file in backup, skipped`);
+    continue;
   }
-  console.log(`${table}: ${rows.length} rows`);
+  // Read line by line so a large table is never held in memory whole.
+  const lines = createInterface({
+    input: createReadStream(path).pipe(createGunzip()),
+    crlfDelay: Number.POSITIVE_INFINITY,
+  });
+  let batch: Record<string, unknown>[] = [];
+  let count = 0;
+  for await (const line of lines) {
+    if (!line) continue;
+    batch.push(JSON.parse(line) as Record<string, unknown>);
+    count++;
+    if (batch.length === BATCH) {
+      await insertRows(table, batch);
+      batch = [];
+    }
+  }
+  if (batch.length) await insertRows(table, batch);
+  console.log(`${table}: ${count} rows`);
 }
 client.close();

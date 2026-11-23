@@ -8,19 +8,18 @@ export const COVERAGE_LABEL: Record<CoverageStatus, string> = {
   unavailable: "Not available",
 };
 
-// Hand-maintained: what each indicator can and cannot show, and why.
-// Mirrored in docs/coverage.md.
+// Hand-maintained: what each indicator can and cannot show, and why. The live
+// Coverage page renders this; it is the single source of truth.
 export const COVERAGE: Record<
   IndicatorId,
-  { status: CoverageStatus; collectors: string[]; summary: string; gaps: string[] }
+  { status: CoverageStatus; summary: string; gaps: string[] }
 > = {
   gpu_rental: {
     status: "partial",
-    collectors: ["azure", "aws", "salad", "runcrate"],
     summary:
       "AWS and Azure list prices for H100 and H200 GPUs, Salad Community Cloud's published RTX 4090 and RTX 5090 prices by priority tier, and Runcrate's published H200, RTX 4090 and RTX 5090 starting rates. Collected weekly.",
     gaps: [
-      "Salad is a single managed community-cloud price schedule, not a host-by-host marketplace. Vast.ai (Sep 2026) and Shadeform (Aug 2026) terms forbid building price indexes or databases without written permission. RunPod (checked Nov 2026) forbids data mining and automated data gathering.",
+      "Salad is a single managed community-cloud price schedule, not a host-by-host marketplace. Vast.ai (Sep 2026) and Shadeform (Aug 2026) terms forbid building price indexes or databases without written permission. Both offer written-permission exceptions, which would unlock real prices and inventory. RunPod (checked Nov 2026) forbids data mining and automated data gathering.",
       "Prices do not show how much capacity is in use. Salad priority tiers differ in preemption risk.",
       "Microsoft's API terms forbid sharing the data, so keep this dashboard private.",
       "Google Cloud's pricing API needs an API key and isn't used.",
@@ -28,7 +27,6 @@ export const COVERAGE: Record<
   },
   gpu_resale: {
     status: "partial",
-    collectors: ["manual"],
     summary:
       "American Compute's GPU resale index: a monthly basket of real sale prices as a share of the price new. Entered by hand with credit.",
     gaps: [
@@ -39,7 +37,6 @@ export const COVERAGE: Record<
   },
   credit: {
     status: "partial",
-    collectors: ["fred", "sec_debt", "manual"],
     summary:
       "Daily borrowing costs by credit rating (ICE BofA via FRED), plus Moody's Baa for long history. Instrument-level debt coverage tracks CoreWeave, Core Scientific, IREN, Applied Digital and Anthropic, using XBRL data from 10-Q and 10-K filings. Rates CoreWeave and other neoclouds agreed when they borrowed, from filings, entered by hand (a frozen record).",
     gaps: [
@@ -52,7 +49,6 @@ export const COVERAGE: Record<
   },
   capex_cashflow: {
     status: "implemented",
-    collectors: ["sec"],
     summary:
       "Quarterly capex, operating cash flow, depreciation, interest, debt and leases from SEC filings. Tracked groups are hyperscalers (MSFT, GOOGL, AMZN, META, ORCL), neoclouds (CRWV, CORZ, IREN, APLD), suppliers (NVDA, AMD, AVGO, SMCI, DELL), datacenter REITs (DLR, EQIX) and AI labs (ANT). Purchase obligations are included where companies tag them, which is rare. Compare companies within their group. 12-month ratios are calculated on the fly.",
     gaps: [
@@ -64,7 +60,6 @@ export const COVERAGE: Record<
   },
   customer_concentration: {
     status: "partial",
-    collectors: ["manual"],
     summary:
       "Revenue share from top customers and announced contract values for CoreWeave, Core Scientific, Nebius, IREN, Applied Digital, Cipher, TeraWulf and Hut 8. Entered by hand with citations.",
     gaps: [
@@ -74,7 +69,6 @@ export const COVERAGE: Record<
   },
   construction: {
     status: "partial",
-    collectors: ["manual", "census"],
     summary:
       "CBRE construction and pre-leasing for main markets (H2 2021 onward), and JLL construction and pre-leasing, entered by hand from each report. Also US Census Bureau monthly spending on private data-center construction since January 2014, in dollars, both seasonally adjusted (annual rate) and not adjusted.",
     gaps: [
@@ -87,7 +81,6 @@ export const COVERAGE: Record<
   },
   vacancy: {
     status: "partial",
-    collectors: ["manual"],
     summary:
       "CBRE and JLL vacancy, take-up (net absorption), total capacity and asking rents. Entered by hand from each report.",
     gaps: [
@@ -97,7 +90,6 @@ export const COVERAGE: Record<
   },
   power_grid: {
     status: "partial",
-    collectors: ["eia"],
     summary:
       "Monthly commercial electricity sales and average prices for Virginia, Texas, Arizona, Illinois, Georgia and Pennsylvania, from EIA Form EIA-861M.",
     gaps: [
@@ -107,7 +99,6 @@ export const COVERAGE: Record<
   },
   contract_conversion: {
     status: "implemented",
-    collectors: ["sec"],
     summary:
       "Order book (RPO), revenue, money owed by customers and inventory, from SEC filings. How fast the order book turns into revenue, yearly growth, days sales outstanding and inventory days are calculated on the fly.",
     gaps: [
@@ -117,7 +108,6 @@ export const COVERAGE: Record<
   },
   insider_activity: {
     status: "implemented",
-    collectors: ["sec_insider"],
     summary:
       "Monthly dollar value of open-market insider sales for every tracked SEC company, parsed from Form 4 filings and calculated as shares times price. Sales made under Rule 10b5-1 plans are split out where the filing says so.",
     gaps: [
@@ -128,7 +118,6 @@ export const COVERAGE: Record<
   },
   depreciation: {
     status: "partial",
-    collectors: ["manual", "sec"],
     summary:
       "Changes to how long AMZN, META, GOOGL, MSFT, ORCL, CRWV, NBIS and IREN assume their servers last, with effective dates, cited from filings. Depreciation costs from SEC filings.",
     gaps: [

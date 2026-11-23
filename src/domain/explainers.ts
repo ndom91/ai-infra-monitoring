@@ -38,7 +38,7 @@ export const EXPLAINERS = {
 
   // ---- Market ----
   gpuListPrice: {
-    what: "What Amazon and Microsoft charge per hour to rent one GPU, from their public price lists. 'Spot' is a discounted price for spare capacity that can be taken back.",
+    what: "What cloud providers charge per hour to rent one GPU, from their published prices. 'Spot' is a discounted price for spare capacity that can be taken back.",
     read: "Flat steps mean the list price did not change. A sudden step down is a price cut.",
     why: "Falling rental prices can mean too much capacity chasing too little demand. But newer chips also make older ones cheaper on purpose, so a cut is not proof of trouble.",
   },

@@ -2,23 +2,12 @@ import { createFileRoute } from "@tanstack/react-router";
 import { FreshnessBadge } from "~/components/FreshnessBadge";
 import { PageLead } from "~/components/PageLead";
 import { SectionHeader } from "~/components/SectionHeader";
+import { COLLECTOR_CADENCE } from "~/domain/collector-cadence";
 import { COVERAGE, COVERAGE_LABEL } from "~/domain/coverage";
 import { INDICATORS } from "~/domain/indicators";
 import { formatDateTime } from "~/lib/format";
 import { pageHead } from "~/lib/seo";
 import { getCoverageData } from "~/server/data";
-
-const COLLECTOR_CADENCE: Record<string, string> = {
-  fred: "weekdays",
-  sec: "weekdays",
-  sec_filings: "weekdays",
-  azure: "weekly",
-  aws: "weekly",
-  salad: "weekly",
-  runcrate: "weekly",
-  eia: "monthly",
-  manual: "on update",
-};
 
 export const Route = createFileRoute("/coverage")({
   head: () =>

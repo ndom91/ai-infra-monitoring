@@ -21,7 +21,9 @@ pnpm dev
 
 `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` configure Turso. Leave both empty
 to use `data/local.db`. `SEC_USER_AGENT` must provide a contact address, for
-example `"AIInfraMonitor you@example.com"`.
+example `"AIInfraMonitor you@example.com"`. It is sent only to sec.gov hosts
+and is required by the `sec*` collectors, which fail with a permanent error
+when it is unset. Every other source receives a generic User-Agent.
 
 ## Operating data collection
 

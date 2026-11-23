@@ -145,7 +145,9 @@ function FundamentalsPage() {
             {selected?.name ?? company} <span className="ticker">{company}</span>
           </h1>
           <p>
-            {selected ? GROUP_BLURBS[selected.group] : ""} Everything below is for this company.
+            {selected ? GROUP_BLURBS[selected.group] : ""} Most charts below are for this company.
+            Customer concentration, announced contracts and server useful lives cover every tracked
+            company.
           </p>
         </div>
       </div>
