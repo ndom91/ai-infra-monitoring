@@ -39,6 +39,6 @@ describe("fredCollector", () => {
     expect(res.status).toBe("partial");
     expect(res.failures.map((f) => f.key)).toEqual(["DGS10"]);
     expect(res.failures[0]?.error.errorClass).toBe("transient");
-    expect(res.inserted).toBe(parseFredCsv(csv, "BAMLH0A0HYM2").length * 8);
+    expect(res.inserted).toBe(parseFredCsv(csv, "BAMLH0A0HYM2").length * (FRED_SERIES.length - 1));
   });
 });
