@@ -112,9 +112,11 @@ export const INDICATORS: IndicatorDef[] = [
       "Index spreads are broad market proxies, not AI-specific.",
       "A yield is not a spread, and a spread is not a default probability.",
       "ICE BofA history on FRED is limited to a rolling 3 years. Older values exist only if this monitor stored them.",
+      "Instrument-level debt covers only the four neoclouds that file 10-Qs and 10-Ks. Private companies' loans and datacenter ABS are not covered.",
     ],
     sources: [
       { label: "FRED", url: "https://fred.stlouisfed.org/" },
+      { label: "SEC EDGAR (XBRL debt notes)", url: "https://www.sec.gov/edgar" },
       {
         label: "FINRA fixed income",
         url: "https://www.finra.org/finra-data/fixed-income",
@@ -132,7 +134,7 @@ export const INDICATORS: IndicatorDef[] = [
     deterioration:
       "Capex growing faster than operating cash flow, negative free cash flow covered by debt or leases, and interest getting harder to cover. Watch heavily indebted neoclouds most.",
     caveats: [
-      "Hyperscalers pay from huge cash flows; neoclouds rely on debt. Compare within each group, not across.",
+      "Hyperscalers pay from huge cash flows; neoclouds rely on debt; suppliers sell the hardware; datacenter REITs own the buildings. Compare within each group, not across.",
       "Finance leases and off-balance-sheet commitments hide part of the real spending.",
       "Some quarters are worked out from year-to-date filings, and are marked as calculated.",
     ],
@@ -229,6 +231,7 @@ export const INDICATORS: IndicatorDef[] = [
     caveats: [
       "An order book isn't guaranteed cash. Contracts can be cancelled or renegotiated.",
       "Companies define and time RPO differently.",
+      "Days sales outstanding and inventory days are calculated and depend on each company's business model. Compare a company with its own history, or within its group.",
     ],
     sources: [
       {
@@ -252,6 +255,29 @@ export const INDICATORS: IndicatorDef[] = [
       "Not all servers share one schedule, and most disclosures aren't GPU-specific.",
     ],
     sources: [{ label: "SEC EDGAR", url: "https://www.sec.gov/edgar/search/" }],
+  },
+  {
+    id: "insider_activity",
+    number: "11",
+    title: "Insider selling",
+    section: "fundamentals",
+    classification: "Leading / coincident",
+    measures:
+      "Dollars of company stock that directors, officers and large holders sold on the open market each month, from Form 4 filings. Calculated as shares times the reported price.",
+    deterioration:
+      "Sales climb well above a company's own normal level, across many insiders at once, outside of pre-scheduled plans.",
+    caveats: [
+      "Insiders sell for routine reasons: diversification, taxes, house purchases. A single month is weak evidence.",
+      "Many sales run under Rule 10b5-1 plans set months earlier. Those are shown separately and say little about current views. The plan box covers a whole filing, so the split is an upper bound.",
+      "Option exercises, tax withholding, gifts and grants are excluded. Sales that report no price are skipped, not estimated.",
+      "The current month is incomplete until it ends. Filings before 2023 carry no plan flag, so their plan split is left blank.",
+    ],
+    sources: [
+      {
+        label: "SEC EDGAR Form 4",
+        url: "https://www.sec.gov/files/forms-3-4-5.pdf",
+      },
+    ],
   },
 ];
 

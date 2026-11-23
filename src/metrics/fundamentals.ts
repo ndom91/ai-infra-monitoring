@@ -152,3 +152,19 @@ export function growthYoY(points: QuarterPoint[]): QuarterPoint[] {
   }
   return out;
 }
+
+// Days sales outstanding: receivables / quarterly revenue x 91. Uses the
+// quarterly (not TTM) flow so seasonality shows; quarters are about 91 days.
+// Skipped when quarterly revenue <= 0.
+export function dso(ar: QuarterPoint[], revenueQuarterly: QuarterPoint[]): QuarterPoint[] {
+  return align([ar, revenueQuarterly], ([a = 0, r = 0]) => (r > 0 ? (a / r) * 91 : undefined));
+}
+
+// Inventory days: inventory / quarterly cost of revenue x 91. Skipped when
+// quarterly cost of revenue <= 0.
+export function inventoryDays(
+  inventory: QuarterPoint[],
+  cogsQuarterly: QuarterPoint[],
+): QuarterPoint[] {
+  return align([inventory, cogsQuarterly], ([i = 0, c = 0]) => (c > 0 ? (i / c) * 91 : undefined));
+}

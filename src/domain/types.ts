@@ -11,6 +11,7 @@ export const INDICATOR_IDS = [
   "power_grid",
   "contract_conversion",
   "depreciation",
+  "insider_activity",
 ] as const;
 export type IndicatorId = (typeof INDICATOR_IDS)[number];
 

@@ -2,9 +2,11 @@ import { SEC_COMPANIES } from "~/domain/companies";
 import {
   capexToOcf,
   debtToOcf,
+  dso,
   fcfAfterCapex,
   growthYoY,
   interestCoverage,
+  inventoryDays,
   type QuarterPoint,
   rpoConversion,
   ttm,
@@ -126,6 +128,22 @@ export function deriveCompanySeries(
       "contract_conversion",
       "Year-over-year growth of net accounts receivable. Receivables growing faster than revenue can mean slower collection.",
       pct(growthYoY(get("ar"))),
+    ),
+    make(
+      "dso",
+      "days sales outstanding",
+      "days",
+      "contract_conversion",
+      "Calculated: net accounts receivable at quarter end divided by that quarter's revenue, times 91 days. Rising values mean customers take longer to pay (or the company is extending more credit). Needs both series for the same quarter end.",
+      dso(get("ar"), revenue),
+    ),
+    make(
+      "inventory_days",
+      "inventory days",
+      "days",
+      "contract_conversion",
+      "Calculated: net inventory at quarter end divided by that quarter's cost of revenue, times 91 days. Rising values mean stock is sitting longer before it sells. Needs both series for the same quarter end.",
+      inventoryDays(get("inventory"), get("cogs")),
     ),
   ].filter((d) => d.points.length > 0);
 }

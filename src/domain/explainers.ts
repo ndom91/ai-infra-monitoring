@@ -30,6 +30,12 @@ export const EXPLAINERS = {
     why: "Rising rates on new deals, or reliance on convertibles and asset-backed notes, show how hard and costly it is for these companies to keep raising money.",
   },
 
+  instrumentDebt: {
+    what: "How much each neocloud owes on each loan, facility and bond, as reported in the debt notes of its quarterly and annual SEC filings.",
+    read: "Each line is one instrument, measured at the filing's balance-sheet date (carrying amount, which can be below the face amount). A line that steps up is a loan being drawn. The table lists the latest rate filed: the stated coupon or margin and the effective rate.",
+    why: "Neoclouds build with borrowed money. The mix of instruments shows how much debt is secured on GPUs, how much is recourse to the parent, and what each costs.",
+  },
+
   // ---- Market ----
   gpuListPrice: {
     what: "What Amazon and Microsoft charge per hour to rent one GPU, from their public price lists. 'Spot' is a discounted price for spare capacity that can be taken back.",
@@ -99,6 +105,36 @@ export const EXPLAINERS = {
     what: "Last year's revenue divided by the order book one year before.",
     read: "A falling line means the order book is turning into revenue more slowly than before.",
     why: "If promised demand keeps growing but conversion slows, some of that demand may never arrive.",
+  },
+  dsoPeers: {
+    what: "Days sales outstanding for hardware suppliers: how many days of a quarter's revenue are still owed by customers at quarter end.",
+    read: "Calculated as receivables ÷ quarterly revenue × 91. A rising line means customers pay later or the supplier extends more credit.",
+    why: "Suppliers that finance or give long terms to AI buyers show it here before it shows in revenue. Compare within suppliers, not with other groups.",
+  },
+  inventoryDays: {
+    what: "How many days of a quarter's cost of revenue the unsold inventory represents, for hardware suppliers.",
+    read: "Calculated as inventory ÷ quarterly cost of revenue × 91. A rising line means stock is building up faster than it sells.",
+    why: "Inventory piling up ahead of sales can signal demand slowing, or a deliberate stockpile ahead of new products. The filing text tells which.",
+  },
+  dsoInventory: {
+    what: "This company's receivables and inventory, each expressed in days.",
+    read: "Both are calculated from the filings (balance at quarter end ÷ that quarter's flow × 91). Compare with the company's own history; levels differ by business model.",
+    why: "Both rising together while revenue growth slows is a classic stress pattern. Companies with no inventory show only the receivables line.",
+  },
+  inventoryBalance: {
+    what: "Net inventory at quarter end, shown with the quarterly cost of revenue it is measured against.",
+    read: "Inventory growing much faster than cost of revenue means more stock per dollar sold.",
+    why: "Only meaningful for companies that hold inventory, mainly hardware suppliers.",
+  },
+  insiderSales: {
+    what: "Dollars of this company's stock that insiders sold on the open market each month, from Form 4 filings. Calculated as shares times the reported price.",
+    read: "Compare with the company's own history. The second line is the part reported under a Rule 10b5-1 plan, a schedule set months ahead.",
+    why: "Heavy selling outside pre-set plans can show insiders taking money off the table. Routine diversification is common, so one month proves little. The latest month is incomplete.",
+  },
+  purchaseObligations: {
+    what: "Unconditional purchase obligations disclosed in the notes: commitments to buy supply or capacity that are not on the balance sheet.",
+    read: "A large and growing figure means the company has committed to buy far ahead of demand it can see.",
+    why: "These commitments are owed whether or not demand shows up. Many companies disclose them only in text or only annually, so this series is often empty.",
   },
   growth: {
     what: "Growth vs a year ago in the order book, revenue, and money owed by customers.",

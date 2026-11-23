@@ -615,6 +615,10 @@ h2 {
   color: var(--muted);
 }
 
+.coverage-mobile-label {
+  display: none;
+}
+
 .cov-implemented {
   color: var(--teal);
   border-color: #446759;
@@ -697,6 +701,19 @@ code {
   margin-top: 14px;
 }
 
+.panel > .sub-head {
+  margin: 26px 0 0;
+  font-size: 15px;
+}
+
+.panel > .grid-2 ~ .grid-2 {
+  margin-top: 14px;
+}
+
+.panel > .sub-head + .grid-2 {
+  margin-top: 12px;
+}
+
 .company-head {
   margin-top: 34px;
   padding-top: 26px;
@@ -728,6 +745,61 @@ code {
 }
 
 @media (max-width: 640px) {
+  .table-scroll .coverage,
+  .table-scroll .coverage tbody {
+    display: block;
+    width: 100%;
+  }
+
+  .table-scroll .coverage thead {
+    display: none;
+  }
+
+  .table-scroll .coverage tr {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 16px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .table-scroll .coverage tr:first-child {
+    padding-top: 4px;
+  }
+
+  .table-scroll .coverage tr:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .table-scroll .coverage tr > td {
+    display: block;
+    padding: 0;
+    border: 0;
+    white-space: normal;
+    text-align: left;
+  }
+
+  .table-scroll .coverage tr > td:first-child,
+  .table-scroll .coverage tr > .coverage-notes {
+    grid-column: 1 / -1;
+  }
+
+  .table-scroll .coverage tr > td:first-child {
+    font-weight: 600;
+  }
+
+  .table-scroll .coverage tr > .coverage-notes {
+    min-width: 0;
+  }
+
+  .coverage-mobile-label {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--muted);
+    font-size: 12px;
+  }
+
   .wrap {
     padding: 18px 12px 48px;
   }
@@ -735,10 +807,6 @@ code {
   .topbar {
     gap: 12px;
     margin-bottom: 18px;
-  }
-
-  .nav a {
-    padding: 5px 8px;
   }
 
   .section-head h1 {
@@ -1543,17 +1611,38 @@ h3,
     font-size: 20px;
   }
 
-  .topbar-updated {
-    margin-left: auto;
+  /* One swipeable row instead of two wrapped rows. The strip bleeds to the
+     screen edges so tabs scroll under the fade instead of clipping early. */
+  .nav {
+    position: relative;
+    flex: 1 0 100%;
+    flex-wrap: nowrap;
+    gap: 4px;
+    margin-inline: -12px;
+    padding-inline: 12px 32px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    mask-image: linear-gradient(to right, #000 calc(100% - 32px), transparent);
   }
 
-  .nav {
-    gap: 2px 4px;
+  .nav::-webkit-scrollbar {
+    display: none;
   }
 
   .nav a {
-    min-block-size: 32px;
-    padding: 6px 8px;
+    display: flex;
+    flex: none;
+    align-items: center;
+    min-block-size: 40px;
+    padding: 0 12px;
+    font-size: 14px;
+    white-space: nowrap;
+  }
+
+  .nav a.nav-github {
+    min-width: 40px;
+    min-height: 40px;
   }
 
   .story-intro h1 {

@@ -15,7 +15,11 @@ const RecentFilingsSchema = v.object({
 });
 
 const SubmissionsSchema = v.object({
-  filings: v.object({ recent: RecentFilingsSchema }),
+  filings: v.object({
+    recent: RecentFilingsSchema,
+    // Older filings spill into extra files when `recent` is full.
+    files: v.optional(v.array(v.unknown())),
+  }),
 });
 
 type Submissions = v.InferOutput<typeof SubmissionsSchema>;
@@ -90,7 +94,7 @@ const REQUEST_GAP_MS = 150;
 export function makeSecFilingsCollector(requestGapMs = REQUEST_GAP_MS): Collector {
   return {
     name: "sec_filings",
-    description: "SEC EDGAR filing events for tracked hyperscalers and neoclouds",
+    description: "SEC EDGAR filing events for all tracked SEC companies",
     async collect({ fetch, log }: CollectContext): Promise<CollectOutput> {
       const filingEvents: FilingEventInput[] = [];
       const snapshots: NonNullable<CollectOutput["snapshots"]> = [];

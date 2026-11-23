@@ -2,7 +2,14 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { fakeFetch, memoryDb } from "../../../test/helpers";
 import { runCollector } from "../runner";
-import { companyOutput, makeSecCollector, SEC_COMPANIES, secCollector, secSeriesId } from ".";
+import {
+  companyOutput,
+  inferCadence,
+  makeSecCollector,
+  SEC_COMPANIES,
+  secCollector,
+  secSeriesId,
+} from ".";
 import {
   type Fact,
   filingIndexUrl,
@@ -184,5 +191,44 @@ describe("secCollector", () => {
     expect(again.revised).toBe(0);
     expect(secSeriesId("CRWV", "capex")).toBe("sec.CRWV.capex");
     expect(secCollector.name).toBe("sec");
+  });
+});
+
+describe("late-January fiscal year (DELL)", () => {
+  it("derives quarters from real period dates, not fiscal labels", () => {
+    // FY2026 ends 2026-01-30; Q1 ends 2025-05-02, Q2 08-01, Q3 10-31.
+    const q = quarterlyFlows([
+      fact("2025-02-01", "2025-05-02", 20),
+      fact("2025-02-01", "2025-08-01", 45),
+      fact("2025-02-01", "2025-10-31", 75),
+      fact("2025-02-01", "2026-01-30", 110, "2026-03-20", "fy"),
+    ]);
+    expect(q.map((p) => [p.periodEnd, p.value, p.kind])).toEqual([
+      ["2025-05-02", 20, "reported"],
+      ["2025-08-01", 25, "calculated"],
+      ["2025-10-31", 30, "calculated"],
+      ["2026-01-30", 35, "calculated"],
+    ]);
+    expect(q.at(-1)).toMatchObject({ periodStart: "2025-11-01", asOf: "2026-03-20" });
+  });
+});
+
+describe("inferCadence", () => {
+  const ends = (...d: string[]) => d.map((periodEnd) => ({ periodEnd }));
+  it("treats quarter-spaced data as quarterly", () => {
+    expect(inferCadence(ends("2025-03-31", "2025-06-30", "2025-09-30", "2025-12-31"))).toBe(
+      "quarterly",
+    );
+  });
+  it("treats 10-K-only data as annual", () => {
+    expect(inferCadence(ends("2023-01-29", "2024-01-28", "2025-01-26"))).toBe("annual");
+  });
+  it("follows the recent spacing when a company switches to quarterly", () => {
+    expect(
+      inferCadence(ends("2022-12-31", "2023-12-31", "2024-03-31", "2024-06-30", "2024-09-30")),
+    ).toBe("quarterly");
+  });
+  it("defaults to quarterly with a single point", () => {
+    expect(inferCadence(ends("2025-12-31"))).toBe("quarterly");
   });
 });

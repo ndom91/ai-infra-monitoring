@@ -6,15 +6,16 @@ with series counts and collector status, is the **Coverage** page
 
 | # | Indicator | Status | Source(s) | Main gaps |
 |---|---|---|---|---|
-| 01 | GPU rental pricing | Partial | Azure Retail Prices (H100/H200 on-demand + spot), AWS Price List (H100/H200 on-demand, monthly since Oct 2024), Salad Community Cloud (RTX 4090/5090, priority tiers), Runcrate public pricing feed (H200, RTX 4090/5090 starting rates) | Published prices only, no inventory. Salad tiers differ in preemption risk. Vast.ai and Shadeform terms forbid building price indexes. GCP needs an API key. |
+| 01 | GPU rental pricing | Partial | Azure Retail Prices (H100/H200 on-demand + spot), AWS Price List (H100/H200 on-demand, monthly since Oct 2024), Salad Community Cloud (RTX 4090/5090, priority tiers), Runcrate public pricing feed (H200, RTX 4090/5090 starting rates) | Published prices only, no inventory. Salad tiers differ in preemption risk. Vast.ai, Shadeform and RunPod terms forbid automated collection. GCP needs an API key. |
 | 02 | GPU resale & collateral | Partial | American Compute resale index (manual, "free to use with attribution") | An index, not per-model prices. ServerBuyback has no reuse license. Nothing links resale to secured debt. |
-| 03 | Credit spreads | Partial | FRED (ICE BofA HY/BB/B/CCC/BBB OAS, HY yield, Baa−10y, DBAA, DGS10); issuer coupons and SOFR margins from filings | ICE history is a rolling 3 years. No per-bond market prices: FINRA's free data forbids automated collection; TRACE feeds are paid. |
-| 04 | Capex & cash flow | Implemented | SEC XBRL for MSFT, GOOGL, AMZN, META, ORCL, CRWV, CORZ, IREN, APLD | Nine companies. Nebius (20-F) is excluded. Tag changes cut some series short. Maturities and off-balance-sheet commitments are not captured. |
+| 03 | Credit spreads | Partial | FRED (ICE BofA HY/BB/B/CCC/BBB OAS, HY yield, Baa−10y, DBAA, DGS10); per-instrument debt (carrying and face amounts, stated and effective rates, spreads) for CRWV, CORZ, IREN and APLD from SEC XBRL (`sec_debt`); issuer coupons and SOFR margins from filings (manual, frozen) | ICE history is a rolling 3 years. No per-bond market prices: FINRA's free data forbids automated collection; TRACE feeds are paid. Private-company GPU-backed loans and datacenter ABS are not covered: no automated source exists. Renamed facilities are separate series. |
+| 04 | Capex & cash flow | Implemented | SEC XBRL for MSFT, GOOGL, AMZN, META, ORCL, CRWV, CORZ, IREN, APLD, NVDA, AMD, AVGO, SMCI, DELL, DLR, EQIX | Sixteen companies in four groups. Nebius (20-F) is excluded. Tag changes cut some series short. Purchase obligations are sparse and often annual; debt maturities and not-yet-commenced leases are not captured. |
 | 05 | Customer concentration | Partial | Filings, cited manually (8 neoclouds / miners) | Irregular disclosure; some give contract values only. |
 | 06 | Construction & preleasing | Partial | CBRE (H2 2021+), JLL, cited manually | Manual per release. JLL definitions changed twice (kept separate). |
 | 07 | Vacancy & absorption | Partial | CBRE, JLL, cited manually | Some CBRE absorption only in charts. JLL 2022–23 not retrievable. |
 | 08 | Contracted vs realized revenue | Implemented | SEC XBRL (RPO, revenue, receivables) | META has no RPO; AMZN RPO tag ends 2020. Cancellations only in text. |
 | 09 | Depreciation & useful life | Partial | Filings (8 companies, cited manually); D&A from SEC XBRL | Rarely GPU-specific. Book-vs-resale curve needs per-model resale prices. |
+| 11 | Insider selling | Implemented | SEC Form 4 (open-market sales, code S, priced), all tracked SEC companies | Priced sales only. 10b5-1 split is an upper bound and absent before 2023. |
 
 ## Sources checked and not used
 

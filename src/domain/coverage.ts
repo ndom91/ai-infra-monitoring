@@ -20,7 +20,7 @@ export const COVERAGE: Record<
     summary:
       "AWS and Azure list prices for H100 and H200 GPUs, Salad Community Cloud's published RTX 4090 and RTX 5090 prices by priority tier, and Runcrate's published H200, RTX 4090 and RTX 5090 starting rates. Collected weekly.",
     gaps: [
-      "Salad is a single managed community-cloud price schedule, not a host-by-host marketplace. Vast.ai (Sep 2026) and Shadeform (Aug 2026) terms forbid building price indexes or databases without written permission.",
+      "Salad is a single managed community-cloud price schedule, not a host-by-host marketplace. Vast.ai (Sep 2026) and Shadeform (Aug 2026) terms forbid building price indexes or databases without written permission. RunPod (checked Nov 2026) forbids data mining and automated data gathering.",
       "Prices do not show how much capacity is in use. Salad priority tiers differ in preemption risk.",
       "Microsoft's API terms forbid sharing the data, so keep this dashboard private.",
       "Google Cloud's pricing API needs an API key and isn't used.",
@@ -39,10 +39,12 @@ export const COVERAGE: Record<
   },
   credit: {
     status: "partial",
-    collectors: ["fred", "manual"],
+    collectors: ["fred", "sec_debt", "manual"],
     summary:
-      "Daily borrowing costs by credit rating (ICE BofA via FRED), plus Moody's Baa for long history. Rates CoreWeave and other neoclouds agreed when they borrowed, from filings.",
+      "Daily borrowing costs by credit rating (ICE BofA via FRED), plus Moody's Baa for long history. Debt instrument by instrument (facilities, notes, loans: carrying amount, face amount, stated and effective rates, spreads) for CoreWeave, Core Scientific, IREN and Applied Digital, from the XBRL data in their 10-Q and 10-K filings. Rates CoreWeave and other neoclouds agreed when they borrowed, from filings, entered by hand (a frozen record).",
     gaps: [
+      "Private companies' GPU-backed loans and datacenter ABS (Lambda, Crusoe, Vantage, Switch, Aligned, STACK) are not covered. Their terms appear only in press releases on sites that block automated access.",
+      "Instruments are stored under the name each filing gives them. If a company renames a facility, the old and new names are separate series.",
       "FRED only keeps the last 3 years of ICE BofA data. Older values exist only if this monitor saved them.",
       "No market prices for individual AI company bonds. FINRA's free data forbids automated collection, and its TRACE feed needs a paid agreement.",
       "Credit ratings are confirmed for only one CoreWeave note. Rating agency pages need a login.",
@@ -52,7 +54,7 @@ export const COVERAGE: Record<
     status: "implemented",
     collectors: ["sec"],
     summary:
-      "Quarterly capex, operating cash flow, depreciation, interest, debt and leases for MSFT, GOOGL, AMZN, META, ORCL, CRWV, CORZ, IREN and APLD, from SEC filings. 12-month ratios are calculated on the fly.",
+      "Quarterly capex, operating cash flow, depreciation, interest, debt and leases for hyperscalers (MSFT, GOOGL, AMZN, META, ORCL), neoclouds (CRWV, CORZ, IREN, APLD), suppliers (NVDA, AMD, AVGO, SMCI, DELL) and datacenter REITs (DLR, EQIX), from SEC filings. Purchase obligations are included where companies tag them, which is rare. Compare within a group, not across. 12-month ratios are calculated on the fly.",
     gaps: [
       "Nebius files only annual 20-F reports with no quarterly data, so it's left out.",
       "Some data labels change over time, and history under an old label isn't joined up. Examples: CRWV debt after Mar 2026, MSFT and ORCL cash interest paid.",
@@ -104,10 +106,21 @@ export const COVERAGE: Record<
     status: "implemented",
     collectors: ["sec"],
     summary:
-      "Order book (RPO), revenue and money owed by customers, from SEC filings. How fast the order book turns into revenue, and yearly growth, are calculated on the fly.",
+      "Order book (RPO), revenue, money owed by customers and inventory, from SEC filings. How fast the order book turns into revenue, yearly growth, days sales outstanding and inventory days are calculated on the fly.",
     gaps: [
       "Meta reports no order book. Amazon's order-book data stops in 2020.",
       "Cancelled contracts and late payments appear only in filing text.",
+    ],
+  },
+  insider_activity: {
+    status: "implemented",
+    collectors: ["sec_insider"],
+    summary:
+      "Monthly dollar value of open-market insider sales for every tracked SEC company, parsed from Form 4 filings and calculated as shares times price. Sales made under Rule 10b5-1 plans are split out where the filing says so.",
+    gaps: [
+      "Only sales with a reported price count; sales without one are skipped, not estimated.",
+      "The plan flag covers a whole filing and does not exist before 2023, so the planned-sales split is an upper bound and blank for older months.",
+      "Backfill reaches only as far back as EDGAR's recent-filings list.",
     ],
   },
   depreciation: {

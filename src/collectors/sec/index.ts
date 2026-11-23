@@ -158,6 +158,37 @@ export const CONCEPTS: Concept[] = [
     definition: "Accounts receivable, net of allowances, current.",
   },
   {
+    id: "inventory",
+    label: "inventory",
+    indicator: "contract_conversion",
+    type: "instant",
+    candidates: [["InventoryNet"]],
+    definition:
+      "Inventory, net of reserves, from the balance sheet. Mostly relevant to hardware suppliers; companies without inventory have no series.",
+  },
+  {
+    id: "cogs",
+    label: "cost of revenue",
+    indicator: "contract_conversion",
+    type: "flow",
+    nonNegative: true,
+    candidates: [["CostOfRevenue"], ["CostOfGoodsAndServicesSold"]],
+    definition:
+      "Cost of revenue (cost of goods and services sold) from the income statement. Used with inventory to compute inventory days.",
+  },
+  {
+    id: "purchase_obligations",
+    label: "purchase obligations",
+    indicator: "capex_cashflow",
+    type: "instant",
+    candidates: [
+      ["PurchaseObligation"],
+      ["UnrecordedUnconditionalPurchaseObligationBalanceSheetAmount"],
+    ],
+    definition:
+      "Unconditional purchase obligations (supply and capacity commitments) not recorded on the balance sheet, as disclosed in the notes. Many companies tag it only annually or not at all, so the series is often missing.",
+  },
+  {
     id: "cash",
     label: "cash & equivalents",
     indicator: "capex_cashflow",
@@ -210,6 +241,19 @@ export function pickCandidate(cf: CompanyFacts, concept: Concept) {
   return best;
 }
 
+const DAY_MS = 86_400_000;
+
+// Some items (purchase obligations, cash interest paid) are disclosed only in
+// the 10-K for some companies. Labelling those "quarterly" would mark them
+// stale for most of the year, so cadence follows the recent spacing of data.
+export function inferCadence(points: Pick<Point, "periodEnd">[]): "quarterly" | "annual" {
+  const recent = points.slice(-4).map((p) => Date.parse(p.periodEnd));
+  const gaps = recent.slice(1).map((t, i) => (t - (recent[i] ?? t)) / DAY_MS);
+  if (gaps.length === 0) return "quarterly";
+  const median = gaps.toSorted((a, b) => a - b)[Math.floor(gaps.length / 2)] ?? 0;
+  return median > 200 ? "annual" : "quarterly";
+}
+
 export function companyOutput(cf: CompanyFacts, company: SecCompany, log: (msg: string) => void) {
   const series: SeriesDef[] = [];
   const observations: ObservationInput[] = [];
@@ -237,7 +281,7 @@ export function companyOutput(cf: CompanyFacts, company: SecCompany, log: (msg: 
         COMMON_RULES,
         `Company group: ${company.group}.`,
       ].join(" "),
-      cadence: "quarterly",
+      cadence: inferCadence(picked.points),
       collector: "sec",
     });
     for (const p of picked.points) {
@@ -266,7 +310,7 @@ export function makeSecCollector(requestGapMs = REQUEST_GAP_MS): Collector {
   return {
     name: "sec",
     description:
-      "SEC EDGAR XBRL fundamentals (capex, cash flow, debt, leases, RPO) for hyperscalers and neoclouds",
+      "SEC EDGAR XBRL fundamentals (capex, cash flow, debt, leases, RPO, receivables, inventory) for hyperscalers, neoclouds, hardware suppliers and datacenter REITs",
     // companyfacts always returns the full history, so backfill and
     // routine runs behave the same.
     collect: (ctx) => collectAll(ctx, requestGapMs),

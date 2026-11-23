@@ -26,7 +26,7 @@ example `"AIInfraMonitor you@example.com"`.
 ## Operating data collection
 
 ```bash
-pnpm collect <fred|sec|azure|aws|salad|runcrate|manual|all> [--backfill] [--no-alerts]
+pnpm collect <fred|sec|sec_debt|sec_filings|sec_insider|azure|aws|salad|runcrate|manual|all> [--backfill] [--no-alerts]
 pnpm alerts [--backtest]
 pnpm db:backup [dir]
 pnpm db:restore <dir>
@@ -58,8 +58,10 @@ bundle.
 ## Scheduled workflows
 
 - `collect-fred.yml`: weekdays at 08:07 UTC.
-- `collect-sec.yml`: weekdays at 08:13 UTC.
-- `collect-sec-filings.yml`: weekdays at 08:00, 13:00, and 18:00 UTC.
+- `collect-sec.yml`: weekdays at 08:13 UTC; runs `sec` and `sec_debt`
+  (per-instrument debt from each 10-Q and 10-K XBRL instance).
+- `collect-sec-filings.yml`: weekdays at 08:00, 13:00, and 18:00 UTC; runs
+  `sec_filings` and `sec_insider` (Form 4 insider sales).
 - `collect-prices.yml`: weekly.
 - `collect-eia.yml`: every 14 days on Thursday (with a weekly schedule check).
 - `collect-manual.yml`: when `data/manual/**` changes on `main`, or manually.
@@ -85,5 +87,5 @@ Production is public at [artificialliabilities.com](https://artificialliabilitie
 Ensure deployed data continues to comply with every collector's source terms.
 
 To deploy from a local machine, run `pnpm wrangler login` followed by
-`pnpm deploy`. To run the built production server locally, use
-`pnpm build && pnpm start`.
+`pnpm deploy`. To run the built Worker locally, use
+`pnpm build && pnpm preview`.

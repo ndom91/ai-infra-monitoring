@@ -65,11 +65,15 @@ function CoveragePage() {
                     <td>
                       {i.number} {i.title}
                     </td>
-                    <td>
+                    <td className="coverage-status">
+                      <span className="coverage-mobile-label">Status</span>
                       <span className={`badge cov-${c.status}`}>{COVERAGE_LABEL[c.status]}</span>
                     </td>
-                    <td className="num">{n}</td>
-                    <td>
+                    <td className="num coverage-series">
+                      <span className="coverage-mobile-label">Series</span>
+                      {n}
+                    </td>
+                    <td className="coverage-notes">
                       <p>{c.summary}</p>
                       {c.gaps.length > 0 && (
                         <ul>

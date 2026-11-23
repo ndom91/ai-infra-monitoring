@@ -92,6 +92,7 @@ export const getFundamentalsData = createServerFn({ method: "GET" })
             "contract_conversion",
             "customer_concentration",
             "depreciation",
+            "insider_activity",
           ],
           range: data.range,
           fullHistory: true,
