@@ -11,6 +11,7 @@ import {
   memberLabel,
   parseInstance,
   parseLabels,
+  readRate,
   slug,
 } from "./instance";
 
@@ -129,6 +130,104 @@ describe("parseInstance category members", () => {
       doc(fact("c0", 224_200_000, "-5") + fact("c0", 224_211_000, "-3")),
     ).facts;
     expect(facts).toEqual([expect.objectContaining({ value: 224_211_000 })]);
+  });
+});
+
+describe("rate scale", () => {
+  const doc = (facts: [string, string][]) => `<?xml version="1.0"?>
+<xbrl xmlns="http://www.xbrl.org/2003/instance" xmlns:us-gaap="http://fasb.org/us-gaap/2031" xmlns:xbrldi="http://xbrl.org/2006/xbrldi" xmlns:x="http://x">
+  ${facts.map(([id, date]) => `<context id="${id}"><entity><segment><xbrldi:explicitMember dimension="us-gaap:DebtInstrumentAxis">x:${id.replace(/\d+$/, "")}Member</xbrldi:explicitMember></segment></entity><period><instant>${date}</instant></period></context>`).join("\n  ")}
+  <unit id="number"><measure>xbrli:pure</measure></unit>
+</xbrl>`;
+  const rate = (
+    ctx: string,
+    value: string,
+    concept = "DebtInstrumentInterestRateEffectivePercentage",
+  ) =>
+    `<us-gaap:${concept} contextRef="${ctx}" unitRef="number" decimals="2">${value}</us-gaap:${concept}>`;
+  const parse = (contexts: [string, string][], facts: string[]) =>
+    parseInstance(doc(contexts).replace("</xbrl>", `${facts.join("\n")}\n</xbrl>`));
+
+  it("reads a filed decimal as percent", () => {
+    expect(readRate(0.0925)).toEqual({ value: 9.25 });
+    expect(readRate(0.15)).toEqual({ value: 15 });
+    expect(readRate(0)).toEqual({ value: 0 });
+  });
+
+  it("reads a whole percent as filed and says so", () => {
+    expect(readRate(10)).toEqual({ value: 10, correction: expect.stringMatching(/whole percent/) });
+    expect(readRate(1.5)).toMatchObject({ value: 1.5 });
+  });
+
+  it("splits the scales at 1 and rejects what is no rate", () => {
+    expect(readRate(1.01)).toMatchObject({ value: 1.01 });
+    expect(readRate(0.99)).toEqual({ value: 99 });
+    expect(readRate(100)).toMatchObject({ value: 100 });
+    expect(readRate(100.5)).toHaveProperty("skip");
+  });
+
+  it("does not store a lone 1 as 100% or as 1%", () => {
+    expect(readRate(1)).toHaveProperty("skip");
+    expect(readRate(1, [1])).toHaveProperty("skip");
+  });
+
+  it("uses other facts of the instrument to read values up to 1", () => {
+    // 0.25 beside 0.0025 is 0.25%; 1 beside 0.0100 is 1%.
+    expect(readRate(0.25, [0.0025, 0.25])).toMatchObject({ value: 0.25 });
+    expect(readRate(1, [0.01, 1])).toMatchObject({
+      value: 1,
+      correction: expect.stringContaining("0.01"),
+    });
+    // Siblings that agree with the decimal reading change nothing.
+    expect(readRate(0.25, [0.2, 0.25])).toEqual({ value: 25 });
+    expect(readRate(1, [0.9, 1])).toEqual({ value: 100 });
+  });
+
+  it("stores the failing CRWV shape (10 filed as a whole percent) as 10%", () => {
+    const { facts, skipped } = parse(
+      [
+        ["OEM1", "2026-03-31"],
+        ["Magnetar1", "2026-03-31"],
+      ],
+      [rate("OEM1", "10"), rate("Magnetar1", "0.12")],
+    );
+    expect(facts.map((f) => [f.instrument, f.value, f.filed])).toEqual([
+      ["OEMMember", 10, "10"],
+      ["MagnetarMember", 12, "0.12"],
+    ]);
+    expect(facts[0]?.correction).toMatch(/whole percent/);
+    expect(facts[1]?.correction).toBeUndefined();
+    expect(skipped.rate).toBe(0);
+  });
+
+  it("skips and reports a lone 1 and a value above 100", () => {
+    const parsedDoc = parse(
+      [
+        ["A1", "2026-03-31"],
+        ["B1", "2026-03-31"],
+      ],
+      [rate("A1", "1", "DebtInstrumentInterestRateStatedPercentage"), rate("B1", "250")],
+    );
+    expect(parsedDoc.facts).toEqual([]);
+    expect(parsedDoc.skipped.rate).toBe(2);
+    expect(parsedDoc.ambiguous).toHaveLength(2);
+  });
+
+  it("reads 1 as 1% when the same instrument is filed as 0.0100 on another date", () => {
+    const { facts } = parse(
+      [
+        ["Note1", "2025-12-08"],
+        ["Note2", "2026-06-30"],
+      ],
+      [
+        rate("Note1", "1", "DebtInstrumentInterestRateStatedPercentage"),
+        rate("Note2", "0.0100", "DebtInstrumentInterestRateStatedPercentage"),
+      ],
+    );
+    expect(facts.map((f) => [f.periodEnd, f.value])).toEqual([
+      ["2025-12-08", 1],
+      ["2026-06-30", 1],
+    ]);
   });
 });
 

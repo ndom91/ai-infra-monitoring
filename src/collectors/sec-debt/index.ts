@@ -31,7 +31,7 @@ const ROUTINE_FILINGS = 5;
 
 type Filing = { accession: string; form: string; filedAt: string; primaryDocument?: string };
 
-type Point = { value: number; filed: string; filing: Filing };
+type Point = { value: number; filed: string; correction?: string; filing: Filing };
 
 type Accumulator = {
   def: Omit<SeriesDef, "cadence">;
@@ -62,7 +62,7 @@ function methodology(fact: DebtFact, labels: Map<string, string>) {
     ? ` Qualifiers kept as part of the series: ${fact.qualifiers.map((q) => `${q.axis} = ${memberLabel(labels, q.member)}`).join("; ")}.`
     : "";
   const unit = METRICS[fact.metric].percent
-    ? "Rates are stored in percent: the filed decimal x 100 (reported)."
+    ? "Rates are stored in percent: the filed decimal x 100 (reported). A value above 1 is read as already in percent, as is a value up to 1 when another fact of the same instrument in the filing shows whole percents; each such reading is stated in the observation note. A rate whose scale cannot be established is left out."
     : "USD amounts as filed; amounts in other currencies are not included.";
   return [
     `XBRL concept us-gaap:${concept} from the XBRL instance document of each 10-Q and 10-K, for the instrument ${fact.instrumentQName}.`,
@@ -144,6 +144,9 @@ export const secDebtCollector: Collector = {
           }
           const base = filingUrl(company.cik, filing.accession);
           const parsed = parseInstance(await get(`${base}${files.instance}`));
+          for (const line of parsed.ambiguous) {
+            log(`${company.ticker}: skipped ${filing.form} ${filing.accession} rate ${line}`);
+          }
           if (parsed.facts.length === 0) continue;
           const labels = files.labels
             ? parseLabels(await get(`${base}${files.labels}`))
@@ -153,7 +156,12 @@ export const secDebtCollector: Collector = {
             const def = seriesFor(company, fact, labels, filing);
             const entry = acc.get(def.id) ?? { def, points: new Map<string, Point>() };
             entry.def = def;
-            entry.points.set(fact.periodEnd, { value: fact.value, filed: fact.filed, filing });
+            entry.points.set(fact.periodEnd, {
+              value: fact.value,
+              filed: fact.filed,
+              correction: fact.correction,
+              filing,
+            });
             acc.set(def.id, entry);
           }
         }
@@ -176,7 +184,7 @@ export const secDebtCollector: Collector = {
               kind: "reported",
               asOf: point.filing.filedAt,
               sourceUrl: filingIndexUrl(company.cik, point.filing.accession),
-              note: `${point.filing.form} filed ${point.filing.filedAt}.${percent ? ` Filed as ${point.filed}.` : ""}`,
+              note: `${point.filing.form} filed ${point.filing.filedAt}.${percent ? ` Filed as ${point.filed}.${point.correction ? ` ${point.correction}` : ""}` : ""}`,
             });
           }
         }

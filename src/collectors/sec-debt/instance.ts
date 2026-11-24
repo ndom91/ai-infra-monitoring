@@ -70,16 +70,69 @@ export type DebtFact = {
   // recourse vs non-recourse, or SOFR vs Treasury margins, never merge.
   qualifiers: Member[];
   periodEnd: string;
-  // Dollars for amounts; percentage points for rates (filed decimal x 100).
+  // Dollars for amounts; percentage points for rates (see readRate).
   value: number;
   // The value exactly as filed.
   filed: string;
+  // Set when a rate was not read as the usual filed decimal x 100.
+  correction?: string;
 };
 
 export type ParsedInstance = {
   facts: DebtFact[];
-  skipped: { aggregate: number; unit: number; typed: number };
+  skipped: { aggregate: number; unit: number; typed: number; rate: number };
+  // One line per rate fact left out because its scale could not be established.
+  ambiguous: string[];
 };
+
+// XBRL percent items are filed as decimals (0.10 = 10%), but some filers file
+// whole percents (10 = 10%), sometimes within one document. The value alone
+// settles most cases:
+//   - above 100: not a rate in either reading, left out.
+//   - above 1: cannot be a decimal (it would be a rate over 100%), so it is
+//     already percent.
+//   - 0 < value <= 1: ambiguous. 0.25 is 25% as a decimal or 0.25% as a whole
+//     percent; 1 is 100% or 1%. The decimal reading is the filing norm and is
+//     kept, unless another fact for the same instrument, metric and qualifiers
+//     in the same document shows that the filer used whole percents here
+//     (see resolveRates). A lone value of exactly 1 is left out, because 100%
+//     is not a credible rate and 1% cannot be confirmed.
+// `unit` (pure) and `decimals` do not help: the failing CRWV fact (10) carries
+// the same unitRef and decimals="2" as its neighbours filed as 0.10.
+const MAX_PERCENT = 100;
+
+type RateReading = { value: number; correction?: string } | { skip: string };
+
+const near = (a: number, b: number) => a > 0 && b > 0 && a / b >= 0.5 && a / b <= 2;
+
+// `siblings` are the filed values of the other facts of the same instrument,
+// metric and qualifiers (other dates) in the same document.
+export function readRate(raw: number, siblings: number[] = []): RateReading {
+  const size = Math.abs(raw);
+  const asDecimal = (r: number) => Number((r * 100).toFixed(10));
+  if (size > MAX_PERCENT) return { skip: `${raw} is above 100 as a percent` };
+  if (size > 1) {
+    return {
+      value: raw,
+      correction: "Read as whole percent: a value above 1 cannot be a decimal rate.",
+    };
+  }
+  const decimal = asDecimal(raw);
+  if (size === 0) return { value: decimal };
+  const others = siblings.filter((s) => s !== raw && s !== 0);
+  const asPercent = (s: number) => (Math.abs(s) > 1 ? Math.abs(s) : Math.abs(asDecimal(s)));
+  const confirms = (reading: number) => others.some((s) => near(asPercent(s), Math.abs(reading)));
+  if (!confirms(decimal) && confirms(raw)) {
+    return {
+      value: raw,
+      correction: `Read as whole percent: another fact for this instrument in the filing is ${others.find((s) => near(asPercent(s), Math.abs(raw)))}.`,
+    };
+  }
+  if (size === 1 && !confirms(decimal)) {
+    return { skip: "1 is 100% as a decimal or 1% as a whole percent, and nothing confirms which" };
+  }
+  return { value: decimal };
+}
 
 const local = (qname: string) => qname.slice(qname.indexOf(":") + 1);
 
@@ -205,8 +258,9 @@ export function parseInstance(xml: string): ParsedInstance {
   // The us-gaap namespace year changes between filings; match on the prefix
   // bound to any us-gaap namespace.
   const prefix = xml.match(/xmlns:([\w-]+)="http:\/\/fasb\.org\/us-gaap\/[^"]*"/)?.[1];
-  const skipped = { aggregate: 0, unit: 0, typed: 0 };
-  if (!prefix) return { facts: [], skipped };
+  const skipped = { aggregate: 0, unit: 0, typed: 0, rate: 0 };
+  const ambiguous: string[] = [];
+  if (!prefix) return { facts: [], skipped, ambiguous };
   const ctx = contexts(xml);
   const unit = units(xml);
   const concepts = [...METRIC_BY_CONCEPT.keys()].join("|");
@@ -214,7 +268,7 @@ export function parseInstance(xml: string): ParsedInstance {
     `<${prefix}:(${concepts})\\b([^>]*?)>\\s*([^<]*?)\\s*</${prefix}:\\1>`,
     "g",
   );
-  const groups = new Map<string, Raw[]>();
+  const all: Raw[] = [];
 
   for (const m of xml.matchAll(re)) {
     const attrs = m[2] ?? "";
@@ -249,17 +303,44 @@ export function parseInstance(xml: string): ParsedInstance {
         context.members.filter((x) => CATEGORY_AXES.has(x.axis) && x.axis !== instrumentAxis),
       ),
       periodEnd: context.end,
-      // Rounded so 0.0975 x 100 is 9.75, not 9.750000000000002.
-      value: percent ? Number((raw * 100).toFixed(10)) : raw,
+      // Rates are read in resolveRates, which can see the other facts.
+      value: raw,
       filed: m[3],
       raw,
       decimals:
         decimals === undefined || decimals === "INF" ? Number.POSITIVE_INFINITY : Number(decimals),
     };
+    all.push(fact);
+  }
+  const groups = new Map<string, Raw[]>();
+  for (const fact of resolveRates(all, skipped, ambiguous)) {
     const key = factKey(fact);
     groups.set(key, [...(groups.get(key) ?? []), fact]);
   }
-  return { facts: [...groups.values()].flatMap(settle), skipped };
+  return { facts: [...groups.values()].flatMap(settle), skipped, ambiguous };
+}
+
+// Converts rate facts to percentage points. Facts of one instrument, metric and
+// qualifiers (any date) inform each other, see readRate.
+function resolveRates(all: Raw[], skipped: ParsedInstance["skipped"], ambiguous: string[]) {
+  const siblings = new Map<string, number[]>();
+  const sibKey = (f: Raw) => `${f.instrument}|${memberText(f.qualifiers)}|${f.metric}`;
+  for (const f of all) siblings.set(sibKey(f), [...(siblings.get(sibKey(f)) ?? []), f.raw]);
+  const out: Raw[] = [];
+  for (const f of all) {
+    if (!METRICS[f.metric].percent) {
+      out.push(f);
+      continue;
+    }
+    const reading = readRate(f.raw, siblings.get(sibKey(f)));
+    if ("skip" in reading) {
+      skipped.rate += 1;
+      ambiguous.push(`${factKey(f)} filed as ${f.filed}: ${reading.skip}`);
+      continue;
+    }
+    out.push({ ...f, value: reading.value, correction: reading.correction });
+  }
+  return out;
 }
 
 const decode = (text: string) =>
