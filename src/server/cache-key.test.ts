@@ -38,6 +38,15 @@ describe("cacheKey", () => {
     expect(keys.size).toBe(1);
   });
 
+  it("gives each page's plain URL and fully spelled-out default URL one key", () => {
+    for (const [path, spec] of Object.entries(PAGE_PARAMS)) {
+      const query = Object.entries(spec as Record<string, { default: string }>)
+        .map(([name, p]) => `${name}=${p.default}`)
+        .join("&");
+      expect(key(query ? `${path}?${query}` : path)).toBe(key(path));
+    }
+  });
+
   it("drops unknown parameters, including on parameterless pages", () => {
     expect(key("/alerts?x=1")).toBe(key("/alerts"));
     expect(key("/?ref=a&b=2")).toBe(key("/"));

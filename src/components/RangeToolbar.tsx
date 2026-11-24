@@ -8,6 +8,8 @@ export function RangeToolbar({ active }: { active: RangeKey }) {
         <Link
           key={k}
           to="."
+          // Default params are stripped from URLs; without `exact` every link would match as active.
+          activeOptions={{ exact: true }}
           search={(prev: Record<string, unknown>) => ({ ...prev, range: k })}
           aria-current={k === active ? "true" : undefined}
           className="toolbar-btn"

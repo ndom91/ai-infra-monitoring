@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, type SearchSchemaInput, stripSearchParams } from "@tanstack/react-router";
 import {
   Chapter,
   ChapterCharts,
@@ -25,7 +25,7 @@ import {
   rentalCohorts,
 } from "~/domain/market";
 import { PAGE_PARAMS } from "~/domain/page-params";
-import { parseRange } from "~/domain/ranges";
+import { parseRange, type RangeKey } from "~/domain/ranges";
 import { formatDate, formatMonthYear } from "~/lib/format";
 import { pageHead } from "~/lib/seo";
 import { getSectionData, type SeriesView } from "~/server/data";
@@ -37,7 +37,17 @@ export const Route = createFileRoute("/market")({
       "GPU Market",
       "Track public GPU rental prices for cloud and consumer chips, and a used-GPU resale index.",
     ),
-  validateSearch: (s) => ({ range: parseRange(s.range, PAGE_PARAMS["/market"].range.default) }),
+  validateSearch: (s: { range?: unknown } & SearchSchemaInput) => ({
+    range: parseRange(s.range, PAGE_PARAMS["/market"].range.default),
+  }),
+  // Default-valued parameters stay out of URLs, so each page has one plain URL.
+  search: {
+    middlewares: [
+      stripSearchParams<{ range: RangeKey }>({
+        range: PAGE_PARAMS["/market"].range.default,
+      }),
+    ],
+  },
   loaderDeps: ({ search }) => ({ range: search.range }),
   loader: ({ deps }) =>
     getSectionData({ data: { indicators: ["gpu_rental", "gpu_resale"], range: deps.range } }),

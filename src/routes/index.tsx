@@ -185,12 +185,12 @@ function Home() {
               ["issued", "What AI companies pay"],
               ["bycompany", "Debt by company"],
             ].map(([hash, label]) => (
-              <Link key={hash} to="/credit" search={{ range: "3y", company: "CRWV" }} hash={hash}>
+              <Link key={hash} to="/credit" hash={hash}>
                 {label}
               </Link>
             ))}
           >
-            <Link to="/credit" search={{ range: "3y", company: "CRWV" }} className="more">
+            <Link to="/credit" className="more">
               More on credit →
             </Link>
           </MoreLink>
@@ -271,17 +271,12 @@ function Home() {
               ["insiders", "Insider sales"],
               ["depreciation", "Depreciation"],
             ].map(([hash, label]) => (
-              <Link
-                key={hash}
-                to="/fundamentals"
-                search={{ range: "5y", company: "CRWV" }}
-                hash={hash}
-              >
+              <Link key={hash} to="/fundamentals" hash={hash}>
                 {label}
               </Link>
             ))}
           >
-            <Link to="/fundamentals" search={{ range: "5y", company: "CRWV" }} className="more">
+            <Link to="/fundamentals" className="more">
               More on company finances →
             </Link>
           </MoreLink>
@@ -336,7 +331,7 @@ function Home() {
             </StoryChart>
           </ChapterCharts>
           <MoreLink>
-            <Link to="/market" search={{ range: "3y" }} className="more">
+            <Link to="/market" className="more">
               More on GPU prices →
             </Link>
           </MoreLink>
@@ -403,20 +398,12 @@ function Home() {
                 ["power", "Power backdrop"],
               ] as const
             ).map(([topic, label]) => (
-              <Link
-                key={topic}
-                to="/infrastructure"
-                search={{ range: "max", topic, publisher: "cbre" }}
-              >
+              <Link key={topic} to="/infrastructure" search={{ topic }}>
                 {label}
               </Link>
             ))}
           >
-            <Link
-              to="/infrastructure"
-              search={{ range: "max", topic: "supply", publisher: "cbre" }}
-              className="more"
-            >
+            <Link to="/infrastructure" className="more">
               More on data-center supply →
             </Link>
           </MoreLink>

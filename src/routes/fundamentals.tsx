@@ -1,4 +1,9 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  Link,
+  type SearchSchemaInput,
+  stripSearchParams,
+} from "@tanstack/react-router";
 import {
   Chapter,
   ChapterCharts,
@@ -24,7 +29,7 @@ import {
 } from "~/domain/headlines";
 import { indicatorById } from "~/domain/indicators";
 import { PAGE_PARAMS } from "~/domain/page-params";
-import { parseRange } from "~/domain/ranges";
+import { parseRange, type RangeKey } from "~/domain/ranges";
 import { formatMonthYear, formatPeriod, formatValue } from "~/lib/format";
 import { pageHead } from "~/lib/seo";
 import { getCompanySeries, getFundamentalsData, type SeriesView } from "~/server/data";
@@ -44,12 +49,21 @@ export const Route = createFileRoute("/fundamentals")({
       "Company Fundamentals",
       "Compare AI infrastructure companies' spending, cash flow, debt, and customer concentration.",
     ),
-  validateSearch: (s) => ({
+  validateSearch: (s: { range?: unknown; company?: unknown } & SearchSchemaInput) => ({
     range: parseRange(s.range, PAGE_PARAMS["/fundamentals"].range.default),
     company: TICKERS.includes(String(s.company))
       ? String(s.company)
       : PAGE_PARAMS["/fundamentals"].company.default,
   }),
+  // Default-valued parameters stay out of URLs, so each page has one plain URL.
+  search: {
+    middlewares: [
+      stripSearchParams<{ range: RangeKey; company: string }>({
+        range: PAGE_PARAMS["/fundamentals"].range.default,
+        company: PAGE_PARAMS["/fundamentals"].company.default,
+      }),
+    ],
+  },
   loaderDeps: ({ search }) => ({ range: search.range, company: search.company }),
   // Peer charts (shared) and the picked company's raw series load separately,
   // so the shared payload does not carry every company's raw filings.
@@ -327,7 +341,7 @@ function FundamentalsPage() {
               switches="company"
               link={
                 hasDebtPage ? (
-                  <Link to="/credit" search={{ company, range: "3y" }} hash="bycompany">
+                  <Link to="/credit" search={{ company }} hash="bycompany">
                     {name}'s debt, instrument by instrument →
                   </Link>
                 ) : null

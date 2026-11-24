@@ -1,4 +1,9 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  Link,
+  type SearchSchemaInput,
+  stripSearchParams,
+} from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { ChartBlock } from "~/components/ChartBlock";
 import { ExternalLink } from "~/components/ExternalLink";
@@ -11,7 +16,7 @@ import { infraExplainer } from "~/domain/explainers";
 import { indicatorById } from "~/domain/indicators";
 import { chartSubtitle, chartTitle, titleRank } from "~/domain/infraTitles";
 import { PAGE_PARAMS, PUBLISHERS, TOPICS } from "~/domain/page-params";
-import { parseRange } from "~/domain/ranges";
+import { parseRange, type RangeKey } from "~/domain/ranges";
 import type { IndicatorId } from "~/domain/types";
 import { formatPeriod, formatValue } from "~/lib/format";
 import { pageHead } from "~/lib/seo";
@@ -75,7 +80,9 @@ export const Route = createFileRoute("/infrastructure")({
       "Data Center Infrastructure",
       "Track data-center construction, vacancy, pre-leasing, rents, and power in North America.",
     ),
-  validateSearch: (s) => ({
+  validateSearch: (
+    s: { range?: unknown; topic?: unknown; publisher?: unknown } & SearchSchemaInput,
+  ) => ({
     range: parseRange(s.range, PAGE_PARAMS["/infrastructure"].range.default),
     topic: TOPICS.includes(s.topic as Topic)
       ? (s.topic as Topic)
@@ -84,6 +91,16 @@ export const Route = createFileRoute("/infrastructure")({
       ? (s.publisher as Publisher)
       : PAGE_PARAMS["/infrastructure"].publisher.default,
   }),
+  // Default-valued parameters stay out of URLs, so each page has one plain URL.
+  search: {
+    middlewares: [
+      stripSearchParams<{ range: RangeKey; topic: Topic; publisher: Publisher }>({
+        range: PAGE_PARAMS["/infrastructure"].range.default,
+        topic: PAGE_PARAMS["/infrastructure"].topic.default,
+        publisher: PAGE_PARAMS["/infrastructure"].publisher.default,
+      }),
+    ],
+  },
   loaderDeps: ({ search }) => ({ range: search.range }),
   loader: ({ deps }) =>
     getSectionData({
@@ -279,6 +296,7 @@ function InfrastructurePage() {
             <Link
               key={t.topic}
               to="."
+              activeOptions={{ exact: true }}
               search={(prev: Record<string, unknown>) => ({ ...prev, topic: t.topic })}
               resetScroll={false}
               className="tile"
@@ -302,6 +320,7 @@ function InfrastructurePage() {
             <Link
               key={t}
               to="."
+              activeOptions={{ exact: true }}
               search={(prev: Record<string, unknown>) => ({ ...prev, topic: t })}
               resetScroll={false}
               aria-current={t === topic ? "true" : undefined}
@@ -461,6 +480,7 @@ function SegmentedSwitch({
         <Link
           key={o.key}
           to="."
+          activeOptions={{ exact: true }}
           search={(prev: Record<string, unknown>) => ({ ...prev, ...o.search })}
           resetScroll={false}
           aria-current={o.active ? "true" : undefined}

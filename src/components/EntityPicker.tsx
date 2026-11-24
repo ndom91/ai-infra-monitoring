@@ -6,6 +6,7 @@ function Chip({ company, active }: { company: SecCompany; active: boolean }) {
   return (
     <Link
       to="."
+      activeOptions={{ exact: true }}
       search={(prev: Record<string, unknown>) => ({ ...prev, company: company.ticker })}
       hash={(prev) => prev ?? ""}
       // Switching company should not jump back to the top of the page.

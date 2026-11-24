@@ -1,4 +1,6 @@
 User-agent: *
 Allow: /
+Disallow: /*?
+Disallow: /_serverFn/
 
 Sitemap: https://artificialliabilities.com/sitemap.xml

@@ -1,4 +1,9 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  Link,
+  type SearchSchemaInput,
+  stripSearchParams,
+} from "@tanstack/react-router";
 import {
   Chapter,
   ChapterCharts,
@@ -28,7 +33,7 @@ import {
 } from "~/domain/headlines";
 import { indicatorById } from "~/domain/indicators";
 import { PAGE_PARAMS } from "~/domain/page-params";
-import { parseRange } from "~/domain/ranges";
+import { parseRange, type RangeKey } from "~/domain/ranges";
 import { formatDate, formatValue, seriesStyle } from "~/lib/format";
 import { pageHead } from "~/lib/seo";
 import { getCreditDebt, getRiskRead, getSectionData, type SeriesView } from "~/server/data";
@@ -43,12 +48,21 @@ export const Route = createFileRoute("/credit")({
       "Credit Risk",
       "Follow borrowing costs, from market credit spreads to the terms and debt of each AI infrastructure company's instruments.",
     ),
-  validateSearch: (s) => ({
+  validateSearch: (s: { range?: unknown; company?: unknown } & SearchSchemaInput) => ({
     range: parseRange(s.range, PAGE_PARAMS["/credit"].range.default),
     company: BORROWERS.includes(String(s.company))
       ? String(s.company)
       : PAGE_PARAMS["/credit"].company.default,
   }),
+  // Default-valued parameters stay out of URLs, so each page has one plain URL.
+  search: {
+    middlewares: [
+      stripSearchParams<{ range: RangeKey; company: string }>({
+        range: PAGE_PARAMS["/credit"].range.default,
+        company: PAGE_PARAMS["/credit"].company.default,
+      }),
+    ],
+  },
   loaderDeps: ({ search }) => ({ range: search.range, company: search.company }),
   loader: async ({ deps }) => {
     const [section, debt, riskRead] = await Promise.all([
@@ -335,7 +349,7 @@ function CreditPage() {
               blurb={GROUP_BLURBS[borrower.group]}
               switches="borrower"
               link={
-                <Link to="/fundamentals" search={{ company, range: "5y" }}>
+                <Link to="/fundamentals" search={{ company }}>
                   Company fundamentals for {company} →
                 </Link>
               }
