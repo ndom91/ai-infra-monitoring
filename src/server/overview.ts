@@ -330,7 +330,6 @@ export const getOverviewData = createServerFn({ method: "GET" }).handler(async (
   return {
     freshness,
     story,
-    alerts: alertHistory,
     riskRead: riskReadFromAlerts(alertHistory),
     // Same alerts as the overall read, so the two always agree.
     steps: stepReads(alertHistory),

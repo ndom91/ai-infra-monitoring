@@ -7,24 +7,30 @@ export type QuarterPoint = { periodEnd: string; value: number };
 
 const DAY_MS = 86_400_000;
 
-function daysBetween(a: string, b: string) {
-  return (Date.parse(b) - Date.parse(a)) / DAY_MS;
-}
+// Days from time `from` to time `to`, both in ms.
+const daysBetween = (from: number, to: number) => (to - from) / DAY_MS;
 
 // Consecutive quarter-ends are 89-92 days apart (13-week quarters: 91).
-function isNextQuarter(prev: string, next: string) {
-  const d = daysBetween(prev, next);
-  return d >= 80 && d <= 100;
-}
-
+const MIN_QUARTER_GAP_DAYS = 80;
+const MAX_QUARTER_GAP_DAYS = 100;
 // One year back, allowing for 52/53-week fiscal years.
-function isPriorYear(prior: string, current: string) {
-  const d = daysBetween(prior, current);
-  return d >= 350 && d <= 380;
-}
+const MIN_YEAR_GAP_DAYS = 350;
+const MAX_YEAR_GAP_DAYS = 380;
 
+const isQuarterGap = (days: number) => days >= MIN_QUARTER_GAP_DAYS && days <= MAX_QUARTER_GAP_DAYS;
+
+// Ascending by period end, equal ends in input order. Dates are ISO strings,
+// so plain comparison sorts them; input that is already in order (the usual
+// case) is returned as is. Callers never modify the result.
 function sorted(points: QuarterPoint[]) {
-  return [...points].sort((a, b) => a.periodEnd.localeCompare(b.periodEnd));
+  let inOrder = true;
+  for (let i = 1; i < points.length && inOrder; i++) {
+    inOrder = (points[i - 1] as QuarterPoint).periodEnd <= (points[i] as QuarterPoint).periodEnd;
+  }
+  if (inOrder) return points;
+  return [...points].sort((a, b) =>
+    a.periodEnd < b.periodEnd ? -1 : a.periodEnd > b.periodEnd ? 1 : 0,
+  );
 }
 
 function byEnd(points: QuarterPoint[]) {
@@ -35,26 +41,36 @@ function byEnd(points: QuarterPoint[]) {
 // quarter produces no value rather than a partial sum.
 export function ttm(points: QuarterPoint[]): QuarterPoint[] {
   const s = sorted(points);
+  const times = s.map((p) => Date.parse(p.periodEnd));
   const out: QuarterPoint[] = [];
-  for (let i = 3; i < s.length; i++) {
-    const window = s.slice(i - 3, i + 1);
-    let consecutive = true;
-    for (let j = 1; j < window.length; j++) {
-      const prev = window[j - 1];
-      const next = window[j];
-      if (!prev || !next || !isNextQuarter(prev.periodEnd, next.periodEnd)) {
-        consecutive = false;
-        break;
-      }
-    }
-    const last = s[i];
-    if (!consecutive || !last) continue;
-    out.push({
-      periodEnd: last.periodEnd,
-      value: window.reduce((acc, p) => acc + p.value, 0),
-    });
+  // Consecutive quarter-end gaps ending at i (a window needs three).
+  let run = 0;
+  for (let i = 1; i < s.length; i++) {
+    run = isQuarterGap(daysBetween(times[i - 1] as number, times[i] as number)) ? run + 1 : 0;
+    if (run < 3) continue;
+    const [a, b, c, d] = [s[i - 3], s[i - 2], s[i - 1], s[i]] as [
+      QuarterPoint,
+      QuarterPoint,
+      QuarterPoint,
+      QuarterPoint,
+    ];
+    // Summed in window order from 0, as a reduce would.
+    out.push({ periodEnd: d.periodEnd, value: 0 + a.value + b.value + c.value + d.value });
   }
   return out;
+}
+
+// One ttm per input within a derivation: several metrics sum the same series.
+export function memoizedTtm(): typeof ttm {
+  const cache = new Map<QuarterPoint[], QuarterPoint[]>();
+  return (points) => {
+    let result = cache.get(points);
+    if (!result) {
+      result = ttm(points);
+      cache.set(points, result);
+    }
+    return result;
+  };
 }
 
 // Combines series that share a periodEnd. `fn` returns undefined to skip a
@@ -109,18 +125,30 @@ export function debtToOcf(
   debt: QuarterPoint[],
   financeLeases: QuarterPoint[],
   ocfQuarterly: QuarterPoint[],
+  ttmOf = ttm,
 ): QuarterPoint[] {
-  return align([debt, financeLeases, ttm(ocfQuarterly)], ([d = 0, l = 0, o = 0]) =>
+  return align([debt, financeLeases, ttmOf(ocfQuarterly)], ([d = 0, l = 0, o = 0]) =>
     o > 0 ? (d + l) / o : undefined,
   );
 }
 
-function priorYearValue(s: QuarterPoint[], periodEnd: string) {
-  for (let i = s.length - 1; i >= 0; i--) {
-    const p = s[i];
-    if (p && isPriorYear(p.periodEnd, periodEnd)) return p.value;
+// The value one year before `periodEnd` (350-380 days, for 52/53-week fiscal
+// years): the latest point in that band. `s` is ascending, so the band is one
+// run of points and a binary search finds its end.
+function priorYearValue(s: QuarterPoint[], times: number[], periodEnd: string) {
+  const at = Date.parse(periodEnd);
+  // First point less than MIN_YEAR_GAP_DAYS before `at`; the one before it is
+  // the latest point at least that far back.
+  let lo = 0;
+  let hi = s.length;
+  while (lo < hi) {
+    const mid = (lo + hi) >> 1;
+    if ((at - (times[mid] as number)) / DAY_MS >= MIN_YEAR_GAP_DAYS) lo = mid + 1;
+    else hi = mid;
   }
-  return undefined;
+  const i = lo - 1;
+  if (i < 0 || daysBetween(times[i] as number, at) > MAX_YEAR_GAP_DAYS) return undefined;
+  return (s[i] as QuarterPoint).value;
 }
 
 // TTM revenue / RPO one year earlier: how much of last year's contracted
@@ -129,11 +157,13 @@ function priorYearValue(s: QuarterPoint[], periodEnd: string) {
 export function rpoConversion(
   revenueQuarterly: QuarterPoint[],
   rpo: QuarterPoint[],
+  ttmOf = ttm,
 ): QuarterPoint[] {
   const r = sorted(rpo);
+  const times = r.map((p) => Date.parse(p.periodEnd));
   const out: QuarterPoint[] = [];
-  for (const p of ttm(revenueQuarterly)) {
-    const prior = priorYearValue(r, p.periodEnd);
+  for (const p of ttmOf(revenueQuarterly)) {
+    const prior = priorYearValue(r, times, p.periodEnd);
     if (prior === undefined || prior <= 0) continue;
     out.push({ periodEnd: p.periodEnd, value: p.value / prior });
   }
@@ -144,9 +174,10 @@ export function rpoConversion(
 // prior-year value is missing or <= 0, where growth is undefined.
 export function growthYoY(points: QuarterPoint[]): QuarterPoint[] {
   const s = sorted(points);
+  const times = s.map((p) => Date.parse(p.periodEnd));
   const out: QuarterPoint[] = [];
   for (const p of s) {
-    const prior = priorYearValue(s, p.periodEnd);
+    const prior = priorYearValue(s, times, p.periodEnd);
     if (prior === undefined || prior <= 0) continue;
     out.push({ periodEnd: p.periodEnd, value: p.value / prior - 1 });
   }

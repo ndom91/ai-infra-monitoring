@@ -7,11 +7,11 @@ import {
   growthYoY,
   interestCoverage,
   inventoryDays,
+  memoizedTtm,
   type QuarterPoint,
   rpoConversion,
-  ttm,
 } from "~/metrics/fundamentals";
-import type { ObsPoint, SeriesDefView } from "./views";
+import { buildView, type ObsPoint, type SeriesDefView } from "./views";
 
 type Derived = { def: SeriesDefView; points: ObsPoint[] };
 
@@ -36,6 +36,7 @@ export function deriveCompanySeries(
   ticker: string,
   get: (concept: string) => QuarterPoint[],
 ): Derived[] {
+  const ttm = memoizedTtm();
   const capex = get("capex");
   const ocf = get("ocf");
   const revenue = get("revenue");
@@ -95,7 +96,7 @@ export function deriveCompanySeries(
       "×",
       "capex_cashflow",
       "Long-term debt (incl. current portion) plus finance-lease liabilities, divided by TTM operating cash flow. Operating leases excluded. Omitted where TTM OCF ≤ 0.",
-      debtToOcf(get("debt"), get("finance_leases"), ocf),
+      debtToOcf(get("debt"), get("finance_leases"), ocf, ttm),
     ),
     make(
       "rpo_conversion",
@@ -103,7 +104,7 @@ export function deriveCompanySeries(
       "×",
       "contract_conversion",
       "Trailing-12-month revenue divided by remaining performance obligations reported about one year earlier. Falling values mean backlog is converting to revenue more slowly.",
-      rpoConversion(revenue, get("rpo")),
+      rpoConversion(revenue, get("rpo"), ttm),
     ),
     make(
       "revenue_ttm_yoy",
@@ -146,6 +147,36 @@ export function deriveCompanySeries(
       inventoryDays(get("inventory"), get("cogs")),
     ),
   ].filter((d) => d.points.length > 0);
+}
+
+// The raw SEC concepts the derived metrics read, found by asking
+// deriveCompanySeries what it requests, so the list cannot drift from the code.
+export function derivedConcepts(): string[] {
+  const requested = new Set<string>();
+  deriveCompanySeries("", (concept) => {
+    requested.add(concept);
+    return [];
+  });
+  return [...requested];
+}
+
+// Ids of the raw series the derived metrics read, for these companies.
+export function derivedInputIds(tickers: string[]) {
+  const concepts = derivedConcepts();
+  return tickers.flatMap((t) => concepts.map((c) => `sec.${t}.${c}`));
+}
+
+// The derived metrics of each company as views, from its raw SEC series.
+export function derivedViews(
+  tickers: string[],
+  raw: Map<string, ObsPoint[]>,
+  ctx: Parameters<typeof buildView>[2],
+) {
+  return tickers
+    .flatMap((ticker) =>
+      deriveCompanySeries(ticker, (concept) => raw.get(`sec.${ticker}.${concept}`) ?? []),
+    )
+    .map((d) => buildView(d.def, d.points, ctx));
 }
 
 export const COMPANY_GROUPS = Object.fromEntries(SEC_COMPANIES.map((c) => [c.ticker, c.group]));

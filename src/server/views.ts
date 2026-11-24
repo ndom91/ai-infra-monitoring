@@ -3,15 +3,17 @@ import type { Cadence } from "~/domain/types";
 import { type Change, changeFromPrior, changeOver } from "~/metrics/changes";
 import type { SeriesRow } from "~/storage/queries";
 
+// History rows carry only the narrow columns; the rest are present on hand-entered
+// series and on each series' latest point (see latestObservations).
 export type ObsPoint = {
-  id: number;
-  periodStart: string;
   periodEnd: string;
   value: number;
   kind: string;
-  asOf: string | null;
-  sourceUrl: string | null;
-  note: string | null;
+  id?: number;
+  periodStart?: string;
+  asOf?: string | null;
+  sourceUrl?: string | null;
+  note?: string | null;
   quote?: string | null;
 };
 

@@ -17,9 +17,15 @@ import {
 import { ruleSummaries, withCurrentWording } from "./alert-text";
 import { cacheResponse } from "./cache";
 import { outstandingDebt } from "./credit-debt";
-import { deriveCompanySeries, TICKERS } from "./derived";
+import { derivedInputIds, derivedViews, TICKERS } from "./derived";
 import { RISK_READ_ALERT_LIMIT, riskReadFromAlerts } from "./overview-signals";
-import { buildView, groupBySeries, type ObsPoint, type SeriesView } from "./views";
+import {
+  buildView,
+  groupBySeries,
+  type ObsPoint,
+  type SeriesDefView,
+  type SeriesView,
+} from "./views";
 
 export type { ObsPoint, SeriesView } from "./views";
 
@@ -48,7 +54,7 @@ export const loadSection = createServerOnlyFn(async function loadSection(
 ): Promise<{
   series: SeriesView[];
   raw: Map<string, ObsPoint[]>;
-  runStatus: Map<string, "running" | "ok" | "partial" | "failed">;
+  runStatus: Map<string, RunStatus>;
   visibleFrom?: string;
 }> {
   const db = getDb();
@@ -66,16 +72,35 @@ export const loadSection = createServerOnlyFn(async function loadSection(
     latestObservations(db, input, loadFrom),
   ]);
   const raw = groupBySeries(rows);
-  const runStatus = new Map(runs.map((r) => [r.collector, r.status]));
-  const series = defs.map(({ updatedAt: _, ...def }) =>
+  const runStatus = runStatusByCollector(runs);
+  return {
+    series: buildViews(defs, raw, runStatus, now, visibleFrom),
+    raw,
+    runStatus,
+    visibleFrom,
+  };
+});
+
+type RunStatus = "running" | "ok" | "partial" | "failed";
+
+const runStatusByCollector = (runs: { collector: string; status: RunStatus }[]) =>
+  new Map(runs.map((r) => [r.collector, r.status]));
+
+function buildViews(
+  defs: (SeriesDefView & { updatedAt?: string })[],
+  raw: Map<string, ObsPoint[]>,
+  runStatus: Map<string, RunStatus>,
+  now: Date,
+  visibleFrom: string | undefined,
+): SeriesView[] {
+  return defs.map(({ updatedAt: _, ...def }) =>
     buildView(def, raw.get(def.id) ?? [], {
       now,
       visibleFrom,
       lastRunStatus: runStatus.get(def.collector),
     }),
   );
-  return { series, raw, runStatus, visibleFrom };
-});
+}
 
 export const getSectionData = createServerFn({ method: "GET" })
   .validator(SectionInput)
@@ -96,32 +121,40 @@ const FUNDAMENTALS_INDICATORS = [
   "insider_activity",
 ] as const;
 
+// The page shows this many filing events.
+export const FILING_EVENTS_SHOWN = 12;
+
 // Shared page-wide data: every company's derived metrics and the hand-curated
 // series. Derived metrics are computed from the raw SEC series of every
-// ticker (TTM and YoY need the full history), but only the results ship.
+// ticker (TTM and YoY need the full history), but only the results ship, so
+// only the concepts they read are loaded. Everything is one parallel batch.
 export const loadFundamentals = createServerOnlyFn(async function loadFundamentals(
   range: RangeKey,
   now: Date,
 ) {
-  const [{ series, raw, runStatus, visibleFrom }, filingEvents] = await Promise.all([
-    loadSection(
-      {
-        indicators: [...FUNDAMENTALS_INDICATORS],
-        range,
-        fullHistory: true,
-        collectors: ["sec", "manual"],
-      },
-      now,
-    ),
-    recentFilingEvents(getDb(), 100),
+  const db = getDb();
+  const visibleFrom = rangeStart(range, now);
+  const handEntered = { indicators: [...FUNDAMENTALS_INDICATORS], collectors: ["manual"] };
+  const derivedInputs = {
+    indicators: [...FUNDAMENTALS_INDICATORS],
+    collectors: ["sec"],
+    seriesIds: derivedInputIds(TICKERS),
+  };
+  const [defs, runs, handRows, inputRows, filingEvents] = await Promise.all([
+    seriesFor(db, handEntered),
+    lastRuns(db),
+    latestObservations(db, handEntered),
+    latestObservations(db, derivedInputs),
+    recentFilingEvents(db, FILING_EVENTS_SHOWN),
   ]);
-  const derived = TICKERS.flatMap((ticker) =>
-    deriveCompanySeries(ticker, (concept) => raw.get(`sec.${ticker}.${concept}`) ?? []),
-  ).map((d) =>
-    buildView(d.def, d.points, { now, visibleFrom, lastRunStatus: runStatus.get("sec") }),
-  );
+  const runStatus = runStatusByCollector(runs);
+  const derived = derivedViews(TICKERS, groupBySeries(inputRows), {
+    now,
+    visibleFrom,
+    lastRunStatus: runStatus.get("sec"),
+  });
   return {
-    series: [...series.filter((s) => s.collector === "manual"), ...derived],
+    series: [...buildViews(defs, groupBySeries(handRows), runStatus, now, visibleFrom), ...derived],
     filingEvents,
     now: now.toISOString(),
     visibleFrom,

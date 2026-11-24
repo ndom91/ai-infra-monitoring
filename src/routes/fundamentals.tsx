@@ -32,7 +32,12 @@ import { PAGE_PARAMS } from "~/domain/page-params";
 import { parseRange, type RangeKey } from "~/domain/ranges";
 import { formatMonthYear, formatPeriod, formatValue } from "~/lib/format";
 import { pageHead } from "~/lib/seo";
-import { getCompanySeries, getFundamentalsData, type SeriesView } from "~/server/data";
+import {
+  FILING_EVENTS_SHOWN,
+  getCompanySeries,
+  getFundamentalsData,
+  type SeriesView,
+} from "~/server/data";
 
 const TICKERS = SEC_COMPANIES.map((c) => c.ticker);
 // The order-book peer chart predates the supplier and REIT groups and stays
@@ -328,7 +333,7 @@ function FundamentalsPage() {
                 labelOf={tickerLabel}
               />
             </ChapterCharts>
-            <FilingEvents events={filingEvents.slice(0, 12)} />
+            <FilingEvents events={filingEvents.slice(0, FILING_EVENTS_SHOWN)} />
           </ChapterMore>
         </Chapter>
 
