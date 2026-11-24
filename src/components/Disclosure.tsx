@@ -30,11 +30,9 @@ export function Disclosure({
           setBuilt(true);
         }}
       >
+        {/* Turned to point right while closed. */}
         <span className="t-acc-chevron">
-          {/* Lucide chevron-down, turned to point right while closed. */}
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="m6 9 6 6 6-6" />
-          </svg>
+          <Chevron />
         </span>
         {summary}
       </button>
@@ -44,5 +42,14 @@ export function Disclosure({
         </div>
       </div>
     </div>
+  );
+}
+
+// Lucide chevron-down.
+export function Chevron() {
+  return (
+    <svg className="chevron" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="m6 9 6 6 6-6" />
+    </svg>
   );
 }

@@ -78,8 +78,8 @@ a:hover {
   border-color: var(--muted);
 }
 
-.chapter-bar-btn:active {
-  background: var(--panel2);
+.chapter-bar:has(.chapter-bar-btn:active) {
+  background: var(--panel);
 }
 
 .infotip-btn:active {
@@ -573,7 +573,7 @@ h2 {
   transform-origin: center;
   transition: transform var(--acc-chevron) var(--acc-ease);
 }
-.t-acc-chevron svg {
+.chevron {
   width: 14px;
   height: 14px;
   fill: none;
@@ -2297,8 +2297,9 @@ h3,
     align-items: center;
     justify-content: space-between;
     gap: 12px;
+    min-height: 48px;
     margin: 0 -12px 24px;
-    padding: 6px 12px;
+    padding: 0 12px;
     border-bottom: 1px solid var(--line);
     background: var(--bg);
   }
@@ -2311,15 +2312,31 @@ h3,
     white-space: nowrap;
   }
 
+  /* A quiet label in the style of the rail headings. Its ::after covers
+     the whole bar, so the bar is one big tap target. */
   .chapter-bar-btn {
+    display: inline-flex;
     flex: none;
-    min-height: 44px;
-    padding: 0 12px;
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    background: var(--panel);
-    color: var(--text);
-    font-size: 13px;
+    align-items: center;
+    gap: 4px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--teal);
+    font: 11px var(--mono);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+
+  .chapter-bar-btn::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+  }
+
+  .chapter-bar-btn .chevron {
+    width: 13px;
+    height: 13px;
   }
 
   .sheet-backdrop {

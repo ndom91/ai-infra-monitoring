@@ -2,7 +2,7 @@ import { useLocation } from "@tanstack/react-router";
 import { type ReactNode, useEffect, useRef, useState } from "react";
 import type { Signal } from "~/domain/chapterSignals";
 import { pickActiveChapter } from "./activeChapter";
-import { Disclosure } from "./Disclosure";
+import { Chevron, Disclosure } from "./Disclosure";
 import { SignalDot, SignalLegend } from "./SignalDot";
 import { type Stat, StatList } from "./StatList";
 
@@ -299,7 +299,8 @@ function MobileChapterBar({
         aria-expanded={open}
         onClick={() => setOpen(true)}
       >
-        Chapters <span aria-hidden="true">⌄</span>
+        Chapters
+        <Chevron />
       </button>
       {/* Both stay rendered so closing can animate; inert while closed. */}
       <div
