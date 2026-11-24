@@ -9,6 +9,7 @@ import {
 } from "~/components/Chapters";
 import { ChartBlock } from "~/components/ChartBlock";
 import { EntityBand, EntityPicker } from "~/components/EntityPicker";
+import { IndicatorNotes } from "~/components/IndicatorNotes";
 import { IssuedTable } from "~/components/IssuedTable";
 import { PageIntro } from "~/components/PageIntro";
 import { ScatterChart, type ScatterSeries } from "~/components/ScatterChart";
@@ -25,6 +26,7 @@ import {
   issuedSummary,
   issuerName,
 } from "~/domain/headlines";
+import { indicatorById } from "~/domain/indicators";
 import { parseRange } from "~/domain/ranges";
 import { formatDate, formatValue } from "~/lib/format";
 import { pageHead } from "~/lib/seo";
@@ -211,6 +213,7 @@ function CreditPage() {
           <Link to="/alerts" className="more">
             See the alert history and the thresholds behind these signals →
           </Link>
+          <IndicatorNotes def={indicatorById("credit")} />
         </Chapter>
 
         <Chapter chapter={rates}>

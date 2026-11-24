@@ -20,30 +20,6 @@ export type IndicatorDef = {
   sources: { label: string; url: string }[];
 };
 
-export const SECTIONS: { id: Section; label: string; blurb: string }[] = [
-  {
-    id: "market",
-    label: "Market economics",
-    blurb: "What it costs to rent a GPU, and what a used one is worth.",
-  },
-  {
-    id: "credit",
-    label: "Financing & credit",
-    blurb: "What it costs to borrow, for the market and for AI companies.",
-  },
-  {
-    id: "infrastructure",
-    label: "Infrastructure",
-    blurb: "How much is being built, and whether it fills up.",
-  },
-  {
-    id: "fundamentals",
-    label: "Company fundamentals",
-    blurb:
-      "Spending, cash, debt, order books, customers and server lifespans, from company filings.",
-  },
-];
-
 export const INDICATORS: IndicatorDef[] = [
   {
     id: "gpu_rental",

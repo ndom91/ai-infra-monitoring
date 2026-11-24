@@ -1,10 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { ChartBlock } from "~/components/ChartBlock";
+import { IndicatorNotes } from "~/components/IndicatorNotes";
 import { PageIntro } from "~/components/PageIntro";
 import { SignalDot } from "~/components/SignalDot";
 import { rentSignal, type Signal, spaceSignal, supplySignal } from "~/domain/chapterSignals";
 import { infraExplainer } from "~/domain/explainers";
+import { indicatorById } from "~/domain/indicators";
 import { parseRange } from "~/domain/ranges";
 import type { IndicatorId } from "~/domain/types";
 import { formatPeriod, formatValue } from "~/lib/format";
@@ -34,6 +36,15 @@ const TOPIC_LABEL: Record<Topic, { long: string; short: string }> = {
   space: { long: "Space available", short: "Space" },
   rent: { long: "Rents", short: "Rents" },
   power: { long: "Power backdrop", short: "Power" },
+};
+
+// The indicator whose notes explain each topic. Asking rents are part of
+// the vacancy indicator.
+const TOPIC_INDICATOR: Record<Topic, IndicatorId> = {
+  supply: "construction",
+  space: "vacancy",
+  rent: "vacancy",
+  power: "power_grid",
 };
 
 const READING: Record<Topic, { body: string; watch: string }> = {
@@ -356,6 +367,9 @@ function InfrastructurePage() {
           <p className="rail-heading">Reading this tab</p>
           <ReadingBody topic={topic} />
         </aside>
+        <div className="topic-notes">
+          <IndicatorNotes def={indicatorById(TOPIC_INDICATOR[topic])} />
+        </div>
       </div>
 
       {historical.length > 0 && (

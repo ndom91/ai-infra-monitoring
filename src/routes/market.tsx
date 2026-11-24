@@ -9,11 +9,13 @@ import {
 } from "~/components/Chapters";
 import { ChartBlock } from "~/components/ChartBlock";
 import { FreshnessBadge } from "~/components/FreshnessBadge";
+import { IndicatorNotes } from "~/components/IndicatorNotes";
 import { PageIntro } from "~/components/PageIntro";
 import { PriceLadder } from "~/components/PriceLadder";
 import { SeriesStats } from "~/components/SeriesStats";
 import { freshnessNote, latestChangeStat, type Stat } from "~/components/StatList";
 import { EXPLAINERS } from "~/domain/explainers";
+import { indicatorById } from "~/domain/indicators";
 import {
   type Cohort,
   offerLabel,
@@ -216,6 +218,7 @@ function MarketPage() {
             List prices exclude negotiated discounts.
           </p>
           <SeriesTables series={dcSeries} />
+          <IndicatorNotes def={indicatorById("gpu_rental")} />
         </Chapter>
 
         <Chapter chapter={spread}>
@@ -288,6 +291,7 @@ function MarketPage() {
               emptyReason="No used-GPU price index we're allowed to use yet. The Coverage page explains why."
             />
           </ChapterCharts>
+          <IndicatorNotes def={indicatorById("gpu_resale")} />
         </Chapter>
       </ChapterLayout>
     </>

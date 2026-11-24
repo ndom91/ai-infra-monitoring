@@ -10,6 +10,7 @@ import {
 import { ChartBlock } from "~/components/ChartBlock";
 import { EntityBand, EntityPicker } from "~/components/EntityPicker";
 import { FilingEvents } from "~/components/FilingEvents";
+import { IndicatorNotes } from "~/components/IndicatorNotes";
 import { PageIntro } from "~/components/PageIntro";
 import type { Stat } from "~/components/StatList";
 import { TermsTable } from "~/components/TermsTable";
@@ -21,6 +22,7 @@ import {
   insiderWindow,
   largestCustomerSeries,
 } from "~/domain/headlines";
+import { indicatorById } from "~/domain/indicators";
 import { parseRange } from "~/domain/ranges";
 import { formatMonthYear, formatPeriod, formatValue } from "~/lib/format";
 import { pageHead } from "~/lib/seo";
@@ -405,6 +407,7 @@ function FundamentalsPage() {
               />
             </ChapterCharts>
           </ChapterMore>
+          <IndicatorNotes def={indicatorById("capex_cashflow")} />
         </Chapter>
 
         <Chapter chapter={orders}>
@@ -461,6 +464,7 @@ function FundamentalsPage() {
               />
             </ChapterCharts>
           </ChapterMore>
+          <IndicatorNotes def={indicatorById("contract_conversion")} />
         </Chapter>
 
         <Chapter chapter={customers}>
@@ -511,6 +515,7 @@ function FundamentalsPage() {
                 : concentrationEmpty
             }
           />
+          <IndicatorNotes def={indicatorById("customer_concentration")} />
         </Chapter>
 
         <Chapter chapter={insiders}>
@@ -549,6 +554,7 @@ function FundamentalsPage() {
               emptyReason="No priced open-market sales found for this company yet."
             />
           </ChapterCharts>
+          <IndicatorNotes def={indicatorById("insider_activity")} />
         </Chapter>
 
         <Chapter chapter={depreciation}>
@@ -616,6 +622,7 @@ function FundamentalsPage() {
               />
             </ChapterCharts>
           </ChapterMore>
+          <IndicatorNotes def={indicatorById("depreciation")} />
         </Chapter>
       </ChapterLayout>
     </>
