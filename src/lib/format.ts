@@ -27,13 +27,12 @@ export function formatDelta(change: Change, unit: string, bps = false) {
   return `${sign}${Math.abs(change.pct * 100).toFixed(1)}%`;
 }
 
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+// Built by hand: en-GB spells September "Sept" in newer browsers.
 export function formatDate(iso: string) {
-  return new Date(`${iso.slice(0, 10)}T00:00:00Z`).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-    timeZone: "UTC",
-  });
+  const [y = "", m = "", d = ""] = iso.slice(0, 10).split("-");
+  return `${Number(d)} ${MONTHS[Number(m) - 1]} ${y}`;
 }
 
 export function formatDateTime(iso: string) {
@@ -44,6 +43,10 @@ export function formatDateTime(iso: string) {
   });
 }
 
+// The first seven are the original palette and keep their order, so existing
+// charts do not change colour. The rest were picked to sit at least as far
+// from every other colour as the original pairs do, and all clear 3:1
+// against the chart background.
 export const PALETTE = [
   "#b5e1cd",
   "#f5c69c",
@@ -52,9 +55,26 @@ export const PALETTE = [
   "#c9b5f0",
   "#e8dc9a",
   "#91a0a4",
+  "#e58fc0",
+  "#5fc7d6",
+  "#a8d86a",
+  "#c48552",
+  "#7b8cf0",
 ];
 
-const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+// Past the end of the palette colours repeat, so each further lap gets a
+// dash pattern to keep every line distinguishable from its twin.
+const DASH_LAPS: number[][] = [
+  [6, 4],
+  [2, 3],
+];
+
+export function seriesStyle(index: number): { color: string; dash?: number[] } {
+  const lap = Math.floor(index / PALETTE.length);
+  const color = PALETTE[index % PALETTE.length] ?? "#b5e1cd";
+  return lap === 0 ? { color } : { color, dash: DASH_LAPS[(lap - 1) % DASH_LAPS.length] };
+}
+
 const QUARTER_ENDS: Record<string, number> = { "03-31": 1, "06-30": 2, "09-30": 3, "12-31": 4 };
 
 // The period an observation covers, in the words of its cadence: "H1 2026",

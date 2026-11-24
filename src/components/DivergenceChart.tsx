@@ -5,11 +5,10 @@ import { Line } from "react-chartjs-2";
 import { formatValue, PALETTE } from "~/lib/format";
 import type { DivergenceLine } from "~/server/overview";
 import { ChartLegend } from "./ChartLegend";
+import { GRID, timeAxis } from "./chartAxis";
 import { sortTooltipDescending } from "./chartTooltip";
 // Registers the chart.js components shared with TimeChart.
 import "./TimeChart";
-
-const TICK = "#86969a";
 
 // Two series, each on its own axis and in its own unit: no rebasing, so a
 // negative or near-zero starting value can't distort the picture.
@@ -26,7 +25,7 @@ export function DivergenceChart({ lines }: { lines: DivergenceLine[] }) {
       callback: (v: string | number) =>
         line.unit.length > 10 ? `${+Number(v).toFixed(2)}` : formatValue(Number(v), line.unit),
     },
-    grid: { color: position === "left" ? "#252d2f" : "transparent" },
+    grid: { color: position === "left" ? GRID : "transparent" },
   });
   const ds = (line: DivergenceLine, yAxisID: string, color: string) => ({
     label: line.label,
@@ -63,12 +62,7 @@ export function DivergenceChart({ lines }: { lines: DivergenceLine[] }) {
               },
             },
             scales: {
-              x: {
-                type: "time",
-                time: { minUnit: "month", tooltipFormat: "d MMM yyyy" },
-                ticks: { color: TICK, maxTicksLimit: 6, maxRotation: 0 },
-                grid: { display: false },
-              },
+              x: timeAxis("month"),
               y: axis(a, "left", ca),
               y1: axis(b, "right", cb),
             },

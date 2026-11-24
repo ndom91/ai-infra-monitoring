@@ -4,7 +4,7 @@ import { type CSSProperties, useRef } from "react";
 import { Scatter } from "react-chartjs-2";
 import { formatDate } from "~/lib/format";
 import { ChartLegend } from "./ChartLegend";
-import { GRID, TICK } from "./TimeChart";
+import { GRID, TICK, timeAxis } from "./chartAxis";
 
 Chart.register(TimeScale, LinearScale, PointElement, Tooltip, Legend);
 
@@ -67,12 +67,7 @@ export function ScatterChart({
               },
             },
             scales: {
-              x: {
-                type: "time",
-                time: { minUnit: "month", tooltipFormat: "d MMM yyyy" },
-                ticks: { color: TICK, maxTicksLimit: 7, maxRotation: 0 },
-                grid: { display: false },
-              },
+              x: timeAxis("month"),
               y: {
                 beginAtZero: true,
                 ticks: { color: TICK, maxTicksLimit: 6, callback: (v) => `${v}%` },

@@ -8,6 +8,7 @@ import { freshnessNote } from "~/components/StatList";
 import { rentSignal, type Signal, spaceSignal, supplySignal } from "~/domain/chapterSignals";
 import { infraExplainer } from "~/domain/explainers";
 import { indicatorById } from "~/domain/indicators";
+import { chartSubtitle, chartTitle, titleRank } from "~/domain/infraTitles";
 import { parseRange } from "~/domain/ranges";
 import type { IndicatorId } from "~/domain/types";
 import { formatPeriod, formatValue } from "~/lib/format";
@@ -99,41 +100,27 @@ function topicOf(s: SeriesView): Topic {
   return (s.indicator as IndicatorId) === "vacancy" ? "space" : "supply";
 }
 
-const METRIC_TITLES: [RegExp, string][] = [
-  [/^under_construction/, "Capacity under construction"],
-  [/^(preleased|precommitted)/, "Share already pre-leased"],
-  [/^inventory/, "Total capacity in operation"],
-  [/^vacancy/, "Vacancy"],
-  [/^net_absorption_mw_annual/, "Net absorption, full year"],
-  [/^net_absorption/, "Net absorption, half-year"],
-  [/^asking_rent/, "Asking rent"],
-];
+// Six state lines need more room than one broker series does.
+const POWER_HEIGHT = 280;
 
 const familyOf = (s: SeriesView) => s.id.split(".").slice(0, 2).join(".");
-
-const metricRank = (metric: string) => {
-  const i = METRIC_TITLES.findIndex(([re]) => re.test(metric));
-  return i === -1 ? METRIC_TITLES.length : i;
-};
 
 // One chart per series, except EIA's per-state series of one measure, which
 // share a chart. Publishers and coverage changes never share a chart, and
 // annual totals never sit next to half-year figures. Charts follow the
-// order of METRIC_TITLES (construction, pre-leasing, inventory, ...).
+// order of TITLES (construction, pre-leasing, inventory, ...).
 function groups(series: SeriesView[]) {
   const map = new Map<string, { family: string; title: string; list: SeriesView[] }>();
   for (const s of series) {
     const family = familyOf(s);
     const shared = family.startsWith("eia.");
     const key = `${shared ? family : s.id}|${s.unit}|${s.cadence}`;
-    const title = shared
-      ? `${s.source}${s.entity ? ` · ${s.entity}` : ""} (${s.unit}${s.cadence === "annual" ? ", annual" : ""})`
-      : (METRIC_TITLES.find(([re]) => re.test(metricOf(s)))?.[1] ?? s.label);
-    const g = map.get(key) ?? { family, title, list: [] };
+    const g = map.get(key) ?? { family, title: chartTitle(s), list: [] };
     g.list.push(s);
     map.set(key, g);
   }
-  const rank = (g: { list: SeriesView[] }) => metricRank(g.list[0] ? metricOf(g.list[0]) : "");
+  const rank = (g: { list: SeriesView[] }) =>
+    g.list[0] ? titleRank(g.list[0]) : Number.MAX_SAFE_INTEGER;
   return [...map.values()].sort((x, y) => rank(x) - rank(y));
 }
 
@@ -363,7 +350,12 @@ function InfrastructurePage() {
             />
           ) : null}
           {[...charts, ...extra].map(({ title, list }) => (
-            <InfraChart key={`${title}-${list[0]?.id}`} title={title} list={list} />
+            <InfraChart
+              key={`${title}-${list[0]?.id}`}
+              title={title}
+              list={list}
+              height={topic === "power" ? POWER_HEIGHT : undefined}
+            />
           ))}
         </div>
         <aside className="reading-tab reading-desktop" aria-label="Reading this tab">
@@ -385,14 +377,13 @@ function InfrastructurePage() {
             JLL changed its market coverage, so these series cannot be joined to the current North
             America figures. They are retained for reference only.
           </p>
-          <div className="grid-2">
+          <div className="topic-charts">
             {historical.map(({ family, title, list }) => (
-              <ChartBlock
+              <InfraChart
                 key={`${title}-${list[0]?.id}`}
-                title={`${title} · ${list[0]?.source ?? ""}`}
-                subtitle={HISTORICAL_JLL_FAMILIES[family]}
-                series={list}
-                info={infraExplainer(list.map((x) => x.id))}
+                title={title}
+                list={list}
+                note={HISTORICAL_JLL_FAMILIES[family]}
               />
             ))}
           </div>
@@ -418,10 +409,22 @@ function ReadingBody({ topic }: { topic: Topic }) {
 
 // A series with one observation shows the figure and its period, not a
 // one-point chart.
-function InfraChart({ title, list }: { title: string; list: SeriesView[] }) {
+function InfraChart({
+  title,
+  list,
+  note,
+  height,
+}: {
+  title: string;
+  list: SeriesView[];
+  // Why a retired series is shown, added after the publisher and unit.
+  note?: string;
+  height?: number;
+}) {
   const info = infraExplainer(list.map((x) => x.id));
   const only = list.length === 1 ? list[0] : undefined;
-  const subtitle = only ? `${only.entity ?? only.source} · ${only.unit}` : undefined;
+  const first = list[0];
+  const subtitle = first ? [chartSubtitle(first), note].filter(Boolean).join(" · ") : note;
   if (only?.latest && only.points.length <= 1) {
     return (
       <div className="block single-point">
@@ -429,22 +432,25 @@ function InfraChart({ title, list }: { title: string; list: SeriesView[] }) {
           <h3>{title}</h3>
           <span className="muted">{subtitle}</span>
         </div>
-        <p className="single-point-value">{formatValue(only.latest.value, only.unit)}</p>
-        <p className="muted">
-          {formatPeriod(only.latest.periodEnd, only.cadence)} · one report so far, so there is no
-          trend to chart.{" "}
-          <a
-            href={only.latest.sourceUrl ?? only.sourceUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Source ↗
-          </a>
-        </p>
+        <div className="block-body">
+          <p className="single-point-value">{formatValue(only.latest.value, only.unit)}</p>
+          <p className="muted">
+            {formatPeriod(only.latest.periodEnd, only.cadence)} ·{" "}
+            {note ? "one report, and coverage has ended" : "one report so far"}, so there is no
+            trend to chart.{" "}
+            <a
+              href={only.latest.sourceUrl ?? only.sourceUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Source ↗
+            </a>
+          </p>
+        </div>
       </div>
     );
   }
-  return <ChartBlock title={title} subtitle={subtitle} series={list} info={info} />;
+  return <ChartBlock title={title} subtitle={subtitle} series={list} info={info} height={height} />;
 }
 
 // Boxed segmented control: panel background, active item on --panel2 in teal.

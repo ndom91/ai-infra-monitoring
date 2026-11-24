@@ -12,9 +12,10 @@ import {
 import { type CSSProperties, useRef } from "react";
 import { Line } from "react-chartjs-2";
 import type { Cadence } from "~/domain/types";
-import { formatValue, PALETTE } from "~/lib/format";
+import { formatValue, seriesStyle } from "~/lib/format";
 import { ChartLegend } from "./ChartLegend";
-import { chartData, type GapPoint } from "./chartGaps";
+import { GRID, TICK, timeAxis } from "./chartAxis";
+import { chartData, flagStepChanges, type GapPoint } from "./chartGaps";
 import { isDerivedKind, sortTooltipDescending } from "./chartTooltip";
 
 Chart.register(TimeScale, LinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
@@ -42,13 +43,14 @@ type Props = {
   bareTicks?: boolean;
 };
 
-export const TICK = "#86969a";
-export const GRID = "#252d2f";
+export { GRID, TICK };
+
+const DEFAULT_HEIGHT = 220;
 
 export function TimeChart({
   lines,
   unit,
-  height = 220,
+  height = DEFAULT_HEIGHT,
   stepped,
   rebase,
   minUnit = "day",
@@ -56,20 +58,30 @@ export function TimeChart({
 }: Props) {
   const chartRef = useRef<Chart<"line"> | null>(null);
   const datasets = lines.map((line, i) => {
-    const color = line.color ?? PALETTE[i % PALETTE.length] ?? "#b5e1cd";
+    const style = seriesStyle(i);
+    const color = line.color ?? style.color;
+    const dash = line.color ? undefined : style.dash;
     const base = line.points[0]?.value;
     const sparse = line.points.length < 40;
+    const data = chartData(line.points, line.cadence, (p) =>
+      rebase && base ? (p.value / base) * 100 : p.value,
+    );
     return {
       label: line.label,
-      data: chartData(line.points, line.cadence, (p) =>
-        rebase && base ? (p.value / base) * 100 : p.value,
-      ),
+      // Stepped lines get a marker only where the value changes.
+      data: stepped ? flagStepChanges(data) : data,
+      dash,
       borderColor: color,
       backgroundColor: color,
       borderWidth: 1.6,
+      borderDash: dash ?? [],
       // Derived/estimated points are drawn hollow so they are never
       // mistaken for reported figures.
-      pointRadius: sparse ? 3.5 : 0,
+      pointRadius: stepped
+        ? (ctx: { raw: unknown }) => ((ctx.raw as GapPoint | undefined)?.marker ? 3.5 : 0)
+        : sparse
+          ? 3.5
+          : 0,
       pointBackgroundColor: (ctx: { raw: unknown }) =>
         isDerivedKind((ctx.raw as GapPoint | undefined)?.kind) ? "#0e1113" : color,
       pointHoverRadius: 4,
@@ -80,11 +92,20 @@ export function TimeChart({
     };
   });
 
-  const legend = datasets.map((d) => ({ label: d.label, color: d.borderColor }));
+  const legend = datasets.map((d) => ({ label: d.label, color: d.borderColor, dash: d.dash }));
 
   return (
     <>
-      <div className="chart" style={{ "--chart-h": `${height}px` } as CSSProperties}>
+      <div
+        className="chart"
+        style={
+          {
+            "--chart-h": `${height}px`,
+            // Phones shorten charts; a taller chart keeps most of its extra height.
+            ...(height > DEFAULT_HEIGHT && { "--chart-h-phone": `${height - 40}px` }),
+          } as CSSProperties
+        }
+      >
         <Line
           ref={chartRef}
           data={{ datasets }}
@@ -111,12 +132,7 @@ export function TimeChart({
               },
             },
             scales: {
-              x: {
-                type: "time",
-                time: { minUnit, tooltipFormat: "d MMM yyyy" },
-                ticks: { color: TICK, maxTicksLimit: 7, maxRotation: 0 },
-                grid: { display: false },
-              },
+              x: timeAxis(minUnit),
               y: {
                 ticks: {
                   color: TICK,

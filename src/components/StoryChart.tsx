@@ -22,36 +22,41 @@ export function StoryChart({
   children: ReactNode;
 }) {
   return (
+    // Two children, a head and a body, so charts in a row can share a head row.
     <figure className="story-chart">
-      <div className="story-chart-head">
-        <h3>{story?.headline ?? fallbackTitle}</h3>
-        {info && <InfoTip label={story?.headline ?? fallbackTitle} info={info} />}
+      <div className="story-chart-top">
+        <div className="story-chart-head">
+          <h3>{story?.headline ?? fallbackTitle}</h3>
+          {info && <InfoTip label={story?.headline ?? fallbackTitle} info={info} />}
+        </div>
+        <p className="story-dek">{dek}</p>
       </div>
-      <p className="story-dek">{dek}</p>
-      {story ? (
-        children
-      ) : (
-        <div className="no-data">
-          <b>Not enough data yet</b>
-          <span>This finding appears once the monitor has enough history to compare.</span>
-        </div>
-      )}
-      {story?.body.length ? (
-        <div className="story-analysis">
-          <p className="story-body">{story.body[0]}</p>
-          {story.body.length > 1 ? (
-            <details className="story-details">
-              <summary>Evidence and context ({story.body.length - 1} notes)</summary>
-              {story.body.slice(1).map((para) => (
-                <p key={para} className="story-body">
-                  {para}
-                </p>
-              ))}
-            </details>
-          ) : null}
-        </div>
-      ) : null}
-      <figcaption className="story-source">{source}</figcaption>
+      <div className="story-chart-body">
+        {story ? (
+          children
+        ) : (
+          <div className="no-data">
+            <b>Not enough data yet</b>
+            <span>This finding appears once the monitor has enough history to compare.</span>
+          </div>
+        )}
+        {story?.body.length ? (
+          <div className="story-analysis">
+            <p className="story-body">{story.body[0]}</p>
+            {story.body.length > 1 ? (
+              <details className="story-details">
+                <summary>Evidence and context ({story.body.length - 1} notes)</summary>
+                {story.body.slice(1).map((para) => (
+                  <p key={para} className="story-body">
+                    {para}
+                  </p>
+                ))}
+              </details>
+            ) : null}
+          </div>
+        ) : null}
+        <figcaption className="story-source">{source}</figcaption>
+      </div>
     </figure>
   );
 }

@@ -288,7 +288,7 @@ function Home() {
             <StoryChart
               story={story.rental.story}
               fallbackTitle="GPU rental prices"
-              dek="Nvidia H100, list price per GPU per hour"
+              dek="Nvidia H100 · calculated per GPU per hour: machine list price ÷ GPUs"
               source="Source: AWS and Azure public price lists, US East. List prices exclude negotiated discounts."
               info={EXPLAINERS.gpuListPrice}
             >
@@ -406,26 +406,30 @@ function Home() {
           <div className="strain-grid">
             {divergences.map((d) => (
               <figure key={d.id} className="story-chart">
-                {DIVERGENCE_STEPS[d.id] ? (
-                  <p className="strain-tag">{DIVERGENCE_STEPS[d.id]}</p>
-                ) : null}
-                <div className="story-chart-head">
-                  <h3>{d.title}</h3>
-                  <InfoTip
-                    label={d.title}
-                    info={DIVERGENCE_INFO[d.id] ?? EXPLAINERS.infraGeneric}
-                  />
-                </div>
-                <p className="story-dek">Watch for: {d.pattern}</p>
-                {d.awaiting ? (
-                  <div className="no-data">
-                    <b>Awaiting data</b>
-                    <span>{d.awaiting}</span>
+                <div className="story-chart-top">
+                  {DIVERGENCE_STEPS[d.id] ? (
+                    <p className="strain-tag">{DIVERGENCE_STEPS[d.id]}</p>
+                  ) : null}
+                  <div className="story-chart-head">
+                    <h3>{d.title}</h3>
+                    <InfoTip
+                      label={d.title}
+                      info={DIVERGENCE_INFO[d.id] ?? EXPLAINERS.infraGeneric}
+                    />
                   </div>
-                ) : (
-                  <DivergenceChart lines={d.lines} />
-                )}
-                {d.note && <figcaption className="story-source">{d.note}</figcaption>}
+                  <p className="story-dek">Watch for: {d.pattern}</p>
+                </div>
+                <div className="story-chart-body">
+                  {d.awaiting ? (
+                    <div className="no-data">
+                      <b>Awaiting data</b>
+                      <span>{d.awaiting}</span>
+                    </div>
+                  ) : (
+                    <DivergenceChart lines={d.lines} />
+                  )}
+                  {d.note && <figcaption className="story-source">{d.note}</figcaption>}
+                </div>
               </figure>
             ))}
           </div>

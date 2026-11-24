@@ -16,7 +16,7 @@ const MAX_GAP_DAYS: Partial<Record<Cadence, number>> = {
 
 const DAY_MS = 86_400_000;
 
-export type GapPoint = { x: number; y: number | null; kind?: string };
+export type GapPoint = { x: number; y: number | null; kind?: string; marker?: boolean };
 
 type Input = { periodEnd: string; value: number; kind?: string };
 
@@ -43,4 +43,25 @@ export function chartData(
     prev = x;
   }
   return out;
+}
+
+// For a stepped line, flags where a marker belongs: the first and last point,
+// the start of each run after a break, and every point whose value differs
+// from the one before. Daily list prices that hold still would otherwise draw
+// a marker per day.
+export function flagStepChanges(data: GapPoint[]): GapPoint[] {
+  let last = -1;
+  data.forEach((d, i) => {
+    if (d.y !== null) last = i;
+  });
+  let prev: number | null = null;
+  return data.map((d, i) => {
+    if (d.y === null) {
+      prev = null;
+      return d;
+    }
+    const marker = prev === null || d.y !== prev || i === last;
+    prev = d.y;
+    return marker ? { ...d, marker } : d;
+  });
 }

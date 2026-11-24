@@ -21,6 +21,7 @@ type Props = {
   stats?: boolean;
   // Bare numbers on the y-axis, for long units such as an index base.
   bareTicks?: boolean;
+  height?: number;
 };
 
 export function ChartBlock({
@@ -34,41 +35,46 @@ export function ChartBlock({
   info,
   stats = true,
   bareTicks,
+  height,
 }: Props) {
   const withData = series.filter((s) => s.points.length > 0);
   const units = new Set(series.map((s) => s.unit));
   return (
+    // Two children, a head and a body, so charts in a row can share a head row.
     <div className="block">
       <div className="block-head">
         <h3>{title}</h3>
         {info && <InfoTip label={title} info={info} />}
         {subtitle && <span className="muted">{subtitle}</span>}
       </div>
-      {withData.length > 0 ? (
-        <TimeChart
-          unit={series[0]?.unit ?? ""}
-          stepped={stepped}
-          rebase={rebase || units.size > 1}
-          minUnit={series.every((s) => LOW_FREQUENCY.has(s.cadence)) ? "month" : "day"}
-          lines={withData.map((s) => ({
-            label: labelOf(s),
-            points: s.points,
-            // A stepped line holds its value on purpose, so it has no gaps.
-            cadence: stepped ? undefined : (s.cadence as Cadence),
-          }))}
-          bareTicks={bareTicks}
-        />
-      ) : (
-        <div className="no-data">
-          <b>
-            {series.length ? "No observations in the selected range" : "No series collected yet"}
-          </b>
-          <span>
-            {emptyReason ?? "Values are never synthesized to fill gaps. Try a longer range."}
-          </span>
-        </div>
-      )}
-      {stats && series.length > 0 && <SeriesStats series={series} />}
+      <div className="block-body">
+        {withData.length > 0 ? (
+          <TimeChart
+            unit={series[0]?.unit ?? ""}
+            stepped={stepped}
+            rebase={rebase || units.size > 1}
+            minUnit={series.every((s) => LOW_FREQUENCY.has(s.cadence)) ? "month" : "day"}
+            lines={withData.map((s) => ({
+              label: labelOf(s),
+              points: s.points,
+              // A stepped line holds its value on purpose, so it has no gaps.
+              cadence: stepped ? undefined : (s.cadence as Cadence),
+            }))}
+            bareTicks={bareTicks}
+            height={height}
+          />
+        ) : (
+          <div className="no-data">
+            <b>
+              {series.length ? "No observations in the selected range" : "No series collected yet"}
+            </b>
+            <span>
+              {emptyReason ?? "Values are never synthesized to fill gaps. Try a longer range."}
+            </span>
+          </div>
+        )}
+        {stats && series.length > 0 && <SeriesStats series={series} />}
+      </div>
     </div>
   );
 }

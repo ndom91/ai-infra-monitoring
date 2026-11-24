@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { chartData } from "./chartGaps";
+import { chartData, flagStepChanges } from "./chartGaps";
 
 const p = (periodEnd: string, value = 1) => ({ periodEnd, value });
 const breaks = (data: { y: number | null }[]) => data.filter((d) => d.y === null).length;
@@ -52,5 +52,31 @@ describe("chartData", () => {
       (q) => q.value * 2,
     );
     expect(a).toEqual({ x: Date.parse("2024-01-01"), y: 10, kind: "estimated" });
+  });
+});
+
+describe("flagStepChanges", () => {
+  const flags = (ys: (number | null)[]) =>
+    flagStepChanges(ys.map((y, x) => ({ x, y }))).map((d) => d.marker === true);
+
+  it("marks the first point, each change and the last point only", () => {
+    expect(flags([5, 5, 5, 6, 6, 6, 6])).toEqual([true, false, false, true, false, false, true]);
+  });
+
+  it("marks nothing between identical values", () => {
+    expect(flags([2, 2, 2, 2])).toEqual([true, false, false, true]);
+  });
+
+  it("marks a single point once", () => {
+    expect(flags([3])).toEqual([true]);
+  });
+
+  it("marks the start of a run after a break, not the break", () => {
+    expect(flags([1, 1, null, 1, 1])).toEqual([true, false, false, true, true]);
+  });
+
+  it("keeps each point's kind", () => {
+    const out = flagStepChanges([{ x: 0, y: 1, kind: "calculated" }]);
+    expect(out[0]).toEqual({ x: 0, y: 1, kind: "calculated", marker: true });
   });
 });

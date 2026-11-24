@@ -995,6 +995,23 @@ h3,
   margin-bottom: 16px;
 }
 
+/* A long legend fills columns instead of one ragged list under the plot. */
+.chart-legend.many {
+  display: block;
+  column-width: 150px;
+  column-gap: 16px;
+}
+
+.chart-legend.many li {
+  break-inside: avoid;
+  margin-bottom: 3px;
+}
+
+.chart-legend.many .chart-legend-item {
+  font-size: 10px;
+  line-height: 1.3;
+}
+
 .chart-legend-item {
   display: inline-flex;
   align-items: baseline;
@@ -1022,6 +1039,11 @@ h3,
   width: 10px;
   height: 2px;
   align-self: center;
+}
+
+/* A repeated colour is drawn dashed on the chart; the swatch matches. */
+.chart-legend-swatch.line.dashed {
+  background: repeating-linear-gradient(90deg, var(--swatch) 0 3px, transparent 3px 5px);
 }
 
 .chart-legend-swatch.dot {
@@ -1501,8 +1523,43 @@ h3,
   grid-template-columns: minmax(0, 1fr);
 }
 
+/* Each chart is a head and a body spanning two rows of the grid, so the head
+   row takes the taller head of a pair and the plots start on the same line.
+   The subgrid's own row gap is 0 so the grid's gap sits between pairs only. */
+.chapter-charts > .block,
+.chapter-charts > .story-chart,
+.topic-charts > .block,
+.strain-grid > .story-chart {
+  display: grid;
+  grid-row: span 2;
+  grid-template-rows: subgrid;
+  row-gap: 0;
+}
+
+.chapter-charts.one > .block,
+.chapter-charts.one > .story-chart {
+  display: block;
+  grid-row: auto;
+}
+
+/* Containment stops a box from being a subgrid, so in these grids the block
+   gives up its container and the body (same width) takes over. */
+.chapter-charts > .block,
+.topic-charts > .block {
+  container-type: normal;
+}
+
+.block-body {
+  container: chart-block / inline-size;
+}
+
+.story-chart-body {
+  min-width: 0;
+}
+
 .chapter .block,
-.topic-panel .block {
+.topic-panel .block,
+.infrastructure-history .block {
   padding: 0;
   border: 0;
   border-radius: 0;
@@ -1510,14 +1567,16 @@ h3,
 }
 
 .chapter .block-head h3,
-.topic-panel .block-head h3 {
+.topic-panel .block-head h3,
+.infrastructure-history .block-head h3 {
   font-size: 17px;
   font-weight: 680;
   letter-spacing: -0.3px;
 }
 
 .chapter .block-head .muted,
-.topic-panel .block-head .muted {
+.topic-panel .block-head .muted,
+.infrastructure-history .block-head .muted {
   font: 11.5px var(--mono);
 }
 
@@ -1876,6 +1935,10 @@ h3,
   margin-top: 48px;
 }
 
+.infrastructure-history .topic-charts {
+  margin-top: 24px;
+}
+
 /* ---- Mid widths ---- */
 
 @media (max-width: 1000px) {
@@ -2146,7 +2209,7 @@ h3,
 
   .chapter .chart,
   .topic-panel .chart {
-    height: 200px;
+    height: var(--chart-h-phone, 200px);
   }
 
   .entity-band {
@@ -2200,6 +2263,11 @@ h3,
   .stack-table .st-meta + .st-meta::before,
   .stack-table .st-fig + .st-meta::before {
     content: "· ";
+  }
+
+  /* With no issuer ahead of it, the date has nothing to separate from. */
+  .terms-table.no-issuer .st-fig + .st-meta::before {
+    content: none;
   }
 
   /* Line break between the title row and the meta line. */
@@ -2750,4 +2818,31 @@ h3,
 
 .topic-notes {
   flex: 1 1 100%;
+}
+
+/* A rates table cut in two by a disclosure keeps its columns aligned. */
+.terms-split {
+  table-layout: fixed;
+}
+
+.terms-split .c-value {
+  width: 84px;
+}
+
+.terms-split .c-date {
+  width: 118px;
+}
+
+.terms-split .c-issuer {
+  width: 72px;
+}
+
+@media (max-width: 640px) {
+  .terms-split {
+    table-layout: auto;
+  }
+}
+
+.infrastructure-history .single-point-value {
+  color: var(--text);
 }

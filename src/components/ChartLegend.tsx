@@ -7,6 +7,8 @@ export type LegendItem = {
   shape?: "line" | "dot";
   // Drawn as a ring, matching a series whose points are hollow.
   hollow?: boolean;
+  // Dash pattern of a repeated colour, so the swatch matches its line.
+  dash?: number[];
 };
 
 // The part of a Chart.js instance the legend drives.
@@ -15,6 +17,9 @@ type Toggleable = {
   setDatasetVisibility(index: number, visible: boolean): void;
   update(): void;
 };
+
+// Past this many items the legend lays out in columns.
+const MANY = 8;
 
 // Lives in HTML under the canvas instead of inside it, so long labels wrap,
 // a dozen series cannot squeeze the plot, and charts side by side keep the
@@ -36,7 +41,7 @@ export function ChartLegend({
     return `${item.label}#${n}`;
   });
   return (
-    <ul className="chart-legend">
+    <ul className={`chart-legend${items.length > MANY ? " many" : ""}`}>
       {items.map((item, i) => {
         // Read from the chart, so the legend cannot drift from what is drawn.
         const visible = chartRef.current?.isDatasetVisible(i) ?? true;
@@ -55,7 +60,7 @@ export function ChartLegend({
               }}
             >
               <span
-                className={`chart-legend-swatch ${item.shape ?? "line"}${item.hollow ? " hollow" : ""}`}
+                className={`chart-legend-swatch ${item.shape ?? "line"}${item.hollow ? " hollow" : ""}${item.dash ? " dashed" : ""}`}
                 style={{ "--swatch": item.color } as CSSProperties}
                 aria-hidden="true"
               />

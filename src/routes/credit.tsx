@@ -378,6 +378,8 @@ function CreditPage() {
               subtitle="Latest figure filed for each instrument. Not today's market price."
               series={debt.rates}
               labelOf={(s) => s.label}
+              hideIssuer
+              visibleRows={12}
             />
           </ChapterCharts>
         </Chapter>
