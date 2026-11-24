@@ -20,10 +20,9 @@ export function openDb(url = databaseUrl()): { db: Db; client: Client } {
   return { db: drizzle(client, { schema, casing: "snake_case" }), client };
 }
 
-let shared: Db | undefined;
-
-// One client per server process.
+// A client holds a per-client query queue. A request killed by the platform never releases its
+// slot, so a client shared across Worker requests can deadlock every later request. Open a fresh
+// one per call and never cache it at module level.
 export function getDb() {
-  shared ??= openDb().db;
-  return shared;
+  return openDb().db;
 }
