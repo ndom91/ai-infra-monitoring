@@ -1,5 +1,5 @@
 import type { Signal } from "~/domain/chapterSignals";
-import { FRESHNESS_LABEL } from "~/domain/freshness";
+import { freshnessSuffix } from "~/domain/freshness";
 import { formatDate, formatDelta, formatValue } from "~/lib/format";
 import type { SeriesView } from "~/server/data";
 
@@ -36,8 +36,7 @@ export function StatList({ stats }: { stats: Stat[] }) {
 }
 
 // Marks a figure whose series is not current, so stale data never passes as today's.
-export const freshnessNote = (s: Pick<SeriesView, "freshness">) =>
-  s.freshness === "current" ? "" : ` · ${FRESHNESS_LABEL[s.freshness].toLowerCase()}`;
+export const freshnessNote = (s: Pick<SeriesView, "freshness">) => freshnessSuffix(s.freshness);
 
 // Latest value, its date, and the change over a year. `bps` shows spreads
 // and yields in basis points.

@@ -140,4 +140,38 @@ describe("shared figure helpers", () => {
     expect(f.rent).toEqual([]);
     expect(f.fill).toEqual([{ label: "Under construction", value: "7,481 MW", note: "June 2026" }]);
   });
+
+  it("marks figures whose series is not current, and only those", () => {
+    const series = {
+      credit: { hy: [p("2026-11-20", 3.2)], ccc: [p("2026-11-20", 14.02)] },
+      capex: { capexTtm: [p("2026-09-30", 6.91e11)], fcfTtm: [p("2026-09-30", 3.3e10)] },
+      neocloud: { capexTtm: [p("2026-09-30", 1e10)], ocfTtm: [p("2026-09-30", 2e9)] },
+      rental: { aws: [p("2026-10-17", 6.88)] },
+      resale: { index: [p("2026-10-31", 90)] },
+      buildings: {
+        vacancy: [p("2025-12-31", 1.6)],
+        construction: [p("2025-12-31", 7000)],
+        preleased: [p("2025-12-31", 70)],
+      },
+    };
+    const f = homeFigures(series, {
+      ccc: "current",
+      hy: "stale",
+      capex: "stale",
+      crwv: "unavailable",
+      vacancy: "stale",
+      preleased: "historical-only",
+    });
+    expect(f.borrow[0]?.note).not.toMatch(/stale/);
+    expect(f.borrow[1]?.note).toMatch(/ · stale$/);
+    expect(f.build[0]?.note).toMatch(/calculated · stale$/);
+    // No entry means unknown: no note.
+    expect(f.build[1]?.note).not.toMatch(/stale|unavailable/);
+    expect(f.build[2]?.note).toMatch(/calculated · source unavailable$/);
+    expect(f.rent.map((r) => r.note).join()).not.toMatch(/stale/);
+    expect(f.fill[0]?.note).toMatch(/ · stale$/);
+    expect(f.fill[2]?.note).not.toMatch(/historical/);
+    // Without a freshness map nothing is marked.
+    expect(homeFigures(series).fill[0]?.note).not.toMatch(/stale/);
+  });
 });

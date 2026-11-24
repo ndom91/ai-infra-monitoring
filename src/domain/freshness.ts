@@ -56,3 +56,22 @@ export const FRESHNESS_LABEL: Record<Freshness, string> = {
   "historical-only": "Historical only",
   awaiting: "Awaiting data",
 };
+
+// Worst first: what a figure built from several series should admit to.
+const FRESHNESS_ORDER: Freshness[] = [
+  "unavailable",
+  "stale",
+  "awaiting",
+  "historical-only",
+  "current",
+];
+
+export function worstFreshness(states: Freshness[]): Freshness | undefined {
+  return FRESHNESS_ORDER.find((s) => states.includes(s));
+}
+
+// " · stale" after a figure's note. Only data that is out of date is admitted
+// to (stale, source unavailable); current, historical-only, awaiting and
+// unknown states add nothing.
+export const freshnessSuffix = (state: Freshness | undefined) =>
+  state === "stale" || state === "unavailable" ? ` · ${FRESHNESS_LABEL[state].toLowerCase()}` : "";

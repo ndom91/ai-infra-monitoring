@@ -1,10 +1,12 @@
 import { createServerFn } from "@tanstack/react-start";
 import { SEC_COMPANIES } from "~/domain/companies";
+import { worstFreshness } from "~/domain/freshness";
 import {
   buildingsStory,
   capexStory,
   constructionStory,
   creditStory,
+  type HomeFreshness,
   neocloudStory,
   rentalStory,
   resaleStory,
@@ -302,8 +304,31 @@ export const getOverviewData = createServerFn({ method: "GET" }).handler(async (
     },
   };
 
+  // What each homepage figure admits to: the worst state of the series behind it.
+  const freshOf = (...ids: string[]) =>
+    worstFreshness(
+      ids.flatMap((id) => {
+        const s = rest.series.find((x) => x.id === id);
+        return s ? [s.freshness] : [];
+      }),
+    );
+  const fcfIds = HYPERSCALERS.flatMap((t) => [`sec.${t}.capex`, `sec.${t}.ocf`]);
+  const freshness: HomeFreshness = {
+    ccc: freshOf("fred.BAMLH0A3HYC"),
+    hy: freshOf("fred.BAMLH0A0HYM2"),
+    capex: freshOf(...HYPERSCALERS.map((t) => `sec.${t}.capex`)),
+    fcf: freshOf(...fcfIds),
+    crwv: freshOf("sec.CRWV.capex", "sec.CRWV.ocf"),
+    aws: freshOf("aws.h100.us-east-1.ondemand"),
+    resale: freshOf("gpu_resale.amcompute.basket_index"),
+    vacancy: freshOf("cbre.na_primary.vacancy"),
+    construction: freshOf("cbre.na_primary.under_construction_mw"),
+    preleased: freshOf("cbre.na_primary.preleased_pct"),
+  };
+
   const alertHistory = withCurrentWording(alerts);
   return {
+    freshness,
     story,
     alerts: alertHistory,
     riskRead: riskReadFromAlerts(alertHistory),

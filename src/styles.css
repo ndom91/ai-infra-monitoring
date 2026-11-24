@@ -981,6 +981,61 @@ h3,
   margin: 2px 0 0;
 }
 
+/* The legend sits under the fixed-height plot, so labels wrap freely. */
+.chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin: -4px 0 10px;
+  padding: 0;
+  list-style: none;
+}
+
+.story-chart .chart-legend {
+  margin-bottom: 16px;
+}
+
+.chart-legend-item {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #86969a;
+  font: 11px / 1.4 var(--mono);
+  text-align: left;
+  cursor: pointer;
+}
+
+.chart-legend-item[aria-pressed="false"] {
+  opacity: 0.45;
+  text-decoration: line-through;
+}
+
+.chart-legend-swatch {
+  flex: none;
+  background: var(--swatch);
+}
+
+.chart-legend-swatch.line {
+  width: 10px;
+  height: 2px;
+  align-self: center;
+}
+
+.chart-legend-swatch.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  align-self: center;
+}
+
+.chart-legend-swatch.hollow {
+  background: var(--bg);
+  box-shadow: inset 0 0 0 1.6px var(--swatch);
+}
+
 .story-chart .no-data {
   height: 200px;
   margin-bottom: 16px;
@@ -1430,10 +1485,16 @@ h3,
 }
 
 /* Charts inside chapters are flat: no boxes, just the hairline rhythm. */
+/* At most two columns: the minimum track is never under half the row, so a
+   third never fits and leaves an empty slot. */
 .chapter-charts {
+  --col-gap: 36px;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 400px), 1fr));
-  gap: 40px 36px;
+  grid-template-columns: repeat(
+      auto-fill,
+      minmax(max(min(100%, 400px), calc((100% - var(--col-gap)) / 2 - 0.5px)), 1fr)
+    );
+  gap: 40px var(--col-gap);
 }
 
 .chapter-charts.one {
@@ -1766,11 +1827,15 @@ h3,
 }
 
 .topic-charts {
+  --col-gap: 36px;
   flex: 999 1 640px;
   min-width: 0;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 400px), 1fr));
-  gap: 40px 36px;
+  grid-template-columns: repeat(
+      auto-fill,
+      minmax(max(min(100%, 400px), calc((100% - var(--col-gap)) / 2 - 0.5px)), 1fr)
+    );
+  gap: 40px var(--col-gap);
 }
 
 .single-point-value {
@@ -2400,6 +2465,7 @@ h3,
   display: flex;
   align-items: center;
   justify-content: space-between;
+  min-height: 18px; /* the last tile has no arrow; keep the four tiles aligned */
   margin-bottom: 8px;
 }
 
@@ -2489,7 +2555,8 @@ h3,
 }
 
 .home-chapters .chapter-charts {
-  gap: 44px 48px;
+  --col-gap: 48px;
+  gap: 44px var(--col-gap);
 }
 
 .more-row {

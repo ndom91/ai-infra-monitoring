@@ -4,6 +4,7 @@ import { ChartBlock } from "~/components/ChartBlock";
 import { IndicatorNotes } from "~/components/IndicatorNotes";
 import { PageIntro } from "~/components/PageIntro";
 import { SignalDot } from "~/components/SignalDot";
+import { freshnessNote } from "~/components/StatList";
 import { rentSignal, type Signal, spaceSignal, supplySignal } from "~/domain/chapterSignals";
 import { infraExplainer } from "~/domain/explainers";
 import { indicatorById } from "~/domain/indicators";
@@ -183,12 +184,14 @@ function InfrastructurePage() {
   const rChange = yearChange(rent);
   const period = (s: SeriesView | undefined) =>
     s?.latest ? formatPeriod(s.latest.periodEnd, s.cadence) : "";
+  // The tile figure is the latest value, so a series that is not current says so.
+  const staleNote = (s: SeriesView | undefined) => (s ? freshnessNote(s) : "");
 
   const tiles: Tile[] = [
     {
       topic: "supply",
       value: construction?.latest ? formatValue(construction.latest.value, "MW") : null,
-      metric: `under construction · ${period(construction)}`,
+      metric: `under construction · ${period(construction)}${staleNote(construction)}`,
       change: [
         cChange?.pct != null ? `${signed(cChange.pct * 100)}% in a year` : "no matching half-year",
         preleased?.latest ? `${+preleased.latest.value.toFixed(1)}% pre-leased` : null,
@@ -200,7 +203,7 @@ function InfrastructurePage() {
     {
       topic: "space",
       value: vacancy?.latest ? `${+vacancy.latest.value.toFixed(2)}%` : null,
-      metric: `vacancy · ${period(vacancy)}`,
+      metric: `vacancy · ${period(vacancy)}${staleNote(vacancy)}`,
       change: [
         vChange ? `${signed(vChange.delta, 1)} pp in a year` : "no matching half-year",
         absorptionFy?.latest
@@ -214,7 +217,7 @@ function InfrastructurePage() {
     {
       topic: "rent",
       value: rent?.latest ? `$${rent.latest.value.toFixed(2)}` : null,
-      metric: `per kW per month · ${period(rent)}`,
+      metric: `per kW per month · ${period(rent)}${staleNote(rent)}`,
       change:
         rChange?.pct != null
           ? `${signed(rChange.pct * 100, 1)}% in a year`

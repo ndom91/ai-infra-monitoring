@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { freshness } from "./freshness";
+import { freshness, freshnessSuffix, worstFreshness } from "./freshness";
 
 const now = new Date("2026-10-17T12:00:00Z");
 
@@ -42,5 +42,25 @@ describe("freshness", () => {
     expect(freshness({ cadence: "irregular", latestPeriodEnd: "2024-01-01", now })).toBe(
       "historical-only",
     );
+  });
+});
+
+describe("worstFreshness", () => {
+  it("picks the state a combined figure should admit to", () => {
+    expect(worstFreshness(["current", "current"])).toBe("current");
+    expect(worstFreshness(["current", "stale", "historical-only"])).toBe("stale");
+    expect(worstFreshness(["stale", "unavailable"])).toBe("unavailable");
+    expect(worstFreshness([])).toBeUndefined();
+  });
+});
+
+describe("freshnessSuffix", () => {
+  it("names only out-of-date states, with a lowercase label", () => {
+    expect(freshnessSuffix("current")).toBe("");
+    expect(freshnessSuffix(undefined)).toBe("");
+    expect(freshnessSuffix("historical-only")).toBe("");
+    expect(freshnessSuffix("awaiting")).toBe("");
+    expect(freshnessSuffix("stale")).toBe(" · stale");
+    expect(freshnessSuffix("unavailable")).toBe(" · source unavailable");
   });
 });

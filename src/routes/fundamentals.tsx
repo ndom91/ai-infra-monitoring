@@ -12,7 +12,7 @@ import { EntityBand, EntityPicker } from "~/components/EntityPicker";
 import { FilingEvents } from "~/components/FilingEvents";
 import { IndicatorNotes } from "~/components/IndicatorNotes";
 import { PageIntro } from "~/components/PageIntro";
-import type { Stat } from "~/components/StatList";
+import { freshnessNote, type Stat } from "~/components/StatList";
 import { TermsTable } from "~/components/TermsTable";
 import { cashSignal } from "~/domain/chapterSignals";
 import { GROUP_BLURBS, SEC_COMPANIES, SEC_DEBT_COMPANIES } from "~/domain/companies";
@@ -93,7 +93,7 @@ function latestStat(
   return {
     label,
     value: format(s.latest.value),
-    note: `${formatPeriod(s.latest.periodEnd, s.cadence)} · ${note}`,
+    note: `${formatPeriod(s.latest.periodEnd, s.cadence)} · ${note}${freshnessNote(s)}`,
     tone: opts.tone,
   };
 }

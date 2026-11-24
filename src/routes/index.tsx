@@ -8,7 +8,9 @@ import { StepNav, type StepTile } from "~/components/StepNav";
 import { StoryChart } from "~/components/StoryChart";
 import { TimeChart } from "~/components/TimeChart";
 import { EXPLAINERS, type Explainer } from "~/domain/explainers";
+import { type Freshness, freshnessSuffix } from "~/domain/freshness";
 import { homeFigures, usdShort } from "~/domain/narrative";
+import { formatDate } from "~/lib/format";
 import { pageHead } from "~/lib/seo";
 import type { Point } from "~/metrics/changes";
 import { getOverviewData } from "~/server/overview";
@@ -42,7 +44,6 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
-const reported = (points: Point[]) => points.map((p) => ({ ...p, kind: "reported" }));
 const calculated = (points: Point[]) => points.map((p) => ({ ...p, kind: "calculated" }));
 
 // Homepage chapters reuse the detail-page header; they carry no status dot.
@@ -72,21 +73,24 @@ function MoreLink({ children, sections }: { children: ReactNode; sections?: Reac
 }
 
 function Home() {
-  const { story, divergences, riskRead, steps } = Route.useLoaderData();
+  const { story, divergences, riskRead, steps, freshness } = Route.useLoaderData();
   const lastUpdated = RootRoute.useLoaderData();
-  const figures = homeFigures(story);
+  const figures = homeFigures(story, freshness);
 
   const ccc = story.credit.ccc.at(-1);
   const capex = story.capex.capexTtm.at(-1);
   const aws = story.rental.aws.at(-1);
   const vacancy = story.buildings.vacancy.at(-1);
+  // Each tile says which period its figure is from, and when that is not current.
+  const dated = (text: string, p: Point, state: Freshness | undefined, span = "") =>
+    `${text} · ${span}${formatDate(p.periodEnd)}${freshnessSuffix(state)}`;
   const tiles: StepTile[] = [
     {
       id: "borrowing",
       verb: "Borrow",
       description: "Lenders fund the build-out",
       figure: ccc ? `${ccc.value.toFixed(2)}%` : null,
-      metric: "extra interest, riskiest borrowers",
+      metric: ccc ? dated("extra interest, riskiest borrowers", ccc, freshness.ccc) : "",
       status: steps.borrow,
     },
     {
@@ -94,7 +98,7 @@ function Home() {
       verb: "Build",
       description: "Companies spend it on data centers",
       figure: capex ? usdShort(capex.value) : null,
-      metric: "big tech capex, 12 months",
+      metric: capex ? dated("big tech capex", capex, freshness.capex, "12 months to ") : "",
       status: steps.build,
     },
     {
@@ -102,7 +106,7 @@ function Home() {
       verb: "Rent out",
       description: "The chips have to earn it back",
       figure: aws ? `$${aws.value.toFixed(2)}` : null,
-      metric: "Nvidia H100 on AWS, per GPU-hour",
+      metric: aws ? dated("Nvidia H100 on AWS, per GPU-hour", aws, freshness.aws) : "",
       status: steps.rent,
     },
     {
@@ -110,7 +114,7 @@ function Home() {
       verb: "Fill",
       description: "Finished buildings need tenants",
       figure: vacancy ? `${vacancy.value.toFixed(1)}%` : null,
-      metric: "data-center space sitting empty",
+      metric: vacancy ? dated("data-center space sitting empty", vacancy, freshness.vacancy) : "",
       status: steps.fill,
     },
   ];
@@ -161,8 +165,8 @@ function Home() {
                 unit="%"
                 height={260}
                 lines={[
-                  { label: "CCC-rated (riskiest)", points: reported(story.credit.ccc) },
-                  { label: "All junk-rated", points: reported(story.credit.hy) },
+                  { label: "CCC-rated (riskiest)", points: story.credit.ccc, cadence: "weekdays" },
+                  { label: "All junk-rated", points: story.credit.hy, cadence: "weekdays" },
                 ]}
               />
             </StoryChart>
@@ -206,8 +210,16 @@ function Home() {
               <TimeChart
                 unit="USD"
                 lines={[
-                  { label: "Capital spending", points: calculated(story.capex.capexTtm) },
-                  { label: "Free cash flow after it", points: calculated(story.capex.fcfTtm) },
+                  {
+                    label: "Capital spending",
+                    points: calculated(story.capex.capexTtm),
+                    cadence: "quarterly",
+                  },
+                  {
+                    label: "Free cash flow after it",
+                    points: calculated(story.capex.fcfTtm),
+                    cadence: "quarterly",
+                  },
                 ]}
                 minUnit="month"
               />
@@ -222,8 +234,16 @@ function Home() {
               <TimeChart
                 unit="USD"
                 lines={[
-                  { label: "Capital spending", points: calculated(story.neocloud.capexTtm) },
-                  { label: "Cash from operations", points: calculated(story.neocloud.ocfTtm) },
+                  {
+                    label: "Capital spending",
+                    points: calculated(story.neocloud.capexTtm),
+                    cadence: "quarterly",
+                  },
+                  {
+                    label: "Cash from operations",
+                    points: calculated(story.neocloud.ocfTtm),
+                    cadence: "quarterly",
+                  },
                 ]}
                 minUnit="month"
               />
@@ -290,7 +310,7 @@ function Home() {
             >
               <TimeChart
                 unit="index"
-                lines={[{ label: "Resale index", points: reported(story.resale.index) }]}
+                lines={[{ label: "Resale index", points: story.resale.index, cadence: "monthly" }]}
               />
             </StoryChart>
           </ChapterCharts>
@@ -322,7 +342,9 @@ function Home() {
               <TimeChart
                 unit="%"
                 minUnit="month"
-                lines={[{ label: "Vacancy", points: reported(story.buildings.vacancy) }]}
+                lines={[
+                  { label: "Vacancy", points: story.buildings.vacancy, cadence: "semiannual" },
+                ]}
               />
             </StoryChart>
             <StoryChart
@@ -336,7 +358,11 @@ function Home() {
                 unit="MW"
                 minUnit="month"
                 lines={[
-                  { label: "Under construction", points: reported(story.buildings.construction) },
+                  {
+                    label: "Under construction",
+                    points: story.buildings.construction,
+                    cadence: "semiannual",
+                  },
                 ]}
               />
             </StoryChart>

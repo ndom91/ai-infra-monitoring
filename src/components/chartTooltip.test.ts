@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { sortTooltipDescending } from "./chartTooltip";
+import { isDerivedKind, sortTooltipDescending } from "./chartTooltip";
 
 describe("sortTooltipDescending", () => {
   it("sorts numeric values from greatest to least, with missing values last", () => {
@@ -13,5 +13,18 @@ describe("sortTooltipDescending", () => {
       -2,
       null,
     ]);
+  });
+});
+
+describe("isDerivedKind", () => {
+  it("treats missing, reported and manual points as not derived", () => {
+    expect(isDerivedKind(undefined)).toBe(false);
+    expect(isDerivedKind("reported")).toBe(false);
+    expect(isDerivedKind("manual")).toBe(false);
+  });
+
+  it("treats calculated and estimated points as derived", () => {
+    expect(isDerivedKind("calculated")).toBe(true);
+    expect(isDerivedKind("estimated")).toBe(true);
   });
 });

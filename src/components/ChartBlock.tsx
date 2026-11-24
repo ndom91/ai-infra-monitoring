@@ -1,4 +1,5 @@
 import type { Explainer } from "~/domain/explainers";
+import type { Cadence } from "~/domain/types";
 import type { SeriesView } from "~/server/data";
 import { InfoTip } from "./InfoTip";
 import { SeriesStats } from "./SeriesStats";
@@ -49,7 +50,12 @@ export function ChartBlock({
           stepped={stepped}
           rebase={rebase || units.size > 1}
           minUnit={series.every((s) => LOW_FREQUENCY.has(s.cadence)) ? "month" : "day"}
-          lines={withData.map((s) => ({ label: labelOf(s), points: s.points }))}
+          lines={withData.map((s) => ({
+            label: labelOf(s),
+            points: s.points,
+            // A stepped line holds its value on purpose, so it has no gaps.
+            cadence: stepped ? undefined : (s.cadence as Cadence),
+          }))}
           bareTicks={bareTicks}
         />
       ) : (

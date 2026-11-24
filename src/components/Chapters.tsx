@@ -79,8 +79,14 @@ export function ChapterCharts({ children, one }: { children: ReactNode; one?: bo
 // charts nobody asked to see.
 export function ChapterMore({ summary, children }: { summary: string; children: ReactNode }) {
   const [open, setOpen] = useState(false);
+  const details = useRef<HTMLDetailsElement>(null);
+  // A reader can open the panel before hydration, when no toggle event
+  // reaches React. Read the real state once mounted so it never opens empty.
+  useEffect(() => {
+    if (details.current) setOpen(details.current.open);
+  }, []);
   return (
-    <details className="chapter-more" onToggle={(e) => setOpen(e.currentTarget.open)}>
+    <details ref={details} className="chapter-more" onToggle={(e) => setOpen(e.currentTarget.open)}>
       <summary>{summary}</summary>
       {open ? <div className="chapter-more-body">{children}</div> : null}
     </details>

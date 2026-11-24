@@ -1,8 +1,9 @@
 import "chartjs-adapter-date-fns";
 import { Chart, Legend, LinearScale, PointElement, TimeScale, Tooltip } from "chart.js";
-import type { CSSProperties } from "react";
+import { type CSSProperties, useRef } from "react";
 import { Scatter } from "react-chartjs-2";
 import { formatDate } from "~/lib/format";
+import { ChartLegend } from "./ChartLegend";
 import { GRID, TICK } from "./TimeChart";
 
 Chart.register(TimeScale, LinearScale, PointElement, Tooltip, Legend);
@@ -27,6 +28,7 @@ export function ScatterChart({
   height?: number;
   ariaLabel: string;
 }) {
+  const chartRef = useRef<Chart<"scatter"> | null>(null);
   const datasets = series.map((s) => ({
     label: s.label,
     data: s.points.map((p) => ({ x: Date.parse(p.date), y: p.value })),
@@ -37,49 +39,58 @@ export function ScatterChart({
     pointHoverRadius: 6,
   }));
   return (
-    <div className="chart" style={{ "--chart-h": `${height}px` } as CSSProperties}>
-      <Scatter
-        aria-label={ariaLabel}
-        role="img"
-        data={{ datasets }}
-        options={{
-          responsive: true,
-          maintainAspectRatio: false,
-          animation: false,
-          plugins: {
-            legend: {
-              position: "bottom",
-              align: "start",
-              labels: { color: TICK, boxWidth: 8, boxHeight: 8, font: { size: 11 } },
-            },
-            tooltip: {
-              callbacks: {
-                title: (items) => {
-                  const p = series[items[0]?.datasetIndex ?? 0]?.points[items[0]?.dataIndex ?? 0];
-                  return p ? p.title : "";
-                },
-                label: (ctx) => {
-                  const p = series[ctx.datasetIndex]?.points[ctx.dataIndex];
-                  return p ? ` ${p.display} · issued ${formatDate(p.date)}` : "";
+    <>
+      <div className="chart" style={{ "--chart-h": `${height}px` } as CSSProperties}>
+        <Scatter
+          ref={chartRef}
+          aria-label={ariaLabel}
+          role="img"
+          data={{ datasets }}
+          options={{
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: false,
+            plugins: {
+              // Drawn as HTML below the chart; see ChartLegend.
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  title: (items) => {
+                    const p = series[items[0]?.datasetIndex ?? 0]?.points[items[0]?.dataIndex ?? 0];
+                    return p ? p.title : "";
+                  },
+                  label: (ctx) => {
+                    const p = series[ctx.datasetIndex]?.points[ctx.dataIndex];
+                    return p ? ` ${p.display} · issued ${formatDate(p.date)}` : "";
+                  },
                 },
               },
             },
-          },
-          scales: {
-            x: {
-              type: "time",
-              time: { minUnit: "month", tooltipFormat: "d MMM yyyy" },
-              ticks: { color: TICK, maxTicksLimit: 7, maxRotation: 0 },
-              grid: { display: false },
+            scales: {
+              x: {
+                type: "time",
+                time: { minUnit: "month", tooltipFormat: "d MMM yyyy" },
+                ticks: { color: TICK, maxTicksLimit: 7, maxRotation: 0 },
+                grid: { display: false },
+              },
+              y: {
+                beginAtZero: true,
+                ticks: { color: TICK, maxTicksLimit: 6, callback: (v) => `${v}%` },
+                grid: { color: GRID },
+              },
             },
-            y: {
-              beginAtZero: true,
-              ticks: { color: TICK, maxTicksLimit: 6, callback: (v) => `${v}%` },
-              grid: { color: GRID },
-            },
-          },
-        }}
+          }}
+        />
+      </div>
+      <ChartLegend
+        items={series.map((s) => ({
+          label: s.label,
+          color: s.color,
+          shape: "dot",
+          hollow: s.hollow,
+        }))}
+        chartRef={chartRef}
       />
-    </div>
+    </>
   );
 }

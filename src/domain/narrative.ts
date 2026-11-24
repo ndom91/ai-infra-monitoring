@@ -2,7 +2,9 @@
 // Every number in the text comes from the data passed in; when the data is
 // too thin to support a sentence, the function returns null instead of
 // guessing. Wording never claims causes, only what the numbers show.
+
 import { changeOver, type Point, valueAtOrBefore } from "~/metrics/changes";
+import { type Freshness, freshnessSuffix } from "./freshness";
 
 export type Story = { headline: string; body: string[] };
 
@@ -282,6 +284,24 @@ type HomeSeries = {
   buildings: { vacancy: Point[]; construction: Point[]; preleased: Point[] };
 };
 
+// How fresh the series behind each figure is. A figure built from several
+// series carries the worst of them. Missing means unknown, and adds no note.
+export type HomeFreshness = Partial<
+  Record<
+    | "ccc"
+    | "hy"
+    | "capex"
+    | "fcf"
+    | "crwv"
+    | "aws"
+    | "resale"
+    | "vacancy"
+    | "construction"
+    | "preleased",
+    Freshness
+  >
+>;
+
 // "$691B", "$1.2T": the short money form for figures.
 export const usdShort = (v: number) => usd(v).replace(" billion", "B").replace(" trillion", "T");
 
@@ -289,15 +309,22 @@ const upDown = (change: number) => `${change >= 0 ? "up" : "down"} ${pct(change)
 
 // Figures for each chapter's stat list. A row is left out when its data is
 // missing; derived figures say "calculated".
-export function homeFigures(s: HomeSeries): Record<"borrow" | "build" | "rent" | "fill", Figure[]> {
-  const spread = (label: string, pts: Point[]): Figure[] => {
+export function homeFigures(
+  s: HomeSeries,
+  fresh: HomeFreshness = {},
+): Record<"borrow" | "build" | "rent" | "fill", Figure[]> {
+  const spread = (label: string, pts: Point[], state: Freshness | undefined): Figure[] => {
     const last = pts.at(-1);
     if (!last) return [];
     // Only compare with a real point within 3 weeks of a year earlier.
     const y = changeOver(pts, 365, 21);
     const move = y ? ` · ${y.delta >= 0 ? "+" : "−"}${bps(y.delta)} bps in a year` : "";
     return [
-      { label, value: `${last.value.toFixed(2)}%`, note: `${shortDate(last.periodEnd)}${move}` },
+      {
+        label,
+        value: `${last.value.toFixed(2)}%`,
+        note: `${shortDate(last.periodEnd)}${move}${freshnessSuffix(state)}`,
+      },
     ];
   };
 
@@ -312,7 +339,7 @@ export function homeFigures(s: HomeSeries): Record<"borrow" | "build" | "rent" |
         then
           ? ` · ${capex.value >= then.value ? "up" : "down"} from ${usd(then.value)} a year earlier`
           : ""
-      } · calculated`,
+      } · calculated${freshnessSuffix(fresh.capex)}`,
     });
   }
   const fcf = s.capex.fcfTtm.at(-1);
@@ -321,7 +348,7 @@ export function homeFigures(s: HomeSeries): Record<"borrow" | "build" | "rent" |
     build.push({
       label: "Big tech free cash flow, 12 months",
       value: usdShort(fcf.value),
-      note: `${fall ? `${pct(fall.drop)} below its ${monthYear(fall.peak.periodEnd)} peak` : `to ${shortDate(fcf.periodEnd)}`} · calculated`,
+      note: `${fall ? `${pct(fall.drop)} below its ${monthYear(fall.peak.periodEnd)} peak` : `to ${shortDate(fcf.periodEnd)}`} · calculated${freshnessSuffix(fresh.fcf)}`,
     });
   }
   const crwv = capexToOcf(s.neocloud.capexTtm, s.neocloud.ocfTtm);
@@ -329,7 +356,7 @@ export function homeFigures(s: HomeSeries): Record<"borrow" | "build" | "rent" |
     build.push({
       label: "CoreWeave capex ÷ operating cash flow",
       value: crwv.ratio == null ? "Cash flow negative" : `${crwv.ratio.toFixed(1)}×`,
-      note: `12-month totals to ${shortDate(crwv.capex.periodEnd)} · calculated`,
+      note: `12-month totals to ${shortDate(crwv.capex.periodEnd)} · calculated${freshnessSuffix(fresh.crwv)}`,
     });
   }
 
@@ -345,7 +372,7 @@ export function homeFigures(s: HomeSeries): Record<"borrow" | "build" | "rent" |
     rent.push({
       label: "Nvidia H100 on AWS, per GPU-hour",
       value: `$${aws.value.toFixed(2)}`,
-      note: `${shortDate(aws.periodEnd)} · ${vs} · list price`,
+      note: `${shortDate(aws.periodEnd)} · ${vs} · list price${freshnessSuffix(fresh.aws)}`,
     });
   }
   const idx = s.resale.index.at(-1);
@@ -356,7 +383,7 @@ export function homeFigures(s: HomeSeries): Record<"borrow" | "build" | "rent" |
       value: idx.value.toFixed(0),
       note: `${monthYear(idx.periodEnd)}${
         c?.pct != null ? ` · ${pct(c.pct)} ${c.pct < 0 ? "below" : "above"} six months earlier` : ""
-      }`,
+      }${freshnessSuffix(fresh.resale)}`,
     });
   }
 
@@ -366,7 +393,7 @@ export function homeFigures(s: HomeSeries): Record<"borrow" | "build" | "rent" |
     fill.push({
       label: "Empty data-center space",
       value: `${vac.value.toFixed(1)}%`,
-      note: `${monthYear(vac.periodEnd)} · main North American markets`,
+      note: `${monthYear(vac.periodEnd)} · main North American markets${freshnessSuffix(fresh.vacancy)}`,
     });
   }
   const built = s.buildings.construction.at(-1);
@@ -375,7 +402,7 @@ export function homeFigures(s: HomeSeries): Record<"borrow" | "build" | "rent" |
     fill.push({
       label: "Under construction",
       value: mw(built.value),
-      note: `${monthYear(built.periodEnd)}${then ? ` · ${upDown(built.value / then.value - 1)} in a year` : ""}`,
+      note: `${monthYear(built.periodEnd)}${then ? ` · ${upDown(built.value / then.value - 1)} in a year` : ""}${freshnessSuffix(fresh.construction)}`,
     });
   }
   const pre = s.buildings.preleased.at(-1);
@@ -383,14 +410,14 @@ export function homeFigures(s: HomeSeries): Record<"borrow" | "build" | "rent" |
     fill.push({
       label: "Already pre-leased",
       value: `${pre.value.toFixed(1)}%`,
-      note: `${monthYear(pre.periodEnd)} · of capacity under construction`,
+      note: `${monthYear(pre.periodEnd)} · of capacity under construction${freshnessSuffix(fresh.preleased)}`,
     });
   }
 
   return {
     borrow: [
-      ...spread("Riskiest companies (CCC-rated)", s.credit.ccc),
-      ...spread("All junk-rated", s.credit.hy),
+      ...spread("Riskiest companies (CCC-rated)", s.credit.ccc, fresh.ccc),
+      ...spread("All junk-rated", s.credit.hy, fresh.hy),
     ],
     build,
     rent,
