@@ -27,6 +27,7 @@ import {
   issuerName,
 } from "~/domain/headlines";
 import { indicatorById } from "~/domain/indicators";
+import { PAGE_PARAMS } from "~/domain/page-params";
 import { parseRange } from "~/domain/ranges";
 import { formatDate, formatValue, seriesStyle } from "~/lib/format";
 import { pageHead } from "~/lib/seo";
@@ -43,8 +44,10 @@ export const Route = createFileRoute("/credit")({
       "Follow borrowing costs, from market credit spreads to the terms and debt of each AI infrastructure company's instruments.",
     ),
   validateSearch: (s) => ({
-    range: parseRange(s.range, "3y"),
-    company: BORROWERS.includes(String(s.company)) ? String(s.company) : "CRWV",
+    range: parseRange(s.range, PAGE_PARAMS["/credit"].range.default),
+    company: BORROWERS.includes(String(s.company))
+      ? String(s.company)
+      : PAGE_PARAMS["/credit"].company.default,
   }),
   loaderDeps: ({ search }) => ({ range: search.range, company: search.company }),
   loader: async ({ deps }) => {

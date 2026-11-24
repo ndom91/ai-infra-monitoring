@@ -23,6 +23,7 @@ import {
   largestCustomerSeries,
 } from "~/domain/headlines";
 import { indicatorById } from "~/domain/indicators";
+import { PAGE_PARAMS } from "~/domain/page-params";
 import { parseRange } from "~/domain/ranges";
 import { formatMonthYear, formatPeriod, formatValue } from "~/lib/format";
 import { pageHead } from "~/lib/seo";
@@ -44,8 +45,10 @@ export const Route = createFileRoute("/fundamentals")({
       "Compare AI infrastructure companies' spending, cash flow, debt, and customer concentration.",
     ),
   validateSearch: (s) => ({
-    range: parseRange(s.range, "5y"),
-    company: TICKERS.includes(String(s.company)) ? String(s.company) : "CRWV",
+    range: parseRange(s.range, PAGE_PARAMS["/fundamentals"].range.default),
+    company: TICKERS.includes(String(s.company))
+      ? String(s.company)
+      : PAGE_PARAMS["/fundamentals"].company.default,
   }),
   loaderDeps: ({ search }) => ({ range: search.range, company: search.company }),
   // Peer charts (shared) and the picked company's raw series load separately,

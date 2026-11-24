@@ -24,6 +24,7 @@ import {
   priceSpread,
   rentalCohorts,
 } from "~/domain/market";
+import { PAGE_PARAMS } from "~/domain/page-params";
 import { parseRange } from "~/domain/ranges";
 import { formatDate, formatMonthYear } from "~/lib/format";
 import { pageHead } from "~/lib/seo";
@@ -36,7 +37,7 @@ export const Route = createFileRoute("/market")({
       "GPU Market",
       "Track public GPU rental prices for cloud and consumer chips, and a used-GPU resale index.",
     ),
-  validateSearch: (s) => ({ range: parseRange(s.range, "3y") }),
+  validateSearch: (s) => ({ range: parseRange(s.range, PAGE_PARAMS["/market"].range.default) }),
   loaderDeps: ({ search }) => ({ range: search.range }),
   loader: ({ deps }) =>
     getSectionData({ data: { indicators: ["gpu_rental", "gpu_resale"], range: deps.range } }),

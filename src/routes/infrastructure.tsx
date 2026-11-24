@@ -10,6 +10,7 @@ import { rentSignal, type Signal, spaceSignal, supplySignal } from "~/domain/cha
 import { infraExplainer } from "~/domain/explainers";
 import { indicatorById } from "~/domain/indicators";
 import { chartSubtitle, chartTitle, titleRank } from "~/domain/infraTitles";
+import { PAGE_PARAMS, PUBLISHERS, TOPICS } from "~/domain/page-params";
 import { parseRange } from "~/domain/ranges";
 import type { IndicatorId } from "~/domain/types";
 import { formatPeriod, formatValue } from "~/lib/format";
@@ -22,9 +23,7 @@ const HISTORICAL_JLL_FAMILIES: Record<string, string> = {
   "jll.na_colo": "JLL's North America colocation coverage ended after Midyear 2025",
 };
 
-const TOPICS = ["supply", "space", "rent", "power"] as const;
 type Topic = (typeof TOPICS)[number];
-const PUBLISHERS = ["cbre", "jll"] as const;
 type Publisher = (typeof PUBLISHERS)[number];
 
 // The current family of each publisher. CBRE and JLL are never mixed.
@@ -77,9 +76,13 @@ export const Route = createFileRoute("/infrastructure")({
       "Track data-center construction, vacancy, pre-leasing, rents, and power in North America.",
     ),
   validateSearch: (s) => ({
-    range: parseRange(s.range, "max"),
-    topic: TOPICS.includes(s.topic as Topic) ? (s.topic as Topic) : "supply",
-    publisher: PUBLISHERS.includes(s.publisher as Publisher) ? (s.publisher as Publisher) : "cbre",
+    range: parseRange(s.range, PAGE_PARAMS["/infrastructure"].range.default),
+    topic: TOPICS.includes(s.topic as Topic)
+      ? (s.topic as Topic)
+      : PAGE_PARAMS["/infrastructure"].topic.default,
+    publisher: PUBLISHERS.includes(s.publisher as Publisher)
+      ? (s.publisher as Publisher)
+      : PAGE_PARAMS["/infrastructure"].publisher.default,
   }),
   loaderDeps: ({ search }) => ({ range: search.range }),
   loader: ({ deps }) =>
