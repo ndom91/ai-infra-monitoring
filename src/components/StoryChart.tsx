@@ -47,8 +47,13 @@ export function StoryChart({
           </div>
         )}
         {story?.body.length ? (
+          // The source sits with the paragraph, so a full-width chart can show
+          // paragraph and evidence as two independent columns.
           <div className="story-analysis">
-            <p className="story-body">{story.body[0]}</p>
+            <div className="story-analysis-main">
+              <p className="story-body">{story.body[0]}</p>
+              <figcaption className="story-source">{source}</figcaption>
+            </div>
             {story.body.length > 1 ? (
               <details className="story-details">
                 <summary>Evidence and context ({story.body.length - 1} notes)</summary>
@@ -60,8 +65,9 @@ export function StoryChart({
               </details>
             ) : null}
           </div>
-        ) : null}
-        <figcaption className="story-source">{source}</figcaption>
+        ) : (
+          <figcaption className="story-source">{source}</figcaption>
+        )}
       </div>
     </figure>
   );

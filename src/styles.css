@@ -1285,11 +1285,15 @@ h3,
   border-top: 1px solid var(--line);
 }
 
+/* The figure spans both text lines and sits centred against them. */
 .stat-row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "label value"
+    "note value";
   column-gap: 16px;
-  align-items: baseline;
+  align-items: center;
   padding: 11px 0;
   border-bottom: 1px solid var(--line-soft);
 }
@@ -1300,7 +1304,12 @@ h3,
 }
 
 .stat-list .stat-value {
+  grid-area: value;
   margin: 0;
+}
+
+.stat-label {
+  grid-area: label;
 }
 
 .stat-value {
@@ -1331,7 +1340,7 @@ h3,
 }
 
 .stat-note {
-  grid-column: 1 / -1;
+  grid-area: note;
   margin: 2px 0 0;
   color: var(--muted-2);
   font-size: 11px;
@@ -2681,12 +2690,32 @@ h3,
   margin-top: 80px;
 }
 
-/* Full-width story: body paragraph and evidence side by side. */
+/* Paired charts: paragraph, evidence, then the source line. */
+.story-analysis {
+  display: flex;
+  flex-direction: column;
+}
+
+.story-analysis-main {
+  display: contents;
+}
+
+.story-analysis .story-source {
+  order: 1;
+}
+
+/* Full-width story: paragraph and source on the left, evidence on the
+   right, as two independent columns so opening one does not stretch the
+   other. */
 .chapter-charts.one .story-analysis {
   display: grid;
   grid-template-columns: 1fr 1fr;
   align-items: start;
   column-gap: clamp(32px, 4vw, 64px);
+}
+
+.chapter-charts.one .story-analysis-main {
+  display: block;
 }
 
 .chapter-charts.one .story-details {
