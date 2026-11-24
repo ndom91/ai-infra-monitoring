@@ -182,13 +182,12 @@ function CreditPage() {
               fredStat("All junk-rated", byId.get("fred.BAMLH0A0HYM2")),
               {
                 label: "Credit alerts fired",
-                value: fired.length ? `${critical} critical · ${warning} warning` : "None",
+                value: String(fired.length),
                 note:
                   firstFired && lastFired
-                    ? `${formatDate(firstFired)} – ${formatDate(lastFired)}`
+                    ? `${critical} critical · ${warning} warning · ${formatDate(firstFired)} – ${formatDate(lastFired)}`
                     : "No warning or critical alert in the latest history",
                 tone: marketSignal === "context" ? undefined : marketSignal,
-                small: true,
               },
             ]}
           />

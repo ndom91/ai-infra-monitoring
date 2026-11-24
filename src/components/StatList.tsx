@@ -7,8 +7,6 @@ export type Stat = {
   // Period, change, and "calculated" where it applies.
   note: string;
   tone?: Signal;
-  // Text-like values ("1 critical · 2 warning") render smaller.
-  small?: boolean;
 };
 
 export function StatList({ stats }: { stats: Stat[] }) {
@@ -18,7 +16,7 @@ export function StatList({ stats }: { stats: Stat[] }) {
         <div key={s.label} className="stat-row">
           <dt className="stat-label">{s.label}</dt>
           <dd
-            className={`stat-value${s.small ? " is-text" : ""}${s.tone ? ` tone-${s.tone}` : ""}${
+            className={`stat-value${s.tone ? ` tone-${s.tone}` : ""}${
               s.value == null ? " awaiting" : ""
             }`}
           >

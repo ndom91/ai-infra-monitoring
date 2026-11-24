@@ -1614,10 +1614,6 @@ h3,
   white-space: nowrap;
 }
 
-.stat-value.is-text {
-  font-size: 13.5px;
-}
-
 .stat-value.awaiting,
 .tile-value.awaiting {
   color: var(--muted);
