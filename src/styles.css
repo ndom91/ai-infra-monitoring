@@ -406,8 +406,8 @@ h2 {
 }
 
 /* ---- Disclosures (src/components/Disclosure.tsx) ----
-   transitions.dev accordion: the panel grows through grid rows 0fr to 1fr
-   and the chevron flips vertically. */
+   transitions.dev accordion: the panel grows through grid rows 0fr to 1fr.
+   The chevron points right when closed and turns down when open. */
 :root {
   --acc-expand: 250ms;
   --acc-collapse: 250ms;
@@ -417,7 +417,7 @@ h2 {
 
 .t-acc-head {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 6px;
   min-height: 24px;
   padding: 0;
@@ -466,7 +466,10 @@ h2 {
 .t-acc-chevron {
   display: inline-flex;
   flex: none;
-  transform: scaleY(1);
+  align-items: center;
+  /* One line tall, so a summary that wraps keeps it on its first line. */
+  height: 1lh;
+  transform: rotate(-90deg);
   transform-origin: center;
   transition: transform var(--acc-chevron) var(--acc-ease);
 }
@@ -479,11 +482,8 @@ h2 {
   stroke-linecap: round;
   stroke-linejoin: round;
 }
-.t-acc-chevron path {
-  vector-effect: non-scaling-stroke;
-}
 .t-acc[data-open="true"] .t-acc-chevron {
-  transform: scaleY(-1);
+  transform: rotate(0deg);
 }
 
 /* Matches the open-state selectors, so it wins without !important. */

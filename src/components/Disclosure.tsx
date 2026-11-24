@@ -31,8 +31,7 @@ export function Disclosure({
         }}
       >
         <span className="t-acc-chevron">
-          {/* Lucide chevron-down: symmetric about the centre, so a vertical
-              flip turns it into a chevron-up. */}
+          {/* Lucide chevron-down, turned to point right while closed. */}
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <path d="m6 9 6 6 6-6" />
           </svg>
