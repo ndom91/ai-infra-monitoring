@@ -155,6 +155,12 @@ function emptyReason(topic: Topic, publisher: Publisher) {
   return `${PUBLISHER_LABEL[publisher].long} has no series for this topic yet. Broker reports are added by hand when they come out.`;
 }
 
+// "Vacancy 1.4%, 80.4% pre-leased, construction up 43% in a year."
+function sentence(parts: string[]) {
+  const text = parts.join(", ");
+  return `${text.charAt(0).toUpperCase()}${text.slice(1)}.`;
+}
+
 function signed(v: number, digits = 0) {
   if (v > 0) return `▲ +${v.toFixed(digits)}`;
   if (v < 0) return `▼ −${Math.abs(v).toFixed(digits)}`;
@@ -243,11 +249,10 @@ function InfrastructurePage() {
 
   // ---- Current read: facts only, from the same CBRE series ----
   const facts = [
-    vacancy?.latest && `Vacancy is ${+vacancy.latest.value.toFixed(2)}%.`,
-    preleased?.latest &&
-      `${+preleased.latest.value.toFixed(1)}% of the capacity under construction is pre-leased.`,
+    vacancy?.latest && `Vacancy ${+vacancy.latest.value.toFixed(2)}%`,
+    preleased?.latest && `${+preleased.latest.value.toFixed(1)}% pre-leased`,
     cChange?.pct != null &&
-      `Construction is ${cChange.pct >= 0 ? "up" : "down"} ${Math.abs(cChange.pct * 100).toFixed(0)}% on the same half a year earlier.`,
+      `construction ${cChange.pct >= 0 ? "up" : "down"} ${Math.abs(cChange.pct * 100).toFixed(0)}% in a year`,
   ].filter(Boolean);
   const latestPeriod = period(construction) || period(vacancy);
 
@@ -281,14 +286,12 @@ function InfrastructurePage() {
       <section className="scorecard" aria-label="Current read">
         <div className="scorecard-read">
           <p className="eyebrow">Current read</p>
-          <h2>{latestPeriod ? `Latest CBRE report: ${latestPeriod}` : "Awaiting CBRE data"}</h2>
+          <h2>{latestPeriod ? `Latest report: ${latestPeriod}` : "Awaiting CBRE data"}</h2>
           <p className="scorecard-facts">
-            {facts.length ? facts.join(" ") : "No CBRE figures have been entered yet."}
+            {facts.length ? sentence(facts as string[]) : "No CBRE figures have been entered yet."}
           </p>
           <p className="scorecard-prov">
-            Figures: CBRE, 8 North American primary markets (7 before 2023).
-            {latestPeriod ? ` Latest report covers ${latestPeriod}.` : ""} Cards use CBRE only, the
-            longest continuous series.
+            CBRE, 8 North American primary markets (7 before 2023). Cards use CBRE only.
           </p>
         </div>
         <div className="tiles">

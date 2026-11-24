@@ -164,6 +164,9 @@ function ChapterList({
 
 const LEGEND: Signal[] = ["worsening", "mixed", "reassuring", "context"];
 
+// A key with only "Context" in it explains nothing, so it is left out.
+const hasStatusKey = (signals: Signal[]) => signals.some((s) => s !== "context");
+
 // Layout A: sticky chapter rail on the left (desktop), a sticky chapter bar
 // with a bottom sheet on phones.
 export function ChapterLayout({
@@ -185,7 +188,7 @@ export function ChapterLayout({
       <aside className="chapter-rail" aria-label="On this page">
         <p className="rail-heading">On this page</p>
         <ChapterList chapters={chapters} active={active} />
-        <SignalLegend signals={used} />
+        {hasStatusKey(used) ? <SignalLegend signals={used} /> : null}
         {picker ? (
           <div className="rail-picker">
             <p className="rail-heading">{picker.heading}</p>
@@ -326,7 +329,7 @@ function MobileChapterBar({
               setOpen(false);
             }}
           />
-          <SignalLegend signals={legend} />
+          {hasStatusKey(legend) ? <SignalLegend signals={legend} /> : null}
         </div>
       ) : null}
     </div>
