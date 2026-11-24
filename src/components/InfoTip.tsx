@@ -46,7 +46,9 @@ export function InfoTip({
       const el = body.current;
       const trigger = button.current;
       if (!el || !trigger) return;
-      const { width, height } = el.getBoundingClientRect();
+      // offset sizes ignore the appear animation's scale.
+      const width = el.offsetWidth;
+      const height = el.offsetHeight;
       const t = trigger.getBoundingClientRect();
       // Where the unshifted popover sits: left-aligned to an inline trigger,
       // right-aligned to the round one.

@@ -102,9 +102,21 @@ h2 {
 }
 
 .toolbar {
+  position: relative;
   display: flex;
   gap: 8px;
   margin: 12px 0 18px;
+}
+
+.toolbar .t-ind {
+  z-index: 1;
+  box-sizing: border-box;
+  border: 1px solid var(--teal);
+  border-radius: 5px;
+}
+
+.toolbar.has-indicator .toolbar-btn[aria-current] {
+  border-color: var(--line);
 }
 
 .toolbar-btn {
@@ -114,6 +126,7 @@ h2 {
   border-radius: 5px;
   padding: 6px 12px;
   touch-action: manipulation;
+  transition: color var(--tabs-dur) var(--tabs-ease);
 }
 
 .toolbar-btn:hover {
@@ -413,6 +426,41 @@ h2 {
   --acc-collapse: 250ms;
   --acc-chevron: 250ms;
   --acc-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --tt-in-dur: 150ms;
+  --tt-in-ease: ease-out;
+  --tt-delay: 80ms;
+  --tt-scale: 0.98;
+  --tabs-dur: 250ms;
+  --tabs-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --panel-open-dur: 400ms;
+  --panel-close-dur: 350ms;
+  --panel-translate-y: 100px;
+  --panel-blur: 2px;
+  --panel-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ---- Sliding indicators (useSlidingIndicator) ----
+   transitions.dev tabs sliding: the hook writes the active item's box into
+   --ind-*; each bar below decides how to draw it. */
+.t-ind {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--ind-w, 0);
+  height: var(--ind-h, 0);
+  transform: translate(var(--ind-x, 0), var(--ind-y, 0));
+  transition:
+    transform var(--tabs-dur) var(--tabs-ease),
+    width var(--tabs-dur) var(--tabs-ease),
+    height var(--tabs-dur) var(--tabs-ease);
+  will-change: transform, width;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .t-ind {
+    transition: none;
+  }
 }
 
 .t-acc-head {
@@ -945,6 +993,38 @@ code {
 .infotip-inline .infotip-body {
   right: auto;
   left: 0;
+}
+
+/* transitions.dev tooltip timing: a short delay, then a quick fade and
+   scale from the trigger's corner. Closing removes it at once. */
+.infotip-body {
+  transform-origin: top right;
+  animation: infotip-in var(--tt-in-dur) var(--tt-in-ease) var(--tt-delay) backwards;
+}
+
+.infotip-body.up {
+  transform-origin: bottom right;
+}
+
+.infotip-inline .infotip-body {
+  transform-origin: top left;
+}
+
+.infotip-inline .infotip-body.up {
+  transform-origin: bottom left;
+}
+
+@keyframes infotip-in {
+  from {
+    opacity: 0;
+    scale: var(--tt-scale);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .infotip-body {
+    animation: none;
+  }
 }
 
 .infotip-inline .infotip-bubble {
@@ -1911,8 +1991,19 @@ h3,
 }
 
 .topic-tabs {
+  position: relative;
   display: flex;
   gap: 4px;
+}
+
+.topic-tabs .t-ind {
+  height: 2px;
+  transform: translate(var(--ind-x, 0), calc(var(--ind-y, 0px) + var(--ind-h, 0px) - 2px));
+  background: var(--teal);
+}
+
+.topic-tabs.has-indicator .topic-tab[aria-current] {
+  border-bottom-color: transparent;
 }
 
 .topic-tab {
@@ -1961,6 +2052,7 @@ h3,
 }
 
 .segmented {
+  position: relative;
   display: flex;
   gap: 2px;
   padding: 3px;
@@ -1969,7 +2061,17 @@ h3,
   background: var(--panel);
 }
 
+.segmented .t-ind {
+  border-radius: 6px;
+  background: var(--panel2);
+}
+
+.segmented.has-indicator .segment[aria-current] {
+  background: none;
+}
+
 .segment {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1979,6 +2081,7 @@ h3,
   color: var(--muted);
   font-size: 12.5px;
   touch-action: manipulation;
+  transition: color var(--tabs-dur) var(--tabs-ease);
 }
 
 .segment:hover {
@@ -2172,6 +2275,48 @@ h3,
     z-index: 40;
     inset: 0;
     background: rgb(0 0 0 / 55%);
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity var(--panel-close-dur) var(--panel-ease),
+      visibility 0s linear var(--panel-close-dur);
+  }
+
+  .sheet-backdrop[data-open="true"] {
+    opacity: 1;
+    visibility: visible;
+    transition:
+      opacity var(--panel-open-dur) var(--panel-ease),
+      visibility 0s;
+  }
+
+  /* transitions.dev panel reveal. Visibility waits for the slide to end,
+     so a closed sheet is hidden and cannot be tabbed into. */
+  .sheet.t-panel-slide {
+    transform: translateY(var(--panel-translate-y));
+    opacity: 0;
+    filter: blur(var(--panel-blur));
+    visibility: hidden;
+    pointer-events: none;
+    transition:
+      transform var(--panel-close-dur) var(--panel-ease),
+      opacity var(--panel-close-dur) var(--panel-ease),
+      filter var(--panel-close-dur) var(--panel-ease),
+      visibility 0s linear var(--panel-close-dur);
+    will-change: transform, opacity, filter;
+  }
+
+  .sheet.t-panel-slide[data-open="true"] {
+    transform: translateY(0);
+    opacity: 1;
+    filter: blur(0);
+    visibility: visible;
+    pointer-events: auto;
+    transition:
+      transform var(--panel-open-dur) var(--panel-ease),
+      opacity var(--panel-open-dur) var(--panel-ease),
+      filter var(--panel-open-dur) var(--panel-ease),
+      visibility 0s;
   }
 
   .sheet {
@@ -3217,5 +3362,15 @@ h3,
 
   .run-table .st-title code {
     font-size: 13px;
+  }
+}
+
+/* After the phone sheet rules, so it overrides them. */
+@media (prefers-reduced-motion: reduce) {
+  .sheet.t-panel-slide,
+  .sheet.t-panel-slide[data-open="true"],
+  .sheet-backdrop,
+  .sheet-backdrop[data-open="true"] {
+    transition: none;
   }
 }

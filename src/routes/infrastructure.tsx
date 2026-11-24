@@ -12,6 +12,7 @@ import { IndicatorNotes } from "~/components/IndicatorNotes";
 import { PageIntro } from "~/components/PageIntro";
 import { SignalDot } from "~/components/SignalDot";
 import { freshnessNote } from "~/components/StatList";
+import { useSlidingIndicator } from "~/components/useSlidingIndicator";
 import { rentSignal, type Signal, spaceSignal, supplySignal } from "~/domain/chapterSignals";
 import { infraExplainer } from "~/domain/explainers";
 import { indicatorById } from "~/domain/indicators";
@@ -185,6 +186,7 @@ type Tile = {
 function InfrastructurePage() {
   const { series } = Route.useLoaderData();
   const { range, topic, publisher } = Route.useSearch();
+  const tabs = useSlidingIndicator<HTMLElement>(topic);
   const cbre = (metric: string) => series.find((s) => s.id === `cbre.na_primary.${metric}`);
 
   // ---- Topic cards: CBRE primary markets only (the longest continuous series) ----
@@ -319,7 +321,8 @@ function InfrastructurePage() {
       </section>
 
       <div className="topic-bar">
-        <nav className="topic-tabs" aria-label="Topic">
+        <nav ref={tabs.bar} className="topic-tabs" aria-label="Topic">
+          <span ref={tabs.indicator} className="t-ind" aria-hidden="true" />
           {TOPICS.map((t) => (
             <Link
               key={t}
@@ -470,6 +473,7 @@ function InfraChart({
 }
 
 // Boxed segmented control: panel background, active item on --panel2 in teal.
+// The --panel2 pill slides between items.
 function SegmentedSwitch({
   label,
   options,
@@ -477,8 +481,12 @@ function SegmentedSwitch({
   label: string;
   options: { key: string; active: boolean; search: Record<string, string>; children: ReactNode }[];
 }) {
+  const { bar, indicator } = useSlidingIndicator<HTMLElement>(
+    options.find((o) => o.active)?.key ?? "",
+  );
   return (
-    <nav className="segmented" aria-label={label}>
+    <nav ref={bar} className="segmented" aria-label={label}>
+      <span ref={indicator} className="t-ind" aria-hidden="true" />
       {options.map((o) => (
         <Link
           key={o.key}

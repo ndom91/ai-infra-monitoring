@@ -1,9 +1,12 @@
 import { Link } from "@tanstack/react-router";
 import { RANGE_KEYS, RANGES, type RangeKey } from "~/domain/ranges";
+import { useSlidingIndicator } from "./useSlidingIndicator";
 
 export function RangeToolbar({ active }: { active: RangeKey }) {
+  const { bar, indicator } = useSlidingIndicator<HTMLElement>(active);
   return (
-    <nav className="toolbar" aria-label="Time range">
+    <nav ref={bar} className="toolbar" aria-label="Time range">
+      <span ref={indicator} className="t-ind" aria-hidden="true" />
       {RANGE_KEYS.map((k) => (
         <Link
           key={k}

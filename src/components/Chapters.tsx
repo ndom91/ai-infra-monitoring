@@ -301,36 +301,40 @@ function MobileChapterBar({
       >
         Chapters <span aria-hidden="true">⌄</span>
       </button>
-      {open ? (
-        <div className="sheet-backdrop" onClick={() => setOpen(false)} aria-hidden="true" />
-      ) : null}
-      {open ? (
-        <div
-          ref={sheet}
-          className="sheet"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="chapter-sheet-title"
-        >
-          <div className="sheet-head">
-            <p id="chapter-sheet-title" className="rail-heading">
-              Chapters
-            </p>
-            <button type="button" className="sheet-close" onClick={() => setOpen(false)}>
-              Close
-            </button>
-          </div>
-          <ChapterList
-            chapters={chapters}
-            active={active}
-            onPick={(slug) => {
-              picked.current = slug;
-              setOpen(false);
-            }}
-          />
-          {hasStatusKey(legend) ? <SignalLegend signals={legend} /> : null}
+      {/* Both stay rendered so closing can animate; inert while closed. */}
+      <div
+        className="sheet-backdrop"
+        data-open={open}
+        onClick={() => setOpen(false)}
+        aria-hidden="true"
+      />
+      <div
+        ref={sheet}
+        className="sheet t-panel-slide"
+        data-open={open}
+        inert={!open}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="chapter-sheet-title"
+      >
+        <div className="sheet-head">
+          <p id="chapter-sheet-title" className="rail-heading">
+            Chapters
+          </p>
+          <button type="button" className="sheet-close" onClick={() => setOpen(false)}>
+            Close
+          </button>
         </div>
-      ) : null}
+        <ChapterList
+          chapters={chapters}
+          active={active}
+          onPick={(slug) => {
+            picked.current = slug;
+            setOpen(false);
+          }}
+        />
+        {hasStatusKey(legend) ? <SignalLegend signals={legend} /> : null}
+      </div>
     </div>
   );
 }
