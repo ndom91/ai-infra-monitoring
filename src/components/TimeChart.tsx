@@ -33,12 +33,21 @@ type Props = {
   rebase?: boolean;
   // Coarsest tick unit worth showing; quarterly data should never get day ticks.
   minUnit?: "day" | "month";
+  bareTicks?: boolean;
 };
 
 export const TICK = "#86969a";
 export const GRID = "#252d2f";
 
-export function TimeChart({ lines, unit, height = 220, stepped, rebase, minUnit = "day" }: Props) {
+export function TimeChart({
+  lines,
+  unit,
+  height = 220,
+  stepped,
+  rebase,
+  minUnit = "day",
+  bareTicks,
+}: Props) {
   const datasets = lines.map((line, i) => {
     const color = line.color ?? PALETTE[i % PALETTE.length] ?? "#b5e1cd";
     const base = line.points[0]?.value;
@@ -110,7 +119,7 @@ export function TimeChart({ lines, unit, height = 220, stepped, rebase, minUnit 
               ticks: {
                 color: TICK,
                 maxTicksLimit: 5,
-                callback: (v) => (rebase ? String(v) : formatValue(Number(v), unit)),
+                callback: (v) => (rebase || bareTicks ? String(v) : formatValue(Number(v), unit)),
               },
               grid: { color: GRID },
             },

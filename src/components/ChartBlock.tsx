@@ -16,6 +16,10 @@ type Props = {
   emptyReason?: string;
   labelOf?: (s: SeriesView) => string;
   info?: Explainer;
+  // Leave out the series table, when the page shows it elsewhere.
+  stats?: boolean;
+  // Bare numbers on the y-axis, for long units such as an index base.
+  bareTicks?: boolean;
 };
 
 export function ChartBlock({
@@ -27,6 +31,8 @@ export function ChartBlock({
   emptyReason,
   labelOf = (s) => s.label,
   info,
+  stats = true,
+  bareTicks,
 }: Props) {
   const withData = series.filter((s) => s.points.length > 0);
   const units = new Set(series.map((s) => s.unit));
@@ -44,6 +50,7 @@ export function ChartBlock({
           rebase={rebase || units.size > 1}
           minUnit={series.every((s) => LOW_FREQUENCY.has(s.cadence)) ? "month" : "day"}
           lines={withData.map((s) => ({ label: labelOf(s), points: s.points }))}
+          bareTicks={bareTicks}
         />
       ) : (
         <div className="no-data">
@@ -55,7 +62,7 @@ export function ChartBlock({
           </span>
         </div>
       )}
-      {series.length > 0 && <SeriesStats series={series} />}
+      {stats && series.length > 0 && <SeriesStats series={series} />}
     </div>
   );
 }

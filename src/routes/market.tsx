@@ -1,11 +1,30 @@
 import { createFileRoute } from "@tanstack/react-router";
+import {
+  Chapter,
+  ChapterCharts,
+  type ChapterDef,
+  ChapterHeader,
+  ChapterLayout,
+  ChapterMore,
+} from "~/components/Chapters";
 import { ChartBlock } from "~/components/ChartBlock";
-import { IndicatorPanel } from "~/components/IndicatorPanel";
-import { PageLead } from "~/components/PageLead";
-import { SectionHeader } from "~/components/SectionHeader";
+import { FreshnessBadge } from "~/components/FreshnessBadge";
+import { PageIntro } from "~/components/PageIntro";
+import { PriceLadder } from "~/components/PriceLadder";
+import { SeriesStats } from "~/components/SeriesStats";
+import type { Stat } from "~/components/StatList";
 import { EXPLAINERS } from "~/domain/explainers";
-import { indicatorById, SECTIONS } from "~/domain/indicators";
+import { FRESHNESS_LABEL } from "~/domain/freshness";
+import {
+  type Cohort,
+  offerLabel,
+  priceLadder,
+  priceRange,
+  priceSpread,
+  rentalCohorts,
+} from "~/domain/market";
 import { parseRange } from "~/domain/ranges";
+import { formatDate, formatDelta, formatMonthYear, formatValue } from "~/lib/format";
 import { pageHead } from "~/lib/seo";
 import { getSectionData, type SeriesView } from "~/server/data";
 
@@ -23,70 +42,262 @@ export const Route = createFileRoute("/market")({
   component: MarketPage,
 });
 
+const LIST_PRICE_NOTE =
+  "These are published list prices, not what customers actually pay after discounts.";
+
+// Marks a figure whose series is not current, so stale prices never pass as today's.
+const freshnessNote = (s: SeriesView) =>
+  s.freshness === "current" ? "" : ` · ${FRESHNESS_LABEL[s.freshness].toLowerCase()}`;
+
+// Latest list price with its date and the change over a year.
+function priceStat(label: string, s: SeriesView | undefined): Stat {
+  if (!s?.latest) return { label, value: null, note: "No observations collected yet" };
+  const y1 = s.changes?.y1;
+  let change = "no value a year earlier";
+  if (y1) change = y1.delta === 0 ? "unchanged in a year" : `${formatDelta(y1, s.unit)} in a year`;
+  return {
+    label,
+    value: formatValue(s.latest.value, s.unit),
+    note: `${formatDate(s.latest.periodEnd)} · ${change}${freshnessNote(s)}`,
+  };
+}
+
+const pctChange = (label: string, c: { pct: number | null } | null | undefined): Stat => ({
+  label,
+  value: c?.pct == null ? null : `${c.pct > 0 ? "+" : "−"}${Math.abs(c.pct * 100).toFixed(1)}%`,
+  note: c?.pct == null ? "No comparable earlier value" : "calculated",
+});
+
+// The provider code inside an id: "aws.h100.us-east-1.ondemand" -> "h100".
+const cohortCode = (c: Cohort<SeriesView>) => c.series[0]?.id.split(".")[1] ?? "";
+const findOffer = (c: Cohort<SeriesView>, provider: string, type: string) =>
+  c.series.find((s) => s.id.startsWith(`${provider}.`) && s.id.endsWith(`.${type}`));
+
+function StaleLine({ series }: { series: SeriesView[] }) {
+  const notCurrent = series.filter((s) => s.freshness !== "current");
+  if (notCurrent.length === 0) return null;
+  const states = [...new Set(notCurrent.map((s) => s.freshness))];
+  return (
+    <p className="chapter-notice stale-line">
+      {states.map((st) => (
+        <FreshnessBadge key={st} state={st} />
+      ))}{" "}
+      {notCurrent.length} of {series.length} series {notCurrent.length === 1 ? "is" : "are"} not
+      current. The table below gives each one's latest date.
+    </p>
+  );
+}
+
+function CohortCharts({ cohorts, subtitle }: { cohorts: Cohort<SeriesView>[]; subtitle: string }) {
+  return (
+    <ChapterCharts>
+      {cohorts.map((c) => (
+        <ChartBlock
+          key={c.entity}
+          title={`${c.entity}: price per GPU-hour`}
+          info={EXPLAINERS.gpuListPrice}
+          subtitle={subtitle}
+          series={c.series}
+          labelOf={offerLabel}
+          stepped
+          stats={false}
+          emptyReason="No price data collected yet."
+        />
+      ))}
+    </ChapterCharts>
+  );
+}
+
+function SeriesTables({ series }: { series: SeriesView[] }) {
+  if (series.length === 0) return null;
+  return (
+    <ChapterMore
+      summary={`Show the ${series.length} series behind these charts: latest price, date observed, change and freshness`}
+    >
+      <div className="block">
+        <SeriesStats series={series} />
+      </div>
+    </ChapterMore>
+  );
+}
+
 function MarketPage() {
   const { series } = Route.useLoaderData();
   const { range } = Route.useSearch();
-  const section = SECTIONS.find((s) => s.id === "market");
-  const rental = series.filter((s) => s.indicator === "gpu_rental");
+  const cohorts = rentalCohorts(series.filter((s) => s.indicator === "gpu_rental"));
+  const datacenter = cohorts.filter((c) => c.kind === "datacenter");
+  const consumer = cohorts.filter((c) => c.kind === "consumer");
   const resale = series.filter((s) => s.indicator === "gpu_resale");
-  // Series ids look like "<provider>.<cohort>.<region>.<pricetype>"; the
-  // entity is the GPU cohort and the source names the provider.
-  const cohorts = new Map<string, SeriesView[]>();
-  for (const s of rental) {
-    const key = s.entity ?? "Other";
-    cohorts.set(key, [...(cohorts.get(key) ?? []), s]);
-  }
-  const shortLabel = (s: SeriesView) => {
-    const [, , region, type] = s.id.split(".");
-    return `${s.source} ${(type ?? "").replaceAll("_", " ")} (${region})`;
-  };
+  const index = resale[0];
+  const dcSeries = datacenter.flatMap((c) => c.series);
+  const consumerSeries = consumer.flatMap((c) => c.series);
+  const chips = (list: Cohort<SeriesView>[]) => list.map((c) => c.chip).join(", ");
+
+  const chapters: ChapterDef[] = [
+    {
+      slug: "datacenter",
+      label: "Data-center GPUs",
+      sub: chips(datacenter) || "No cohorts yet",
+      signal: "context",
+    },
+    { slug: "spread", label: "The spread", sub: "Same chip, different sellers", signal: "context" },
+    {
+      slug: "consumer",
+      label: "Consumer-grade GPUs",
+      sub: chips(consumer) || "No cohorts yet",
+      signal: "context",
+    },
+    { slug: "used", label: "Used GPUs", sub: "Resale index · monthly", signal: "context" },
+  ];
+  const [dc, spread, cons, used] = chapters as [ChapterDef, ChapterDef, ChapterDef, ChapterDef];
+
+  const h100 = datacenter.find((c) => cohortCode(c) === "h100");
+  const listStats: Stat[] = [
+    ...datacenter.map((c) => priceStat(`Nvidia ${c.chip} on AWS`, findOffer(c, "aws", "ondemand"))),
+    priceStat("Nvidia H100 on Azure", h100 && findOffer(h100, "azure", "ondemand")),
+  ];
+
+  const ladders = datacenter.map((c) => ({ cohort: c, rows: priceLadder(c.series) }));
+  const spreadStats: Stat[] = ladders.flatMap(({ cohort, rows }) => {
+    const sp = priceSpread(rows);
+    if (!sp) return [];
+    return [
+      {
+        label: `${cohort.chip}: ${sp.cheapest.label} vs ${sp.dearest.label}`,
+        value: `−${Math.abs(sp.gap * 100).toFixed(0)}%`,
+        note: `$${sp.cheapest.price.toFixed(2)} vs $${sp.dearest.price.toFixed(2)} · calculated`,
+      },
+    ];
+  });
+
+  const consumerStats: Stat[] = consumer.map((c) => {
+    const r = priceRange(priceLadder(c.series));
+    const label = `${c.chip}, cheapest to dearest`;
+    if (!r) return { label, value: null, note: "No observations collected yet" };
+    return {
+      label,
+      value: r.text,
+      note: `per GPU-hour · ${r.count} published prices · ${formatDate(r.oldest)}`,
+    };
+  });
+
+  const resaleStats: Stat[] = [
+    {
+      label: "Resale index",
+      value: index?.latest ? index.latest.value.toFixed(0) : null,
+      note: index?.latest
+        ? `${formatMonthYear(index.latest.periodEnd)} · early 2025 = 100${freshnessNote(index)}`
+        : "No observations collected yet",
+    },
+    pctChange("Change in six months", index?.changes?.m6),
+    pctChange("Change in a year", index?.changes?.y1),
+  ];
 
   return (
     <>
-      <SectionHeader
-        title={section?.label ?? "Market"}
-        blurb={section?.blurb ?? ""}
+      <PageIntro
+        eyebrow="Market"
+        title="What does it cost to rent a GPU, and what is a used one worth?"
         range={range}
-      />
-      <PageLead title="Start with public rental list prices">
-        Compare like-for-like GPU-hour list prices by accelerator class, provider, region, and tier.
-        These are published offers rather than transaction prices. The separate resale section is
-        limited to cited, permitted secondary-market evidence.
-      </PageLead>
-      <IndicatorPanel def={indicatorById("gpu_rental")}>
-        <div className="grid-2">
-          {[...cohorts]
-            .sort(([a], [b]) => a.localeCompare(b))
-            .map(([entity, cohortSeries]) => {
-              const isConsumer = entity.startsWith("RTX");
-              return (
-                <ChartBlock
-                  key={entity}
-                  title={`${entity}: price per GPU-hour`}
-                  info={EXPLAINERS.gpuListPrice}
-                  subtitle={
-                    isConsumer
-                      ? "Published hourly price; priority tiers remain separate"
-                      : "Machine list price divided by the GPUs in it"
-                  }
-                  series={cohortSeries}
-                  labelOf={shortLabel}
-                  stepped
-                  emptyReason="No price data collected yet."
-                />
-              );
-            })}
-        </div>
-      </IndicatorPanel>
-      <IndicatorPanel def={indicatorById("gpu_resale")}>
-        <ChartBlock
-          title="Used GPU prices"
-          info={EXPLAINERS.gpuResale}
-          subtitle="Published index, entered by hand with a citation"
-          series={resale}
-          emptyReason="No used-GPU price index we're allowed to use yet. The Coverage page explains why."
-        />
-      </IndicatorPanel>
+      >
+        Four chapters: the chips AI data centers are built on, how far prices spread for the same
+        chip, the consumer-grade end of the market, and what used chips resell for.
+      </PageIntro>
+      <ChapterLayout chapters={chapters} note={LIST_PRICE_NOTE}>
+        <Chapter chapter={dc}>
+          <ChapterHeader
+            index={1}
+            total={4}
+            chapter={dc}
+            meta="List prices"
+            question="Is renting a top data-center GPU getting cheaper?"
+            watchFor="list-price cuts on the big clouds. They move rarely and in steps, so each one matters."
+            stats={listStats}
+          />
+          <StaleLine series={dcSeries} />
+          <CohortCharts
+            cohorts={datacenter}
+            subtitle="Machine list price divided by the GPUs in it"
+          />
+          <p className="chapter-source">
+            Source: AWS Price List and Azure Retail Prices, plus smaller providers' published rates.
+            List prices exclude negotiated discounts.
+          </p>
+          <SeriesTables series={dcSeries} />
+        </Chapter>
+
+        <Chapter chapter={spread}>
+          <ChapterHeader
+            index={2}
+            total={4}
+            chapter={spread}
+            meta="Latest prices"
+            question="How much cheaper is the same chip away from the on-demand list price?"
+            watchFor="the gap between on-demand, spot and smaller providers widening. A wide gap can mean capacity is going spare."
+            stats={spreadStats}
+          />
+          <ChapterCharts>
+            {ladders.map(({ cohort, rows }) => (
+              <PriceLadder
+                key={cohort.entity}
+                title={`${cohort.entity}, cheapest first`}
+                rows={rows}
+              />
+            ))}
+          </ChapterCharts>
+        </Chapter>
+
+        <Chapter chapter={cons}>
+          <ChapterHeader
+            index={3}
+            total={4}
+            chapter={cons}
+            meta="Published hourly prices"
+            question="What do consumer-grade GPUs rent for?"
+            watchFor="priority tiers moving together."
+            stats={consumerStats}
+          />
+          <StaleLine series={consumerSeries} />
+          <CohortCharts
+            cohorts={consumer}
+            subtitle="Published hourly price; priority tiers remain separate"
+          />
+          <p className="chapter-source">
+            Source: published hourly prices from each provider. Priority tiers stay separate and are
+            never averaged.
+          </p>
+          <SeriesTables series={consumerSeries} />
+        </Chapter>
+
+        <Chapter chapter={used}>
+          <ChapterHeader
+            index={4}
+            total={4}
+            chapter={used}
+            meta="Monthly"
+            question="What is a used data-center GPU worth?"
+            watchFor="resale values falling faster than loans are repaid. These GPUs often secure the loans that paid for them."
+            stats={resaleStats}
+          />
+          {index?.latest && index.freshness !== "current" ? (
+            <p className="chapter-notice stale-line">
+              <FreshnessBadge state={index.freshness} /> Latest observation is{" "}
+              {formatDate(index.latest.periodEnd)}. The index is published monthly and entered by
+              hand.
+            </p>
+          ) : null}
+          <ChapterCharts one>
+            <ChartBlock
+              title="Used GPU prices"
+              info={EXPLAINERS.gpuResale}
+              subtitle="Published index, entered by hand with a citation"
+              series={resale}
+              bareTicks
+              emptyReason="No used-GPU price index we're allowed to use yet. The Coverage page explains why."
+            />
+          </ChapterCharts>
+        </Chapter>
+      </ChapterLayout>
     </>
   );
 }

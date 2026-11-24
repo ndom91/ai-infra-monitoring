@@ -153,10 +153,13 @@ const LEGEND: Signal[] = ["worsening", "mixed", "reassuring", "context"];
 export function ChapterLayout({
   chapters,
   picker,
+  note,
   children,
 }: {
   chapters: ChapterDef[];
   picker?: { heading: string; node: ReactNode };
+  // A short caveat at the bottom of the rail.
+  note?: ReactNode;
   children: ReactNode;
 }) {
   const active = useActiveChapter(chapters.map((c) => c.slug));
@@ -173,6 +176,7 @@ export function ChapterLayout({
             {picker.node}
           </div>
         ) : null}
+        {note ? <p className="rail-note">{note}</p> : null}
       </aside>
       <div className="chapter-main">
         <MobileChapterBar chapters={chapters} active={active} />

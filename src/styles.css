@@ -2757,3 +2757,88 @@ h3,
     font-size: 24px;
   }
 }
+
+/* ---- Market: rail note and price ladder ---- */
+
+.rail-note {
+  margin: 22px 0 0;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.stale-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.ladder {
+  width: 100%;
+  border-collapse: collapse;
+  border-top: 1px solid var(--line);
+}
+
+.ladder tr {
+  display: grid;
+  grid-template-columns: minmax(130px, 1fr) minmax(70px, 1.3fr) auto;
+  align-items: center;
+  column-gap: 16px;
+  padding: 10px 0;
+  border-bottom: 1px solid #222a2c;
+}
+
+.ladder th,
+.ladder td:not(.ladder-price) {
+  text-align: left;
+}
+
+.ladder th,
+.ladder td {
+  padding: 0;
+  font-weight: 400;
+}
+
+.ladder-offer a {
+  display: block;
+  color: var(--text);
+  font-size: 13px;
+}
+
+.ladder-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 6px;
+  color: #7f8d91;
+  font-size: 11px;
+}
+
+.ladder-meta .kind {
+  margin-left: 0;
+}
+
+.ladder-track {
+  display: block;
+  height: 8px;
+  background: var(--panel);
+}
+
+.ladder-bar {
+  display: block;
+  height: 100%;
+  background: #446759;
+}
+
+.ladder-bar.cheapest {
+  background: var(--teal);
+}
+
+.ladder-price {
+  font: 600 15px var(--mono);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
