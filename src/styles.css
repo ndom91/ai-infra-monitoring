@@ -1235,20 +1235,6 @@ h3,
   }
 }
 
-/* ---- Mobile menu (topbar) ---- */
-
-.nav-wrap {
-  position: relative;
-}
-
-.nav-toggle {
-  display: none;
-}
-
-.kicker-page {
-  display: none;
-}
-
 /* ---- Page intro (chapter and scorecard pages) ---- */
 
 .page-intro {
@@ -2081,74 +2067,38 @@ h3,
 /* ---- Phones ---- */
 
 @media (max-width: 640px) {
-  .topbar {
-    align-items: center;
-    flex-wrap: nowrap;
-    padding-bottom: 12px;
-  }
-
-  .brand {
-    flex-direction: column-reverse;
-  }
-
-  .kicker-tagline {
-    display: none;
-  }
-
-  .kicker-page {
-    display: inline;
-  }
-
-  .nav-toggle {
-    display: grid;
-    place-items: center;
-    width: 44px;
-    height: 44px;
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    background: var(--panel);
-    color: var(--text);
-    touch-action: manipulation;
-  }
-
-  .nav-toggle svg {
-    width: 20px;
-    height: 20px;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 1.6;
-    stroke-linecap: round;
-  }
-
+  /* One swipeable row instead of two wrapped rows. The strip bleeds to the
+     screen edges so tabs scroll under the fade instead of clipping early. */
   .nav {
+    position: relative;
+    flex: 1 0 100%;
+    flex-wrap: nowrap;
+    gap: 4px;
+    margin-inline: -12px;
+    padding-inline: 12px 32px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    mask-image: linear-gradient(to right, #000 calc(100% - 32px), transparent);
+  }
+
+  .nav::-webkit-scrollbar {
     display: none;
   }
 
-  .nav.open {
-    position: absolute;
-    z-index: 30;
-    top: calc(100% + 8px);
-    right: 0;
+  .nav a {
     display: flex;
-    flex-direction: column;
-    min-width: 220px;
-    padding: 6px;
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    background: var(--panel);
-    box-shadow: 0 12px 30px rgb(0 0 0 / 45%);
-  }
-
-  .nav.open a {
-    display: flex;
+    flex: none;
     align-items: center;
-    min-height: 44px;
+    min-block-size: 40px;
     padding: 0 12px;
-    font-size: 15px;
+    font-size: 14px;
+    white-space: nowrap;
   }
 
-  .nav.open a.nav-github {
-    justify-content: flex-start;
+  .nav a.nav-github {
+    min-width: 40px;
+    min-height: 40px;
   }
 
   /* Range toolbar: full width, equal buttons, at least 40 px tall. */
