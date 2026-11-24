@@ -229,6 +229,16 @@ h2 {
   outline-offset: -2px;
 }
 
+/* Phones paint the tap highlight as a square box; a rounded pressed state
+   replaces it. */
+.nav a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.nav a:active {
+  background: var(--panel);
+}
+
 .nav .t-ind {
   border-radius: 6px;
   background: var(--panel2);
