@@ -181,27 +181,43 @@ function FundamentalsPage() {
   const hyperLatest = hyperLives.flatMap((s) => (s.latest ? [s.latest.value] : []));
   const maxLife = hyperLatest.length ? Math.max(...hyperLatest) : null;
 
-  const chapters: ChapterDef[] = [
-    { slug: "peers", label: "Across peers", sub: "Same for every company", signal: "context" },
-    {
-      slug: "cash",
-      label: "Cash & spending",
-      sub: `${company} · quarterly`,
-      signal: cashSignal(capexOcf?.latest?.value),
-    },
-    { slug: "orders", label: "Order book", sub: `${company} · quarterly`, signal: "context" },
-    { slug: "customers", label: "Customers", sub: `${company} · from filings`, signal: "context" },
-    { slug: "insiders", label: "Insider sales", sub: `${company} · monthly`, signal: "context" },
-    { slug: "depreciation", label: "Depreciation", sub: "All companies", signal: "context" },
-  ];
-  const [peers, cash, orders, customers, insiders, depreciation] = chapters as [
-    ChapterDef,
-    ChapterDef,
-    ChapterDef,
-    ChapterDef,
-    ChapterDef,
-    ChapterDef,
-  ];
+  const peers: ChapterDef = {
+    slug: "peers",
+    label: "Across peers",
+    sub: "Same for every company",
+    signal: "context",
+  };
+  const cash: ChapterDef = {
+    slug: "cash",
+    label: "Cash & spending",
+    sub: `${company} · quarterly`,
+    signal: cashSignal(capexOcf?.latest?.value),
+  };
+  const orders: ChapterDef = {
+    slug: "orders",
+    label: "Order book",
+    sub: `${company} · quarterly`,
+    signal: "context",
+  };
+  const customers: ChapterDef = {
+    slug: "customers",
+    label: "Customers",
+    sub: `${company} · from filings`,
+    signal: "context",
+  };
+  const insiders: ChapterDef = {
+    slug: "insiders",
+    label: "Insider sales",
+    sub: `${company} · monthly`,
+    signal: "context",
+  };
+  const depreciation: ChapterDef = {
+    slug: "depreciation",
+    label: "Depreciation",
+    sub: "All companies",
+    signal: "context",
+  };
+  const chapters = [peers, cash, orders, customers, insiders, depreciation];
   const total = chapters.length;
   const cashTone = cash.signal === "context" ? undefined : cash.signal;
 

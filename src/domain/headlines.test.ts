@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { matchedYearChange, matchedYearOverYear } from "~/metrics/changes";
+import { matchedYearChange } from "~/metrics/changes";
 import {
   classifyIssuerDebt,
   groupMedianAtLatestQuarter,
@@ -86,23 +86,6 @@ describe("groupMedianAtLatestQuarter", () => {
 });
 
 describe("matched-period year-over-year change", () => {
-  const halfYears = [
-    { periodEnd: "2024-12-31", value: 4000 },
-    { periodEnd: "2025-06-30", value: 5000 },
-    { periodEnd: "2025-12-31", value: 6000 },
-    { periodEnd: "2026-06-30", value: 7500 },
-  ];
-
-  it("compares H1 with the H1 a year earlier", () => {
-    const c = matchedYearOverYear(halfYears);
-    expect(c?.from.periodEnd).toBe("2025-06-30");
-    expect(c?.pct).toBeCloseTo(0.5);
-  });
-
-  it("returns null when the matching half-year is missing", () => {
-    expect(matchedYearOverYear(halfYears.filter((p) => p.periodEnd !== "2025-06-30"))).toBeNull();
-  });
-
   it("rejects a stored change between different half-years", () => {
     const to = { periodEnd: "2026-06-30", value: 2 };
     const ok = { from: { periodEnd: "2025-06-30", value: 1 }, to, delta: 1, pct: 1 };

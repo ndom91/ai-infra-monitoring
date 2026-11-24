@@ -12,7 +12,7 @@ import { EntityBand, EntityPicker } from "~/components/EntityPicker";
 import { IssuedTable } from "~/components/IssuedTable";
 import { PageIntro } from "~/components/PageIntro";
 import { ScatterChart, type ScatterSeries } from "~/components/ScatterChart";
-import type { Stat } from "~/components/StatList";
+import { latestChangeStat, type Stat } from "~/components/StatList";
 import { TermsTable } from "~/components/TermsTable";
 import { creditMarketSignal, SIGNAL_LABELS } from "~/domain/chapterSignals";
 import { GROUP_BLURBS, SEC_DEBT_COMPANIES } from "~/domain/companies";
@@ -26,7 +26,7 @@ import {
   issuerName,
 } from "~/domain/headlines";
 import { parseRange } from "~/domain/ranges";
-import { formatDate, formatDelta, formatValue } from "~/lib/format";
+import { formatDate, formatValue } from "~/lib/format";
 import { pageHead } from "~/lib/seo";
 import { getCreditDebt, getRiskRead, getSectionData, type SeriesView } from "~/server/data";
 
@@ -61,20 +61,6 @@ export const Route = createFileRoute("/credit")({
 
 // Labels are "Instrument (qualifier) — metric"; charts show the instrument part.
 const instrumentLabel = (s: SeriesView) => s.label.split(" — ")[0] ?? s.label;
-
-// "Nov 20, 2026 · +482 bps in a year": FRED spreads and yields move in bps.
-function fredStat(label: string, s: SeriesView | undefined, tone?: Stat["tone"]): Stat {
-  if (!s?.latest) return { label, value: null, note: "No observations collected yet" };
-  const y1 = s.changes?.y1;
-  return {
-    label,
-    value: formatValue(s.latest.value, s.unit),
-    note: `${formatDate(s.latest.periodEnd)} · ${
-      y1 ? `${formatDelta(y1, s.unit, true)} in a year` : "no value a year earlier"
-    }`,
-    tone,
-  };
-}
 
 const KIND_STYLE: Record<IssuedKind, Omit<ScatterSeries, "points">> = {
   note: { label: "Senior / secured notes", color: "#b5e1cd" },
@@ -114,18 +100,31 @@ function CreditPage() {
   const borrower = SEC_DEBT_COMPANIES.find((c) => c.ticker === company);
 
   const marketSignal = creditMarketSignal(riskRead.label);
-  const chapters: ChapterDef[] = [
-    { slug: "market", label: "Market stress", sub: "Daily · FRED", signal: marketSignal },
-    { slug: "rates", label: "Rate backdrop", sub: "Daily · FRED", signal: "context" },
-    { slug: "issued", label: "What AI companies pay", sub: "From filings", signal: "context" },
-    { slug: "bycompany", label: "Debt by company", sub: "Quarterly · SEC", signal: "context" },
-  ];
-  const [market, rates, issuedCh, byCompany] = chapters as [
-    ChapterDef,
-    ChapterDef,
-    ChapterDef,
-    ChapterDef,
-  ];
+  const market: ChapterDef = {
+    slug: "market",
+    label: "Market stress",
+    sub: "Daily · FRED",
+    signal: marketSignal,
+  };
+  const rates: ChapterDef = {
+    slug: "rates",
+    label: "Rate backdrop",
+    sub: "Daily · FRED",
+    signal: "context",
+  };
+  const issuedCh: ChapterDef = {
+    slug: "issued",
+    label: "What AI companies pay",
+    sub: "From filings",
+    signal: "context",
+  };
+  const byCompany: ChapterDef = {
+    slug: "bycompany",
+    label: "Debt by company",
+    sub: "Quarterly · SEC",
+    signal: "context",
+  };
+  const chapters = [market, rates, issuedCh, byCompany];
 
   // Alert history: the same signals as the homepage "Current read".
   const fired = riskRead.signals.filter((s) => s.severity !== "info");
@@ -174,12 +173,11 @@ function CreditPage() {
             question="Are lenders getting nervous about the riskiest borrowers?"
             watchFor="the CCC spread rising faster than the broad junk index. The weakest borrowers are usually cut off first."
             stats={[
-              fredStat(
-                "CCC-rated, extra interest",
-                byId.get("fred.BAMLH0A3HYC"),
-                marketSignal === "context" ? undefined : marketSignal,
-              ),
-              fredStat("All junk-rated", byId.get("fred.BAMLH0A0HYM2")),
+              latestChangeStat("CCC-rated, extra interest", byId.get("fred.BAMLH0A3HYC"), {
+                bps: true,
+                tone: marketSignal === "context" ? undefined : marketSignal,
+              }),
+              latestChangeStat("All junk-rated", byId.get("fred.BAMLH0A0HYM2"), { bps: true }),
               {
                 label: "Credit alerts fired",
                 value: String(fired.length),
@@ -224,9 +222,13 @@ function CreditPage() {
             question="Is it credit risk, or just higher rates overall?"
             watchFor="spreads widening while Treasury yields are flat. That points at credit risk, not the rate cycle."
             stats={[
-              fredStat("BBB-rated, extra interest", byId.get("fred.BAMLC0A4CBBB")),
-              fredStat("10-year Treasury yield", byId.get("fred.DGS10")),
-              fredStat("Junk-bond total yield", byId.get("fred.BAMLH0A0HYM2EY")),
+              latestChangeStat("BBB-rated, extra interest", byId.get("fred.BAMLC0A4CBBB"), {
+                bps: true,
+              }),
+              latestChangeStat("10-year Treasury yield", byId.get("fred.DGS10"), { bps: true }),
+              latestChangeStat("Junk-bond total yield", byId.get("fred.BAMLH0A0HYM2EY"), {
+                bps: true,
+              }),
             ]}
           />
           <ChapterCharts>

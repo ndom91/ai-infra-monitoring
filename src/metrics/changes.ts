@@ -97,19 +97,3 @@ export function matchedYearChange(change: Change | null): Change | null {
   const [ty, tm] = change.to.periodEnd.split("-").map(Number);
   return fy === (ty ?? 0) - 1 && fm === tm ? change : null;
 }
-
-// The same-month point one year before the latest, from a full history.
-export function matchedYearOverYear(points: Point[]): Change | null {
-  const to = points.at(-1);
-  if (!to) return null;
-  const [y, m] = to.periodEnd.split("-");
-  const prefix = `${Number(y) - 1}-${m}`;
-  const from = points.findLast((p) => p.periodEnd.startsWith(prefix));
-  if (!from) return null;
-  return {
-    from,
-    to,
-    delta: to.value - from.value,
-    pct: from.value === 0 ? null : (to.value - from.value) / Math.abs(from.value),
-  };
-}

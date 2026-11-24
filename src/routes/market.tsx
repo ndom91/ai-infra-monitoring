@@ -12,9 +12,8 @@ import { FreshnessBadge } from "~/components/FreshnessBadge";
 import { PageIntro } from "~/components/PageIntro";
 import { PriceLadder } from "~/components/PriceLadder";
 import { SeriesStats } from "~/components/SeriesStats";
-import type { Stat } from "~/components/StatList";
+import { freshnessNote, latestChangeStat, type Stat } from "~/components/StatList";
 import { EXPLAINERS } from "~/domain/explainers";
-import { FRESHNESS_LABEL } from "~/domain/freshness";
 import {
   type Cohort,
   offerLabel,
@@ -24,7 +23,7 @@ import {
   rentalCohorts,
 } from "~/domain/market";
 import { parseRange } from "~/domain/ranges";
-import { formatDate, formatDelta, formatMonthYear, formatValue } from "~/lib/format";
+import { formatDate, formatMonthYear } from "~/lib/format";
 import { pageHead } from "~/lib/seo";
 import { getSectionData, type SeriesView } from "~/server/data";
 
@@ -44,23 +43,6 @@ export const Route = createFileRoute("/market")({
 
 const LIST_PRICE_NOTE =
   "These are published list prices, not what customers actually pay after discounts.";
-
-// Marks a figure whose series is not current, so stale prices never pass as today's.
-const freshnessNote = (s: SeriesView) =>
-  s.freshness === "current" ? "" : ` · ${FRESHNESS_LABEL[s.freshness].toLowerCase()}`;
-
-// Latest list price with its date and the change over a year.
-function priceStat(label: string, s: SeriesView | undefined): Stat {
-  if (!s?.latest) return { label, value: null, note: "No observations collected yet" };
-  const y1 = s.changes?.y1;
-  let change = "no value a year earlier";
-  if (y1) change = y1.delta === 0 ? "unchanged in a year" : `${formatDelta(y1, s.unit)} in a year`;
-  return {
-    label,
-    value: formatValue(s.latest.value, s.unit),
-    note: `${formatDate(s.latest.periodEnd)} · ${change}${freshnessNote(s)}`,
-  };
-}
 
 const pctChange = (label: string, c: { pct: number | null } | null | undefined): Stat => ({
   label,
@@ -133,28 +115,38 @@ function MarketPage() {
   const consumerSeries = consumer.flatMap((c) => c.series);
   const chips = (list: Cohort<SeriesView>[]) => list.map((c) => c.chip).join(", ");
 
-  const chapters: ChapterDef[] = [
-    {
-      slug: "datacenter",
-      label: "Data-center GPUs",
-      sub: chips(datacenter) || "No cohorts yet",
-      signal: "context",
-    },
-    { slug: "spread", label: "The spread", sub: "Same chip, different sellers", signal: "context" },
-    {
-      slug: "consumer",
-      label: "Consumer-grade GPUs",
-      sub: chips(consumer) || "No cohorts yet",
-      signal: "context",
-    },
-    { slug: "used", label: "Used GPUs", sub: "Resale index · monthly", signal: "context" },
-  ];
-  const [dc, spread, cons, used] = chapters as [ChapterDef, ChapterDef, ChapterDef, ChapterDef];
+  const dc: ChapterDef = {
+    slug: "datacenter",
+    label: "Data-center GPUs",
+    sub: chips(datacenter) || "No cohorts yet",
+    signal: "context",
+  };
+  const spread: ChapterDef = {
+    slug: "spread",
+    label: "The spread",
+    sub: "Same chip, different sellers",
+    signal: "context",
+  };
+  const cons: ChapterDef = {
+    slug: "consumer",
+    label: "Consumer-grade GPUs",
+    sub: chips(consumer) || "No cohorts yet",
+    signal: "context",
+  };
+  const used: ChapterDef = {
+    slug: "used",
+    label: "Used GPUs",
+    sub: "Resale index · monthly",
+    signal: "context",
+  };
+  const chapters = [dc, spread, cons, used];
 
   const h100 = datacenter.find((c) => cohortCode(c) === "h100");
   const listStats: Stat[] = [
-    ...datacenter.map((c) => priceStat(`Nvidia ${c.chip} on AWS`, findOffer(c, "aws", "ondemand"))),
-    priceStat("Nvidia H100 on Azure", h100 && findOffer(h100, "azure", "ondemand")),
+    ...datacenter.map((c) =>
+      latestChangeStat(`Nvidia ${c.chip} on AWS`, findOffer(c, "aws", "ondemand")),
+    ),
+    latestChangeStat("Nvidia H100 on Azure", h100 && findOffer(h100, "azure", "ondemand")),
   ];
 
   const ladders = datacenter.map((c) => ({ cohort: c, rows: priceLadder(c.series) }));

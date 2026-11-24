@@ -132,7 +132,7 @@ function Home() {
           </p>
         </div>
         <aside className="hero-aside">
-          <RiskRead read={riskRead} variant="compact" updated={lastUpdated} />
+          <RiskRead read={riskRead} updated={lastUpdated} />
         </aside>
       </section>
 

@@ -935,164 +935,8 @@ h3,
   text-wrap: pretty;
 }
 
-.story-aside {
-  border-left: 1px solid var(--line);
-  padding-left: 28px;
-}
-
-.story-aside h2 {
-  font: 600 11px var(--mono);
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: var(--teal);
-  margin: 6px 0 14px;
-}
-
-.risk-read-head {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-bottom: 12px;
-}
-
-.risk-read-head .eyebrow {
-  margin: 0;
-}
-
-.risk-read-head h2 {
-  color: var(--text);
-  font: 650 22px / 1.1 var(--display);
-  letter-spacing: -0.5px;
-  text-transform: none;
-}
-
-.risk-read-detail {
-  color: var(--reading);
-  font-size: 13px;
-  line-height: 1.5;
-  margin: 0;
-}
-
-.risk-signal-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.story-aside .risk-signal-list li {
-  display: grid;
-  grid-template-columns: 8px 1fr;
-  gap: 5px 8px;
-  padding: 12px 0 12px 2px;
-  color: var(--reading);
-}
-
-.story-aside .risk-signal-list li::before {
-  align-self: start;
-  background: var(--muted);
-  border-radius: 50%;
-  content: "";
-  height: 6px;
-  margin-top: 6px;
-  width: 6px;
-}
-
-.story-aside .risk-signal-list li.sev-warning::before {
-  background: var(--orange);
-}
-
-.story-aside .risk-signal-list li.sev-critical::before {
-  background: #ffa49e;
-}
-
-.risk-signal-list .badge {
-  grid-column: 2;
-  border: 0;
-  color: var(--muted);
-  font-size: 10px;
-  letter-spacing: 0.8px;
-  padding: 0;
-}
-
-.risk-signal-list li.sev-warning .badge {
-  color: var(--orange);
-}
-
-.risk-signal-list li.sev-critical .badge {
-  color: #ffa49e;
-}
-
-.risk-signal-list li > span:nth-child(2) {
-  grid-column: 2;
-}
-
-.risk-signal-date {
-  grid-column: 2;
-  color: var(--muted);
-  font: 10px var(--mono);
-}
-
-.story-aside .risk-signal-list li:last-child {
-  border-bottom: 0;
-}
-
-.data-timing {
-  border-top: 1px solid var(--line);
-  color: var(--muted);
-  font: 10px / 1.5 var(--mono);
-  margin: 2px 0 0;
-  padding-top: 12px;
-}
-
-.story-aside ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.story-aside li {
-  position: relative;
-  font-size: 13px;
-  line-height: 1.55;
-  color: var(--reading);
-  padding: 14px 0 14px 14px;
-  border-bottom: 1px solid #222a2c;
-  text-wrap: pretty;
-}
-
-.story-aside li:first-child {
-  padding-top: 0;
-}
-
 /* Severity bar, inset by the same amount top and bottom so it sits
    centered between the separators. */
-.story-aside li::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 14px;
-  bottom: 14px;
-  width: 2px;
-  border-radius: 1px;
-  background: var(--muted);
-}
-
-.story-aside li:first-child::before {
-  top: 0;
-}
-
-.story-aside li.sev-warning::before {
-  background: var(--orange);
-}
-
-.story-aside li.sev-critical::before {
-  background: #ffa49e;
-}
-
-.story-aside .more {
-  margin-top: 14px;
-}
-
 /* Grows to fill the tile so every note sits on the bottom edge; the font
    scales with the tile width (container query units). */
 /* Grid, not CSS columns: column balancing reflowed the summary into the
@@ -1174,13 +1018,6 @@ h3,
 }
 
 @media (max-width: 1000px) {
-  .story-aside {
-    border-left: 0;
-    padding-left: 0;
-    border-top: 1px solid var(--line);
-    padding-top: 20px;
-  }
-
   /* An odd last tile spans the full row instead of leaving a hole. */
 }
 
@@ -1197,17 +1034,6 @@ h3,
   .story-intro h1 {
     font-size: 32px;
     letter-spacing: -1px;
-  }
-
-  .story-aside {
-    order: -1;
-    border-top: 0;
-    border-bottom: 1px solid var(--line);
-    padding: 0 0 20px;
-  }
-
-  .risk-signal-list li {
-    font-size: 12px;
   }
 
   .story-intro p {
@@ -1615,20 +1441,22 @@ h3,
 }
 
 .chapter .block,
-.chapter-more .block {
+.topic-panel .block {
   padding: 0;
   border: 0;
   border-radius: 0;
   background: none;
 }
 
-.chapter .block-head h3 {
+.chapter .block-head h3,
+.topic-panel .block-head h3 {
   font-size: 17px;
   font-weight: 680;
   letter-spacing: -0.3px;
 }
 
-.chapter .block-head .muted {
+.chapter .block-head .muted,
+.topic-panel .block-head .muted {
   font: 11.5px var(--mono);
 }
 
@@ -1943,23 +1771,6 @@ h3,
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 400px), 1fr));
   gap: 40px 36px;
-}
-
-.topic-panel .block {
-  padding: 0;
-  border: 0;
-  border-radius: 0;
-  background: none;
-}
-
-.topic-panel .block-head h3 {
-  font-size: 17px;
-  font-weight: 680;
-  letter-spacing: -0.3px;
-}
-
-.topic-panel .block-head .muted {
-  font: 11.5px var(--mono);
 }
 
 .single-point-value {

@@ -9,7 +9,7 @@ import { parseRange } from "~/domain/ranges";
 import type { IndicatorId } from "~/domain/types";
 import { formatPeriod, formatValue } from "~/lib/format";
 import { pageHead } from "~/lib/seo";
-import { type Change, matchedYearChange, matchedYearOverYear } from "~/metrics/changes";
+import { type Change, matchedYearChange } from "~/metrics/changes";
 import { getSectionData, type SeriesView } from "~/server/data";
 
 const HISTORICAL_JLL_FAMILIES: Record<string, string> = {
@@ -75,10 +75,12 @@ export const Route = createFileRoute("/infrastructure")({
   component: InfrastructurePage,
 });
 
+const metricOf = (s: SeriesView) => s.id.split(".").slice(2).join(".");
+
 // Which topic a series belongs to, by its metric; the indicator is the fallback.
 function topicOf(s: SeriesView): Topic {
   if (s.indicator === "power_grid") return "power";
-  const metric = s.id.split(".").slice(2).join(".");
+  const metric = metricOf(s);
   if (metric.startsWith("asking_rent")) return "rent";
   if (/^(vacancy|net_absorption)/.test(metric)) return "space";
   if (/^(under_construction|preleased|precommitted|inventory)/.test(metric)) return "supply";
@@ -97,45 +99,30 @@ const METRIC_TITLES: [RegExp, string][] = [
 
 const familyOf = (s: SeriesView) => s.id.split(".").slice(0, 2).join(".");
 
-// Seasonally adjusted annual rates and monthly amounts have different scales, so
-// each Census series gets its own chart.
-const CHART_PER_SERIES = new Set(["census.c30"]);
+const metricRank = (metric: string) => {
+  const i = METRIC_TITLES.findIndex(([re]) => re.test(metric));
+  return i === -1 ? METRIC_TITLES.length : i;
+};
 
-// One chart per publisher market definition, metric, unit and cadence.
-// Publishers and coverage changes never share a chart, and annual totals never
-// sit next to half-year figures.
+// One chart per series, except EIA's per-state series of one measure, which
+// share a chart. Publishers and coverage changes never share a chart, and
+// annual totals never sit next to half-year figures. Charts follow the
+// order of METRIC_TITLES (construction, pre-leasing, inventory, ...).
 function groups(series: SeriesView[]) {
   const map = new Map<string, { family: string; title: string; list: SeriesView[] }>();
   for (const s of series) {
     const family = familyOf(s);
-    const metric = s.id.split(".").slice(2).join(".");
-    const perSeries =
-      CHART_PER_SERIES.has(family) || family.startsWith("cbre.") || family.startsWith("jll.");
-    const key = `${perSeries ? s.id : family}|${s.unit}|${s.cadence}`;
-    const named = METRIC_TITLES.find(([re]) => re.test(metric))?.[1];
-    const title = chartTitle(s, { perSeries, named, ownChart: CHART_PER_SERIES.has(family) });
+    const shared = family.startsWith("eia.");
+    const key = `${shared ? family : s.id}|${s.unit}|${s.cadence}`;
+    const title = shared
+      ? `${s.source}${s.entity ? ` · ${s.entity}` : ""} (${s.unit}${s.cadence === "annual" ? ", annual" : ""})`
+      : (METRIC_TITLES.find(([re]) => re.test(metricOf(s)))?.[1] ?? s.label);
     const g = map.get(key) ?? { family, title, list: [] };
     g.list.push(s);
     map.set(key, g);
   }
-  // Charts follow the order of METRIC_TITLES (construction, pre-leasing,
-  // inventory, ...); anything unnamed goes last.
-  const rank = (g: { list: SeriesView[] }) => {
-    const metric = g.list[0]?.id.split(".").slice(2).join(".") ?? "";
-    const i = METRIC_TITLES.findIndex(([re]) => re.test(metric));
-    return i === -1 ? METRIC_TITLES.length : i;
-  };
-  return [...map.values()].sort((a, b) => rank(a) - rank(b));
-}
-
-function chartTitle(
-  s: SeriesView,
-  o: { perSeries: boolean; named: string | undefined; ownChart: boolean },
-) {
-  if (o.ownChart) return s.label;
-  if (o.named && o.perSeries) return o.named;
-  const entity = s.entity ? ` · ${s.entity}` : "";
-  return `${s.source}${entity} (${s.unit}${s.cadence === "annual" ? ", annual" : ""})`;
+  const rank = (g: { list: SeriesView[] }) => metricRank(g.list[0] ? metricOf(g.list[0]) : "");
+  return [...map.values()].sort((x, y) => rank(x) - rank(y));
 }
 
 function emptyReason(topic: Topic, publisher: Publisher) {
@@ -154,10 +141,10 @@ function signed(v: number, digits = 0) {
   return `± ${v.toFixed(digits)}`;
 }
 
-// Same half-year a year apart, from the stored change or the full history.
+// Same half-year a year apart. The stored change is computed on the server
+// from the full history, so a short page range cannot hide the year-ago point.
 function yearChange(s: SeriesView | undefined): Change | null {
-  if (!s) return null;
-  return matchedYearChange(s.changes?.y1 ?? null) ?? matchedYearOverYear(s.points);
+  return matchedYearChange(s?.changes?.y1 ?? null);
 }
 
 type Tile = {
