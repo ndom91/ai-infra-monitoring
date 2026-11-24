@@ -157,3 +157,31 @@ export function insiderWindow(total: Point[], planned: Point[], endMonth: string
     plannedShare: sum > 0 && complete ? plannedSum / sum : null,
   };
 }
+
+// ---- Customer concentration (data/manual/customer_concentration.yaml) ----
+
+type ConcentrationSeries = { id: string; label: string };
+
+const NOT_A_CUSTOMER = /^(largest_customer|second_largest_customer|top\d)$/;
+
+// The series for a company's largest customer over one period length
+// ("fy" or "q"). Prefer an explicit largest-customer series. Otherwise,
+// when exactly one named customer is disclosed for that period, it is the
+// largest disclosed customer, and its name comes from the label.
+export function largestCustomerSeries<T extends ConcentrationSeries>(
+  list: T[],
+  period: "fy" | "q",
+): { series: T; customer: string | null } | null {
+  const suffix = `_pct_${period}`;
+  const own = list.filter((s) => s.id.endsWith(suffix));
+  const explicit = own.find((s) => s.id.endsWith(`.largest_customer${suffix}`));
+  if (explicit) return { series: explicit, customer: null };
+  const named = own.filter((s) => {
+    const metric = (s.id.split(".")[2] ?? "").slice(0, -suffix.length);
+    return !NOT_A_CUSTOMER.test(metric);
+  });
+  const only = named.length === 1 ? named[0] : undefined;
+  if (!only) return null;
+  const customer = /revenue share from (.+?) \(/.exec(only.label)?.[1] ?? null;
+  return { series: only, customer };
+}

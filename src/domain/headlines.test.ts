@@ -6,6 +6,7 @@ import {
   insiderWindow,
   issuedInstruments,
   issuedSummary,
+  largestCustomerSeries,
   median,
 } from "./headlines";
 
@@ -138,5 +139,38 @@ describe("insiderWindow", () => {
 
   it("crosses a year boundary", () => {
     expect(insiderWindow([{ periodEnd: "2025-12-31", value: 9 }], [], "2026-01").total).toBe(9);
+  });
+});
+
+describe("largestCustomerSeries", () => {
+  const s = (id: string, label = `${id} label`) => ({ id, label });
+
+  it("prefers an explicit largest-customer series", () => {
+    const list = [
+      s("customer_concentration.CRWV.microsoft_pct_fy"),
+      s("customer_concentration.CRWV.largest_customer_pct_fy"),
+    ];
+    expect(largestCustomerSeries(list, "fy")).toEqual({ series: list[1], customer: null });
+  });
+
+  it("uses the only named customer, with its name from the label", () => {
+    const list = [
+      s(
+        "customer_concentration.CORZ.coreweave_pct_q",
+        "Core Scientific revenue share from CoreWeave (quarter)",
+      ),
+      s("customer_concentration.CORZ.coreweave_pct_6m"),
+    ];
+    expect(largestCustomerSeries(list, "q")).toEqual({ series: list[0], customer: "CoreWeave" });
+    expect(largestCustomerSeries(list, "fy")).toBeNull();
+  });
+
+  it("does not guess between several named customers", () => {
+    const list = [
+      s("customer_concentration.X.alpha_pct_q"),
+      s("customer_concentration.X.beta_pct_q"),
+      s("customer_concentration.X.top2_pct_q"),
+    ];
+    expect(largestCustomerSeries(list, "q")).toBeNull();
   });
 });

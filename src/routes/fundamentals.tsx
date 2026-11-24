@@ -16,7 +16,11 @@ import { TermsTable } from "~/components/TermsTable";
 import { cashSignal } from "~/domain/chapterSignals";
 import { GROUP_BLURBS, SEC_COMPANIES, SEC_DEBT_COMPANIES } from "~/domain/companies";
 import { EXPLAINERS } from "~/domain/explainers";
-import { groupMedianAtLatestQuarter, insiderWindow } from "~/domain/headlines";
+import {
+  groupMedianAtLatestQuarter,
+  insiderWindow,
+  largestCustomerSeries,
+} from "~/domain/headlines";
 import { parseRange } from "~/domain/ranges";
 import { formatMonthYear, formatPeriod, formatValue } from "~/lib/format";
 import { pageHead } from "~/lib/seo";
@@ -68,9 +72,21 @@ function latestStat(
   label: string,
   s: SeriesView | undefined,
   note: string,
-  opts: { tone?: Stat["tone"]; missing?: string; format?: (v: number) => string } = {},
+  opts: {
+    tone?: Stat["tone"];
+    missing?: string;
+    placeholder?: string;
+    format?: (v: number) => string;
+  } = {},
 ): Stat {
-  if (!s?.latest) return { label, value: null, note: opts.missing ?? "Not reported" };
+  if (!s?.latest) {
+    return {
+      label,
+      value: null,
+      note: opts.missing ?? "Not reported",
+      placeholder: opts.placeholder,
+    };
+  }
   const format = opts.format ?? ((v: number) => formatValue(v, s.unit));
   return {
     label,
@@ -123,6 +139,35 @@ function FundamentalsPage() {
   };
 
   const concentration = own(manual("customer_concentration"));
+  // Customer data is hand-curated for a few companies only. "Not tracked"
+  // makes clear the gap is coverage, not a missing disclosure.
+  const concentrationTracked = concentration.length > 0;
+  const concentrationEmpty = concentrationTracked
+    ? "No share disclosures for this period length are entered for this company."
+    : `Customer shares are not tracked for ${company}. They are entered by hand from filings, with a quote for each.`;
+  const concentrationMissing = concentrationTracked
+    ? {
+        format: pct0,
+        placeholder: "None entered",
+        missing: "No disclosure entered for this period",
+      }
+    : {
+        format: pct0,
+        placeholder: "Not tracked",
+        missing: `No customer data entered for ${company}`,
+      };
+  const largestCustomerStat = (period: "fy" | "q") => {
+    const found = largestCustomerSeries(concentration, period);
+    const who = found?.customer
+      ? `Largest disclosed customer (${found.customer})`
+      : "Largest customer";
+    return latestStat(
+      `${who}, ${period === "fy" ? "full year" : "latest quarter"}`,
+      found?.series,
+      period === "fy" ? "share of revenue" : "single quarter",
+      concentrationMissing,
+    );
+  };
   const insiderTotal = one(`insider.${company}.open_market_sales_usd`);
   const insiderPlanned = one(`insider.${company}.open_market_sales_10b5_1_usd`);
   const endMonth = now.slice(0, 7);
@@ -411,23 +456,13 @@ function FundamentalsPage() {
             question="How much depends on a handful of customers?"
             watchFor="one or two customers making up most of revenue, or a single customer's share swinging sharply between quarters."
             stats={[
-              latestStat(
-                "Largest customer, full year",
-                one(`customer_concentration.${company}.largest_customer_pct_fy`),
-                "share of revenue",
-                { format: pct0 },
-              ),
-              latestStat(
-                "Largest customer, latest quarter",
-                one(`customer_concentration.${company}.largest_customer_pct_q`),
-                "single quarter",
-                { format: pct0 },
-              ),
+              largestCustomerStat("fy"),
+              largestCustomerStat("q"),
               latestStat(
                 "Top two customers, latest quarter",
                 one(`customer_concentration.${company}.top2_pct_q`),
                 "single quarter",
-                { format: pct0 },
+                concentrationMissing,
               ),
             ]}
           />
@@ -438,7 +473,7 @@ function FundamentalsPage() {
               subtitle="As disclosed in annual filings"
               series={concentration.filter((s) => s.id.endsWith("_pct_fy"))}
               labelOf={concentrationLabel}
-              emptyReason="This company has not disclosed customer shares, or none are entered yet."
+              emptyReason={concentrationEmpty}
             />
             <ChartBlock
               title="Biggest customers' share, single quarters"
@@ -446,7 +481,7 @@ function FundamentalsPage() {
               subtitle="Kept apart from full-year disclosures"
               series={concentration.filter((s) => s.id.endsWith("_pct_q"))}
               labelOf={concentrationLabel}
-              emptyReason="This company has not disclosed customer shares, or none are entered yet."
+              emptyReason={concentrationEmpty}
             />
           </ChapterCharts>
           <TermsTable
@@ -454,6 +489,11 @@ function FundamentalsPage() {
             info={EXPLAINERS.contracts}
             subtitle="Total value as announced. Not guaranteed revenue."
             series={concentration.filter((s) => s.id.includes("contract_value"))}
+            emptyReason={
+              concentrationTracked
+                ? "No contract announcements are entered for this company."
+                : concentrationEmpty
+            }
           />
         </Chapter>
 

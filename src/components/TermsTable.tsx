@@ -11,12 +11,15 @@ export function TermsTable({
   series,
   labelOf = (s) => s.label,
   info,
+  emptyReason,
 }: {
   title: string;
   subtitle?: string;
   series: SeriesView[];
   labelOf?: (s: SeriesView) => string;
   info?: Explainer;
+  // Shown when there are no series at all, rather than none in range.
+  emptyReason?: string;
 }) {
   // Always include each series' latest entry: a one-off term (e.g. a 2023
   // note issue) should not vanish because the page range is shorter.
@@ -36,8 +39,12 @@ export function TermsTable({
       </div>
       {rows.length === 0 ? (
         <div className="no-data">
-          <b>No entries in the selected range</b>
-          <span>Try a longer range.</span>
+          <b>{series.length ? "No entries in the selected range" : "Nothing recorded"}</b>
+          <span>
+            {series.length
+              ? "Try a longer range."
+              : (emptyReason ?? "No entries have been collected yet.")}
+          </span>
         </div>
       ) : (
         <table className="stats stack-table terms-table">

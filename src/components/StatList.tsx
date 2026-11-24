@@ -7,6 +7,9 @@ export type Stat = {
   // Period, change, and "calculated" where it applies.
   note: string;
   tone?: Signal;
+  // Shown instead of "Awaiting data" when the value is null for a known
+  // reason, e.g. "Not tracked".
+  placeholder?: string;
 };
 
 export function StatList({ stats }: { stats: Stat[] }) {
@@ -20,7 +23,7 @@ export function StatList({ stats }: { stats: Stat[] }) {
               s.value == null ? " awaiting" : ""
             }`}
           >
-            {s.value ?? "Awaiting data"}
+            {s.value ?? s.placeholder ?? "Awaiting data"}
           </dd>
           <dd className="stat-note">{s.note}</dd>
         </div>
