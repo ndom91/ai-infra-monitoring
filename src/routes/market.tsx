@@ -3,6 +3,7 @@ import {
   Chapter,
   ChapterCharts,
   type ChapterDef,
+  ChapterFooter,
   ChapterHeader,
   ChapterLayout,
   ChapterMore,
@@ -227,8 +228,10 @@ function MarketPage() {
             Source: AWS Price List and Azure Retail Prices, plus smaller providers' published rates.
             List prices exclude negotiated discounts.
           </p>
-          <SeriesTables series={dcSeries} />
-          <IndicatorNotes def={indicatorById("gpu_rental")} />
+          <ChapterFooter>
+            <SeriesTables series={dcSeries} />
+            <IndicatorNotes def={indicatorById("gpu_rental")} />
+          </ChapterFooter>
         </Chapter>
 
         <Chapter chapter={spread}>

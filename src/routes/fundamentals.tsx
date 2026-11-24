@@ -8,6 +8,7 @@ import {
   Chapter,
   ChapterCharts,
   type ChapterDef,
+  ChapterFooter,
   ChapterHeader,
   ChapterLayout,
   ChapterMore,
@@ -401,35 +402,37 @@ function FundamentalsPage() {
               series={sec(["debt", "finance_leases", "operating_leases", "cash"])}
             />
           </ChapterCharts>
-          <ChapterMore summary="Show 4 more: free cash flow, can it carry its debt, interest costs, purchase commitments">
-            <ChapterCharts>
-              <ChartBlock
-                title="Free cash flow"
-                info={EXPLAINERS.fcf}
-                subtitle="Last 12 months: operating cash flow minus capex · calculated"
-                series={derived(["fcf_ttm"])}
-              />
-              <ChartBlock
-                title="Can it carry its debt?"
-                info={EXPLAINERS.leverageCoverage}
-                subtitle="Each line means something different, so compare it with its own history · calculated"
-                series={derived(["debt_to_ocf", "interest_coverage_ttm"])}
-              />
-              <ChartBlock
-                title="Interest costs"
-                info={EXPLAINERS.interest}
-                subtitle="Interest on the books vs interest actually paid"
-                series={sec(["interest_expense", "interest_paid"])}
-              />
-              <ChartBlock
-                title="Purchase commitments"
-                info={EXPLAINERS.purchaseObligations}
-                subtitle="Unconditional purchase obligations from the filing notes · missing for most companies"
-                series={sec(["purchase_obligations"])}
-              />
-            </ChapterCharts>
-          </ChapterMore>
-          <IndicatorNotes def={indicatorById("capex_cashflow")} />
+          <ChapterFooter>
+            <ChapterMore summary="Show 4 more: free cash flow, can it carry its debt, interest costs, purchase commitments">
+              <ChapterCharts>
+                <ChartBlock
+                  title="Free cash flow"
+                  info={EXPLAINERS.fcf}
+                  subtitle="Last 12 months: operating cash flow minus capex · calculated"
+                  series={derived(["fcf_ttm"])}
+                />
+                <ChartBlock
+                  title="Can it carry its debt?"
+                  info={EXPLAINERS.leverageCoverage}
+                  subtitle="Each line means something different, so compare it with its own history · calculated"
+                  series={derived(["debt_to_ocf", "interest_coverage_ttm"])}
+                />
+                <ChartBlock
+                  title="Interest costs"
+                  info={EXPLAINERS.interest}
+                  subtitle="Interest on the books vs interest actually paid"
+                  series={sec(["interest_expense", "interest_paid"])}
+                />
+                <ChartBlock
+                  title="Purchase commitments"
+                  info={EXPLAINERS.purchaseObligations}
+                  subtitle="Unconditional purchase obligations from the filing notes · missing for most companies"
+                  series={sec(["purchase_obligations"])}
+                />
+              </ChapterCharts>
+            </ChapterMore>
+            <IndicatorNotes def={indicatorById("capex_cashflow")} />
+          </ChapterFooter>
         </Chapter>
 
         <Chapter chapter={orders}>
@@ -464,29 +467,31 @@ function FundamentalsPage() {
               series={derived(["rpo_yoy", "revenue_ttm_yoy", "ar_yoy"])}
             />
           </ChapterCharts>
-          <ChapterMore summary="Show 3 more: conversion ratio, collection and stock days, inventory">
-            <ChapterCharts>
-              <ChartBlock
-                title="Order book to revenue"
-                info={EXPLAINERS.conversion}
-                subtitle="12-month revenue ÷ order book a year earlier · calculated"
-                series={derived(["rpo_conversion"])}
-              />
-              <ChartBlock
-                title="Collection and stock days"
-                info={EXPLAINERS.dsoInventory}
-                subtitle="Receivables and inventory in days of quarterly revenue and cost of revenue · calculated"
-                series={derived(["dso", "inventory_days"])}
-              />
-              <ChartBlock
-                title="Inventory"
-                info={EXPLAINERS.inventoryBalance}
-                subtitle="Net inventory and quarterly cost of revenue"
-                series={sec(["inventory", "cogs"])}
-              />
-            </ChapterCharts>
-          </ChapterMore>
-          <IndicatorNotes def={indicatorById("contract_conversion")} />
+          <ChapterFooter>
+            <ChapterMore summary="Show 3 more: conversion ratio, collection and stock days, inventory">
+              <ChapterCharts>
+                <ChartBlock
+                  title="Order book to revenue"
+                  info={EXPLAINERS.conversion}
+                  subtitle="12-month revenue ÷ order book a year earlier · calculated"
+                  series={derived(["rpo_conversion"])}
+                />
+                <ChartBlock
+                  title="Collection and stock days"
+                  info={EXPLAINERS.dsoInventory}
+                  subtitle="Receivables and inventory in days of quarterly revenue and cost of revenue · calculated"
+                  series={derived(["dso", "inventory_days"])}
+                />
+                <ChartBlock
+                  title="Inventory"
+                  info={EXPLAINERS.inventoryBalance}
+                  subtitle="Net inventory and quarterly cost of revenue"
+                  series={sec(["inventory", "cogs"])}
+                />
+              </ChapterCharts>
+            </ChapterMore>
+            <IndicatorNotes def={indicatorById("contract_conversion")} />
+          </ChapterFooter>
         </Chapter>
 
         <Chapter chapter={customers}>
@@ -623,28 +628,30 @@ function FundamentalsPage() {
               emptyReason="Changes are added by hand from company filings, with citations."
             />
           </ChapterCharts>
-          <ChapterMore
-            summary={`Show depreciation & amortization for ${name}, and network-equipment lifespans`}
-          >
-            <ChapterCharts>
-              <ChartBlock
-                title={`${name}: depreciation & amortization`}
-                info={EXPLAINERS.da}
-                subtitle="Quarterly cost of equipment wearing out"
-                series={sec(["da"])}
-              />
-              <ChartBlock
-                title="How long network equipment is assumed to last"
-                info={EXPLAINERS.usefulLife}
-                subtitle="Each step is a change the company announced"
-                series={manual("depreciation").filter((s) => !LIFE_SERIES.test(s.id))}
-                stepped
-                labelOf={tickerLabel}
-                emptyReason="Changes are added by hand from company filings, with citations."
-              />
-            </ChapterCharts>
-          </ChapterMore>
-          <IndicatorNotes def={indicatorById("depreciation")} />
+          <ChapterFooter>
+            <ChapterMore
+              summary={`Show depreciation & amortization for ${name}, and network-equipment lifespans`}
+            >
+              <ChapterCharts>
+                <ChartBlock
+                  title={`${name}: depreciation & amortization`}
+                  info={EXPLAINERS.da}
+                  subtitle="Quarterly cost of equipment wearing out"
+                  series={sec(["da"])}
+                />
+                <ChartBlock
+                  title="How long network equipment is assumed to last"
+                  info={EXPLAINERS.usefulLife}
+                  subtitle="Each step is a change the company announced"
+                  series={manual("depreciation").filter((s) => !LIFE_SERIES.test(s.id))}
+                  stepped
+                  labelOf={tickerLabel}
+                  emptyReason="Changes are added by hand from company filings, with citations."
+                />
+              </ChapterCharts>
+            </ChapterMore>
+            <IndicatorNotes def={indicatorById("depreciation")} />
+          </ChapterFooter>
         </Chapter>
       </ChapterLayout>
     </>

@@ -80,6 +80,12 @@ export function ChapterCharts({ children, one }: { children: ReactNode; one?: bo
 
 // Collapsed charts mount only once opened, so Chart.js does no work for
 // charts nobody asked to see.
+// Disclosures at the foot of a chapter ("Show more", "How to read this"),
+// side by side instead of stacked.
+export function ChapterFooter({ children }: { children: ReactNode }) {
+  return <div className="chapter-footer">{children}</div>;
+}
+
 export function ChapterMore({ summary, children }: { summary: string; children: ReactNode }) {
   const [open, setOpen] = useState(false);
   const details = useRef<HTMLDetailsElement>(null);
