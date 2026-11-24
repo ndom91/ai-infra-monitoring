@@ -34,7 +34,7 @@ export const Route = createFileRoute("/market")({
     pageHead(
       "/market",
       "GPU Market",
-      "Track public GPU rental and resale prices across major cloud providers.",
+      "Track public GPU rental prices for cloud and consumer chips, and a used-GPU resale index.",
     ),
   validateSearch: (s) => ({ range: parseRange(s.range, "3y") }),
   loaderDeps: ({ search }) => ({ range: search.range }),
@@ -44,11 +44,11 @@ export const Route = createFileRoute("/market")({
 });
 
 const LIST_PRICE_NOTE =
-  "These are published list prices, not what customers actually pay after discounts.";
+  "Rental prices here are published list prices, not what customers actually pay after discounts.";
 
 const pctChange = (label: string, c: { pct: number | null } | null | undefined): Stat => ({
   label,
-  value: c?.pct == null ? null : `${c.pct > 0 ? "+" : "−"}${Math.abs(c.pct * 100).toFixed(1)}%`,
+  value: c?.pct == null ? null : `${c.pct > 0 ? "+" : "−"}${+Math.abs(c.pct * 100).toFixed(1)}%`,
   note: c?.pct == null ? "No comparable earlier value" : "calculated",
 });
 
@@ -85,7 +85,6 @@ function CohortCharts({ cohorts, subtitle }: { cohorts: Cohort<SeriesView>[]; su
           labelOf={offerLabel}
           stepped
           stats={false}
-          emptyReason="No price data collected yet."
         />
       ))}
     </ChapterCharts>
@@ -167,7 +166,7 @@ function MarketPage() {
   const consumerStats: Stat[] = consumer.map((c) => {
     const r = priceRange(priceLadder(c.series));
     const label = `${c.chip}, cheapest to dearest`;
-    if (!r) return { label, value: null, note: "No observations collected yet" };
+    if (!r) return { label, value: null, note: "No data collected yet" };
     return {
       label,
       value: r.text,
@@ -180,8 +179,8 @@ function MarketPage() {
       label: "Resale index",
       value: index?.latest ? index.latest.value.toFixed(0) : null,
       note: index?.latest
-        ? `${formatMonthYear(index.latest.periodEnd)} · early 2025 = 100${freshnessNote(index)}`
-        : "No observations collected yet",
+        ? `${formatMonthYear(index.latest.periodEnd)} · H1 2025 = 100${freshnessNote(index)}`
+        : "No data collected yet",
     },
     pctChange("Change in six months", index?.changes?.m6),
     pctChange("Change in a year", index?.changes?.y1),
@@ -211,7 +210,7 @@ function MarketPage() {
           <StaleLine series={dcSeries} />
           <CohortCharts
             cohorts={datacenter}
-            subtitle="Machine list price divided by the GPUs in it"
+            subtitle="Machine list price divided by the GPUs in it · calculated"
           />
           <p className="chapter-source">
             Source: AWS Price List and Azure Retail Prices, plus smaller providers' published rates.
@@ -255,7 +254,7 @@ function MarketPage() {
           <StaleLine series={consumerSeries} />
           <CohortCharts
             cohorts={consumer}
-            subtitle="Published hourly price; priority tiers remain separate"
+            subtitle="Published hourly price · priority tiers remain separate"
           />
           <p className="chapter-source">
             Source: published hourly prices from each provider. Priority tiers stay separate and are
@@ -285,7 +284,7 @@ function MarketPage() {
             <ChartBlock
               title="Used GPU prices"
               info={EXPLAINERS.gpuResale}
-              subtitle="Published index, entered by hand with a citation"
+              subtitle="Published index · entered by hand with a citation"
               series={resale}
               bareTicks
               emptyReason="No used-GPU price index we're allowed to use yet. The Coverage page explains why."

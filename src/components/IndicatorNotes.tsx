@@ -1,4 +1,4 @@
-import type { IndicatorDef } from "~/domain/indicators";
+import { CLASSIFICATION_TIMING, type IndicatorDef } from "~/domain/indicators";
 import { ExternalLink } from "./ExternalLink";
 
 // "How to read this": what an indicator measures, its warning signs,
@@ -6,9 +6,8 @@ import { ExternalLink } from "./ExternalLink";
 export function IndicatorNotes({ def }: { def: IndicatorDef }) {
   return (
     <details className="readme indicator-notes">
-      <summary>
-        How to read this <span className="readme-kind">· {def.classification.toLowerCase()}</span>
-      </summary>
+      <summary>How to read this</summary>
+      <p className="readme-measures">{CLASSIFICATION_TIMING[def.classification]}</p>
       <p className="readme-measures">{def.measures}</p>
       <div className="readme-body">
         <div>

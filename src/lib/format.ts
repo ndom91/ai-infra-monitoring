@@ -5,14 +5,32 @@ const compact = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 1,
 });
 
+// A true minus sign (U+2212) instead of the ASCII hyphen.
+const minus = (s: string) => (s.startsWith("-") ? `−${s.slice(1)}` : s);
+
+// At most `digits` decimals, trailing zeros dropped.
+const trimmed = (v: number, digits = 2) => minus(`${+v.toFixed(digits)}`);
+
+const whole = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
+
 export function formatValue(value: number, unit: string) {
   if (unit === "USD") return `${value < 0 ? "−" : ""}$${compact.format(Math.abs(value))}`;
   if (unit === "USD/GPU-hr") return `$${value.toFixed(2)}/hr`;
-  if (unit === "%") return `${value.toFixed(2)}%`;
-  if (unit === "count") return Math.round(value).toLocaleString("en-US");
-  if (unit === "×") return `${value.toFixed(2)}×`;
-  const n = Math.abs(value) >= 1000 ? compact.format(value) : `${+value.toFixed(2)}`;
+  if (unit === "%") return `${trimmed(value)}%`;
+  if (unit === "count") return minus(whole.format(value));
+  if (unit === "days") return `${minus(whole.format(value))} days`;
+  if (unit === "MW") return `${minus(whole.format(value))} MW`;
+  if (unit === "×") return minus(`${value.toFixed(2)}×`);
+  const n = Math.abs(value) >= 1000 ? minus(compact.format(value)) : trimmed(value);
   return `${n} ${unit}`;
+}
+
+// Axis ticks save space: megawatts go compact ("10K MW") and days keep their
+// decimals so a rounded tick never names a value the axis does not mark.
+export function formatTick(value: number, unit: string) {
+  if (unit === "MW") return `${minus(compact.format(value))} MW`;
+  if (unit === "days") return `${trimmed(value)} days`;
+  return formatValue(value, unit);
 }
 
 // Spreads and yields move in basis points; other % series in percentage points.
@@ -20,11 +38,11 @@ export function formatDelta(change: Change, unit: string, bps = false) {
   const sign = change.delta > 0 ? "+" : change.delta < 0 ? "−" : "±";
   const abs = Math.abs(change.delta);
   if (unit === "%") {
-    return bps ? `${sign}${Math.round(abs * 100)} bps` : `${sign}${abs.toFixed(2)} pp`;
+    return bps ? `${sign}${Math.round(abs * 100)} bps` : `${sign}${trimmed(abs)} pp`;
   }
   if (unit === "×") return `${sign}${abs.toFixed(2)}×`;
   if (change.pct == null) return `${sign}${formatValue(abs, unit)}`;
-  return `${sign}${Math.abs(change.pct * 100).toFixed(1)}%`;
+  return `${sign}${trimmed(Math.abs(change.pct * 100), 1)}%`;
 }
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -35,12 +53,11 @@ export function formatDate(iso: string) {
   return `${Number(d)} ${MONTHS[Number(m) - 1]} ${y}`;
 }
 
+// Day style plus a 24-hour UTC time: "20 Nov 2026, 14:05 UTC".
 export function formatDateTime(iso: string) {
-  return new Date(iso).toLocaleString("en-GB", {
-    dateStyle: "medium",
-    timeStyle: "short",
-    timeZone: "UTC",
-  });
+  const d = new Date(iso);
+  const time = `${String(d.getUTCHours()).padStart(2, "0")}:${String(d.getUTCMinutes()).padStart(2, "0")}`;
+  return `${formatDate(d.toISOString())}, ${time} UTC`;
 }
 
 // The first seven are the original palette and keep their order, so existing

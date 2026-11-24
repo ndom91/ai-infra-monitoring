@@ -6,7 +6,9 @@
   --panel: #181c1e;
   --panel2: #202628;
   --line: #313a3d;
+  --line-soft: #222a2c;
   --muted: #91a0a4;
+  --muted-2: #7f8d91;
   --text: #e8eeee;
   --teal: #b5e1cd;
   --orange: #f5c69c;
@@ -104,7 +106,7 @@ h2 {
   margin-bottom: 6px;
   color: var(--muted);
   font: 11px var(--mono);
-  letter-spacing: 0.04em;
+  letter-spacing: 1.5px;
   text-transform: uppercase;
 }
 
@@ -154,28 +156,6 @@ h2 {
 .toolbar-btn[aria-current] {
   border-color: var(--teal);
   color: var(--teal);
-}
-
-.pill {
-  border: 1px solid #446759;
-  background: #233a34;
-  border-radius: 20px;
-  color: var(--teal);
-  padding: 3px 9px;
-  white-space: nowrap;
-  font: 11px var(--mono);
-}
-
-.pill.mixed {
-  background: #3c3329;
-  color: var(--orange);
-  border-color: #75604a;
-}
-
-.pill.lag {
-  background: #293239;
-  color: #c0cbd1;
-  border-color: #465861;
 }
 
 .no-data {
@@ -324,18 +304,6 @@ h2 {
   margin-bottom: 18px;
 }
 
-.panel-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 16px;
-  margin-bottom: 16px;
-}
-
-.panel-head h2 {
-  font-size: 18px;
-}
-
 .eyebrow {
   font: 11px var(--mono);
   color: var(--teal);
@@ -346,25 +314,6 @@ h2 {
 .measures {
   max-width: 760px;
   font-size: 13px;
-}
-
-.pill.cls-structural,
-.pill.cls-coincident {
-  background: #293239;
-  color: #c0cbd1;
-  border-color: #465861;
-}
-
-.pill.cls-mixed {
-  background: #3c3329;
-  color: var(--orange);
-  border-color: #75604a;
-}
-
-.grid-2 {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
 }
 
 .block {
@@ -427,7 +376,7 @@ h2 {
 
 .stats td {
   padding: 6px;
-  border-bottom: 1px solid #222a2c;
+  border-bottom: 1px solid var(--line-soft);
   vertical-align: top;
 }
 
@@ -473,6 +422,7 @@ h2 {
   margin-left: 6px;
   font: 11px var(--mono);
   color: var(--orange);
+  letter-spacing: 0.8px;
   text-transform: uppercase;
 }
 
@@ -486,7 +436,7 @@ h2 {
   border: 1px solid var(--line);
   white-space: nowrap;
   text-transform: uppercase;
-  letter-spacing: 0.4px;
+  letter-spacing: 0.8px;
 }
 
 .fresh-current {
@@ -518,13 +468,34 @@ h2 {
 .readme {
   margin-top: 14px;
   border-top: 1px solid var(--line);
-  padding-top: 10px;
+  padding-top: 12px;
 }
 
-.readme summary {
+/* One look for every disclosure summary. The marker sits inside the box so it
+   never hangs outside the column or clips at a phone's edge. */
+.readme summary,
+.story-details summary,
+.chapter-more summary,
+.reading-mobile summary {
+  min-height: 24px;
+  color: var(--reading);
   cursor: pointer;
-  color: var(--muted);
-  font-size: 12px;
+  font-size: 13px;
+  list-style-position: inside;
+}
+
+.readme summary:hover,
+.story-details summary:hover,
+.chapter-more summary:hover,
+.reading-mobile summary:hover {
+  color: var(--text);
+}
+
+.readme[open] summary,
+.story-details[open] summary,
+.chapter-more[open] summary,
+.reading-mobile[open] summary {
+  margin-bottom: 14px;
 }
 
 .readme-body {
@@ -552,7 +523,6 @@ h2 {
 }
 
 @media (max-width: 1000px) {
-  .grid-2,
   .readme-body {
     grid-template-columns: 1fr;
   }
@@ -651,27 +621,6 @@ code {
   font-size: 12px;
 }
 
-.small {
-  font-size: 12px;
-}
-
-.panel > .block {
-  margin-top: 14px;
-}
-
-.panel > .sub-head {
-  margin: 26px 0 0;
-  font-size: 15px;
-}
-
-.panel > .grid-2 ~ .grid-2 {
-  margin-top: 14px;
-}
-
-.panel > .sub-head + .grid-2 {
-  margin-top: 12px;
-}
-
 /* ---- Mobile ---- */
 
 .table-scroll {
@@ -760,11 +709,6 @@ code {
 
   .panel {
     padding: 14px 12px;
-  }
-
-  .panel-head {
-    flex-direction: column;
-    gap: 8px;
   }
 
   .block {
@@ -959,7 +903,7 @@ code {
 .infotip-row b {
   display: block;
   font: 600 11px var(--mono);
-  letter-spacing: 0.6px;
+  letter-spacing: 0.8px;
   text-transform: uppercase;
   color: var(--teal);
   margin-bottom: 2px;
@@ -1147,18 +1091,7 @@ h3,
 .story-details {
   border-top: 1px solid var(--line);
   margin-top: 14px;
-  padding-top: 10px;
-}
-
-.story-details summary {
-  color: var(--teal);
-  cursor: pointer;
-  font-size: 12px;
-  list-style-position: outside;
-}
-
-.story-details[open] summary {
-  margin-bottom: 12px;
+  padding-top: 12px;
 }
 
 .story-source {
@@ -1167,14 +1100,10 @@ h3,
   margin-top: 10px;
 }
 
-@media (max-width: 1000px) {
-  /* An odd last tile spans the full row instead of leaving a hole. */
-}
-
 @media (max-width: 640px) {
   .kicker {
     font-size: 11px;
-    letter-spacing: 1.4px;
+    letter-spacing: 1.5px;
   }
 
   .brand-name {
@@ -1297,7 +1226,7 @@ h3,
   list-style: none;
   margin: 14px 0 0;
   padding: 0;
-  color: #7f8d91;
+  color: var(--muted-2);
   font-size: 11px;
 }
 
@@ -1320,7 +1249,7 @@ h3,
   column-gap: 16px;
   align-items: baseline;
   padding: 11px 0;
-  border-bottom: 1px solid #222a2c;
+  border-bottom: 1px solid var(--line-soft);
 }
 
 .stat-label {
@@ -1362,7 +1291,7 @@ h3,
 .stat-note {
   grid-column: 1 / -1;
   margin: 2px 0 0;
-  color: #7f8d91;
+  color: var(--muted-2);
   font-size: 11px;
 }
 
@@ -1392,7 +1321,7 @@ h3,
   margin: 0 0 10px;
   color: var(--muted);
   font: 11px var(--mono);
-  letter-spacing: 1.4px;
+  letter-spacing: 1.5px;
   text-transform: uppercase;
 }
 
@@ -1427,7 +1356,7 @@ h3,
   font: 11px var(--mono);
 }
 
-/* #7f8d91 on the active row's lighter background is only 4.47:1. */
+/* --muted-2 on the active row's lighter background is only 4.47:1. */
 .chapter-list a[aria-current] .chapter-list-sub {
   color: var(--muted);
 }
@@ -1448,7 +1377,7 @@ h3,
 }
 
 .chapter-list-sub {
-  color: #7f8d91;
+  color: var(--muted-2);
   font-size: 11px;
 }
 
@@ -1520,12 +1449,7 @@ h3,
   outline: none;
 }
 
-.chapter + .chapter,
-.entity-band + .chapter {
-  margin-top: 96px;
-}
-
-.chapter + .entity-band {
+.chapter + .chapter {
   margin-top: 96px;
 }
 
@@ -1553,7 +1477,7 @@ h3,
   margin: 0 0 10px;
   color: var(--muted);
   font: 11px var(--mono);
-  letter-spacing: 1.2px;
+  letter-spacing: 1.5px;
   text-transform: uppercase;
 }
 
@@ -1691,29 +1615,14 @@ h3,
 
 .chapter-source {
   margin: 8px 0 0;
-  color: #7f8d91;
+  color: var(--muted-2);
   font: 11px / 1.5 var(--mono);
 }
 
 .chapter-more {
   margin-top: 30px;
-  padding-top: 14px;
+  padding-top: 12px;
   border-top: 1px solid var(--line);
-}
-
-.chapter-more summary {
-  min-height: 24px;
-  color: var(--reading);
-  cursor: pointer;
-  font-size: 13px;
-}
-
-.chapter-more summary:hover {
-  color: var(--text);
-}
-
-.chapter-more[open] summary {
-  margin-bottom: 26px;
 }
 
 /* Entity band: the first chapter that follows one company. */
@@ -1734,12 +1643,13 @@ h3,
   margin: 0 0 6px;
   color: var(--muted);
   font: 11px var(--mono);
-  letter-spacing: 1.4px;
+  letter-spacing: 1.5px;
   text-transform: uppercase;
 }
 
 .entity-band-name {
   margin: 0;
+  color: var(--text);
   font: 700 26px / 1.15 var(--display);
   letter-spacing: -0.6px;
 }
@@ -1818,7 +1728,7 @@ h3,
 
 .scorecard-prov {
   margin: 0;
-  color: #7f8d91;
+  color: var(--muted-2);
   font: 11px / 1.5 var(--mono);
 }
 
@@ -1880,6 +1790,12 @@ h3,
   font: 11.5px / 1.45 var(--mono);
 }
 
+/* Pinned to the bottom so the four tiles' status rows line up. */
+.tile .signal {
+  margin-top: auto;
+  padding-top: 4px;
+}
+
 .topic-bar {
   display: flex;
   flex-wrap: wrap;
@@ -1919,7 +1835,7 @@ h3,
 }
 
 .topic-count {
-  color: #7f8d91;
+  color: var(--muted-2);
   font: 11px var(--mono);
 }
 
@@ -2269,9 +2185,7 @@ h3,
     padding: 0 12px;
   }
 
-  .chapter + .chapter,
-  .entity-band + .chapter,
-  .chapter + .entity-band {
+  .chapter + .chapter {
     margin-top: 64px;
   }
 
@@ -2352,7 +2266,7 @@ h3,
     align-items: baseline;
     column-gap: 12px;
     padding: 10px 0;
-    border-bottom: 1px solid #222a2c;
+    border-bottom: 1px solid var(--line-soft);
   }
 
   .stack-table td {
@@ -2472,15 +2386,6 @@ h3,
     padding-left: 12px;
     border-left: 2px solid var(--line);
   }
-
-  .reading-mobile summary {
-    min-height: 32px;
-    color: var(--teal);
-    cursor: pointer;
-    font: 11px var(--mono);
-    letter-spacing: 1.4px;
-    text-transform: uppercase;
-  }
 }
 
 /* Series tables: one small card per row whenever the chart column is
@@ -2500,7 +2405,7 @@ h3,
     column-gap: 10px;
     row-gap: 2px;
     padding: 8px 0;
-    border-bottom: 1px solid #222a2c;
+    border-bottom: 1px solid var(--line-soft);
   }
 
   .series-stats td {
@@ -2559,7 +2464,7 @@ h3,
 }
 
 .hero-read-updated {
-  color: #7f8d91;
+  color: var(--muted-2);
 }
 
 .hero-read h2 {
@@ -2589,7 +2494,7 @@ h3,
   align-items: center;
   gap: 4px 8px;
   padding: 11px 0;
-  border-bottom: 1px solid #222a2c;
+  border-bottom: 1px solid var(--line-soft);
   color: var(--muted);
 }
 
@@ -2672,7 +2577,7 @@ h3,
   width: 18px;
   height: 18px;
   fill: none;
-  stroke: #7f8d91;
+  stroke: var(--muted-2);
   stroke-width: 1.5;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -2780,7 +2685,7 @@ h3,
 .more-sections a + a::before {
   content: "·";
   margin: 0 8px;
-  color: #7f8d91;
+  color: var(--muted-2);
 }
 
 .more-sections a:hover {
@@ -2797,7 +2702,7 @@ h3,
   margin: 0 0 6px;
   color: var(--teal);
   font: 11px var(--mono);
-  letter-spacing: 1px;
+  letter-spacing: 1.5px;
   text-transform: uppercase;
 }
 
@@ -2860,7 +2765,7 @@ h3,
   align-items: center;
   column-gap: 16px;
   padding: 10px 0;
-  border-bottom: 1px solid #222a2c;
+  border-bottom: 1px solid var(--line-soft);
 }
 
 .ladder th,
@@ -2885,7 +2790,7 @@ h3,
   flex-wrap: wrap;
   align-items: center;
   gap: 4px 6px;
-  color: #7f8d91;
+  color: var(--muted-2);
   font-size: 11px;
 }
 
@@ -2922,19 +2827,15 @@ h3,
   margin-top: 28px;
 }
 
-.readme summary {
-  min-height: 24px;
-}
-
-.readme-kind {
-  color: #7f8d91;
-}
-
 .readme-measures {
   max-width: 760px;
-  margin: 10px 0 0;
+  margin: 0;
   color: var(--reading);
   font-size: 13px;
+}
+
+.readme-measures + .readme-measures {
+  margin-top: 6px;
 }
 
 .readme-body p {
@@ -2988,24 +2889,17 @@ h3,
   }
 
   /* The summary's own padding now supplies the space around it. */
-  .chapter-more {
-    padding-top: 2px;
-  }
-
-  .chapter-more[open] summary {
-    margin-bottom: 14px;
-  }
-
-  .readme {
-    padding-top: 0;
-  }
-
+  .chapter-more,
+  .readme,
   .story-details {
     padding-top: 0;
   }
 
-  .story-details[open] summary {
-    margin-bottom: 0;
+  .readme[open] summary,
+  .story-details[open] summary,
+  .chapter-more[open] summary,
+  .reading-mobile[open] summary {
+    margin-bottom: 4px;
   }
 
   .page-intro .toolbar-btn,

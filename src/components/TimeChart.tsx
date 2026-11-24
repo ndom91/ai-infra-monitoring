@@ -12,7 +12,7 @@ import {
 import { type CSSProperties, useRef } from "react";
 import { Line } from "react-chartjs-2";
 import type { Cadence } from "~/domain/types";
-import { formatValue, seriesStyle } from "~/lib/format";
+import { formatTick, formatValue, seriesStyle } from "~/lib/format";
 import { ChartLegend } from "./ChartLegend";
 import { GRID, TICK, timeAxis } from "./chartAxis";
 import { chartData, flagStepChanges, type GapPoint } from "./chartGaps";
@@ -142,7 +142,7 @@ export function TimeChart({
                 ticks: {
                   color: TICK,
                   maxTicksLimit: 5,
-                  callback: (v) => (rebase || bareTicks ? String(v) : formatValue(Number(v), unit)),
+                  callback: (v) => (rebase || bareTicks ? String(v) : formatTick(Number(v), unit)),
                 },
                 grid: { color: GRID },
               },

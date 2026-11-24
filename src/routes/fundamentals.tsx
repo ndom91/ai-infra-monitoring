@@ -268,14 +268,14 @@ function FundamentalsPage() {
             <ChartBlock
               title="Big tech: spending vs cash coming in"
               info={EXPLAINERS.capexIntensityHyper}
-              subtitle="12-month capex ÷ 12-month operating cash flow. Calculated"
+              subtitle="12-month capex ÷ 12-month operating cash flow · calculated"
               series={acrossGroup("hyperscaler", "capex_ocf_ttm")}
               labelOf={tickerLabel}
             />
             <ChartBlock
               title="Neoclouds: spending vs cash coming in"
               info={EXPLAINERS.capexIntensityNeo}
-              subtitle="Blank where cash flow was negative. Calculated"
+              subtitle="Blank where cash flow was negative · calculated"
               series={acrossGroup("neocloud", "capex_ocf_ttm")}
               labelOf={tickerLabel}
             />
@@ -285,28 +285,28 @@ function FundamentalsPage() {
               <ChartBlock
                 title="Neoclouds: debt vs cash coming in"
                 info={EXPLAINERS.leverageNeo}
-                subtitle="(Debt + finance leases) ÷ 12-month operating cash flow. Calculated"
+                subtitle="(Debt + finance leases) ÷ 12-month operating cash flow · calculated"
                 series={acrossGroup("neocloud", "debt_to_ocf")}
                 labelOf={tickerLabel}
               />
               <ChartBlock
                 title="How fast the order book turns into revenue"
                 info={EXPLAINERS.conversionPeers}
-                subtitle="12-month revenue ÷ order book (RPO) a year earlier. Calculated"
+                subtitle="12-month revenue ÷ order book (RPO) a year earlier · calculated"
                 series={BACKLOG_PEERS.flatMap((t) => byId.get(`derived.${t}.rpo_conversion`) ?? [])}
                 labelOf={tickerLabel}
               />
               <ChartBlock
                 title="Suppliers: how long customers take to pay"
                 info={EXPLAINERS.dsoPeers}
-                subtitle="Days sales outstanding: receivables ÷ quarterly revenue × 91. Calculated"
+                subtitle="Days sales outstanding: receivables ÷ quarterly revenue × 91 · calculated"
                 series={acrossGroup("supplier", "dso")}
                 labelOf={tickerLabel}
               />
               <ChartBlock
                 title="Suppliers: how long stock sits unsold"
                 info={EXPLAINERS.inventoryDays}
-                subtitle="Inventory days: inventory ÷ quarterly cost of revenue × 91. Calculated"
+                subtitle="Inventory days: inventory ÷ quarterly cost of revenue × 91 · calculated"
                 series={acrossGroup("supplier", "inventory_days")}
                 labelOf={tickerLabel}
               />
@@ -315,23 +315,22 @@ function FundamentalsPage() {
           </ChapterMore>
         </Chapter>
 
-        {selected ? (
-          <EntityBand
-            eyebrow="Chapters 02–06 follow one company"
-            company={selected}
-            blurb={GROUP_BLURBS[selected.group]}
-            switches="company"
-            link={
-              hasDebtPage ? (
-                <Link to="/credit" search={{ company, range: "3y" }} hash="bycompany">
-                  {name}'s debt, instrument by instrument →
-                </Link>
-              ) : null
-            }
-          />
-        ) : null}
-
         <Chapter chapter={cash}>
+          {selected ? (
+            <EntityBand
+              eyebrow="Chapters 02–06 follow one company"
+              company={selected}
+              blurb={GROUP_BLURBS[selected.group]}
+              switches="company"
+              link={
+                hasDebtPage ? (
+                  <Link to="/credit" search={{ company, range: "3y" }} hash="bycompany">
+                    {name}'s debt, instrument by instrument →
+                  </Link>
+                ) : null
+              }
+            />
+          ) : null}
           {picker("row")}
           {awaitingFundamentals ? (
             <p className="chapter-notice">
@@ -370,7 +369,7 @@ function FundamentalsPage() {
             <ChartBlock
               title="Capex vs cash from the business"
               info={EXPLAINERS.capexVsOcf}
-              subtitle="Quarterly. Some quarters are worked out from year-to-date totals"
+              subtitle="Quarterly · some quarters are worked out from year-to-date totals"
               series={sec(["capex", "ocf"])}
             />
             <ChartBlock
@@ -385,13 +384,13 @@ function FundamentalsPage() {
               <ChartBlock
                 title="Free cash flow"
                 info={EXPLAINERS.fcf}
-                subtitle="Last 12 months: operating cash flow minus capex. Calculated"
+                subtitle="Last 12 months: operating cash flow minus capex · calculated"
                 series={derived(["fcf_ttm"])}
               />
               <ChartBlock
                 title="Can it carry its debt?"
                 info={EXPLAINERS.leverageCoverage}
-                subtitle="Calculated ratios. Each line means something different, so compare it with its own history"
+                subtitle="Each line means something different, so compare it with its own history · calculated"
                 series={derived(["debt_to_ocf", "interest_coverage_ttm"])}
               />
               <ChartBlock
@@ -403,7 +402,7 @@ function FundamentalsPage() {
               <ChartBlock
                 title="Purchase commitments"
                 info={EXPLAINERS.purchaseObligations}
-                subtitle="Unconditional purchase obligations from the filing notes. Missing for most companies"
+                subtitle="Unconditional purchase obligations from the filing notes · missing for most companies"
                 series={sec(["purchase_obligations"])}
               />
             </ChapterCharts>
@@ -439,7 +438,7 @@ function FundamentalsPage() {
             <ChartBlock
               title="Growth vs a year ago"
               info={EXPLAINERS.growth}
-              subtitle="Order book, 12-month revenue and receivables, year on year. Calculated"
+              subtitle="Order book, 12-month revenue and receivables, year on year · calculated"
               series={derived(["rpo_yoy", "revenue_ttm_yoy", "ar_yoy"])}
             />
           </ChapterCharts>
@@ -448,13 +447,13 @@ function FundamentalsPage() {
               <ChartBlock
                 title="Order book to revenue"
                 info={EXPLAINERS.conversion}
-                subtitle="12-month revenue ÷ order book a year earlier. Calculated"
+                subtitle="12-month revenue ÷ order book a year earlier · calculated"
                 series={derived(["rpo_conversion"])}
               />
               <ChartBlock
                 title="Collection and stock days"
                 info={EXPLAINERS.dsoInventory}
-                subtitle="Calculated: receivables and inventory in days of quarterly revenue and cost of revenue"
+                subtitle="Receivables and inventory in days of quarterly revenue and cost of revenue · calculated"
                 series={derived(["dso", "inventory_days"])}
               />
               <ChartBlock
@@ -508,7 +507,7 @@ function FundamentalsPage() {
           <TermsTable
             title="Announced customer contracts"
             info={EXPLAINERS.contracts}
-            subtitle="Total value as announced. Not guaranteed revenue."
+            subtitle="Total value as announced · not guaranteed revenue"
             series={concentration.filter((s) => s.id.includes("contract_value"))}
             emptyReason={
               concentrationTracked
@@ -547,7 +546,7 @@ function FundamentalsPage() {
             <ChartBlock
               title="Insider open-market sales"
               info={EXPLAINERS.insiderSales}
-              subtitle="Calculated monthly: shares × price on Form 4 sales. The second line is sales under 10b5-1 plans"
+              subtitle="Monthly shares × price on Form 4 sales · the second line is sales under 10b5-1 plans · calculated"
               series={pick([
                 `insider.${company}.open_market_sales_usd`,
                 `insider.${company}.open_market_sales_10b5_1_usd`,

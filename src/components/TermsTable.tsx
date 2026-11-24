@@ -55,12 +55,17 @@ export function TermsTable({
       <div className="block-body">
         {rows.length === 0 ? (
           <div className="no-data">
-            <b>{series.length ? "No entries in the selected range" : "Nothing recorded"}</b>
-            <span>
-              {series.length
-                ? "Try a longer range."
-                : (emptyReason ?? "No entries have been collected yet.")}
-            </span>
+            {series.some((s) => s.latest) ? (
+              <>
+                <b>No observations in the selected range</b>
+                <span>Try a longer range.</span>
+              </>
+            ) : (
+              <>
+                <b>No data collected yet</b>
+                {emptyReason && <span>{emptyReason}</span>}
+              </>
+            )}
           </div>
         ) : (
           <>

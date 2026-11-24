@@ -2,7 +2,7 @@ import "chartjs-adapter-date-fns";
 import type { Chart } from "chart.js";
 import { useRef } from "react";
 import { Line } from "react-chartjs-2";
-import { formatValue, PALETTE } from "~/lib/format";
+import { formatTick, formatValue, PALETTE } from "~/lib/format";
 import type { DivergenceLine } from "~/server/overview";
 import { ChartLegend } from "./ChartLegend";
 import { GRID, timeAxis } from "./chartAxis";
@@ -29,7 +29,7 @@ export function DivergenceChart({
       maxTicksLimit: 5,
       // Long units ("index (H1 2025 = 100)") would crowd the axis; the legend names them.
       callback: (v: string | number) =>
-        line.unit.length > 10 ? `${+Number(v).toFixed(2)}` : formatValue(Number(v), line.unit),
+        line.unit.length > 10 ? `${+Number(v).toFixed(2)}` : formatTick(Number(v), line.unit),
     },
     grid: { color: position === "left" ? GRID : "transparent" },
   });

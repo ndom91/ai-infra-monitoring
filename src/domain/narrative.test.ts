@@ -129,16 +129,16 @@ describe("shared figure helpers", () => {
       {
         label: "Riskiest companies (CCC-rated)",
         value: "14.02%",
-        note: "Nov 20, 2026 · +482 bps in a year",
+        note: "20 Nov 2026 · +482 bps in a year",
       },
     ]);
     expect(f.build.map((r) => r.value)).toEqual(["$691B", "$33B", "Cash flow negative"]);
     expect(f.build[0]?.note).toBe(
-      "to Sep 30, 2026 · up from $357 billion a year earlier · calculated",
+      "to 30 Sep 2026 · up from $357 billion a year earlier · calculated",
     );
-    expect(f.build[1]?.note).toBe("87% below its March 2024 peak · calculated");
+    expect(f.build[1]?.note).toBe("87% below its Mar 2024 peak · calculated");
     expect(f.rent).toEqual([]);
-    expect(f.fill).toEqual([{ label: "Under construction", value: "7,481 MW", note: "June 2026" }]);
+    expect(f.fill).toEqual([{ label: "Under construction", value: "7,481 MW", note: "Jun 2026" }]);
   });
 
   it("marks figures whose series is not current, and only those", () => {

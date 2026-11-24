@@ -66,12 +66,17 @@ export function ChartBlock({
           />
         ) : (
           <div className="no-data">
-            <b>
-              {series.length ? "No observations in the selected range" : "No series collected yet"}
-            </b>
-            <span>
-              {emptyReason ?? "Values are never synthesized to fill gaps. Try a longer range."}
-            </span>
+            {series.some((s) => s.latest) ? (
+              <>
+                <b>No observations in the selected range</b>
+                <span>Try a longer range.</span>
+              </>
+            ) : (
+              <>
+                <b>No data collected yet</b>
+                {emptyReason && <span>{emptyReason}</span>}
+              </>
+            )}
           </div>
         )}
         {stats && series.length > 0 && <SeriesStats series={series} />}

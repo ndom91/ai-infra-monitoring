@@ -18,8 +18,8 @@ import { type Change, matchedYearChange } from "~/metrics/changes";
 import { getSectionData, type SeriesView } from "~/server/data";
 
 const HISTORICAL_JLL_FAMILIES: Record<string, string> = {
-  "jll.us_colo": "JLL's U.S. colocation coverage ended after Midyear 2024.",
-  "jll.na_colo": "JLL's North America colocation coverage ended after Midyear 2025.",
+  "jll.us_colo": "JLL's U.S. colocation coverage ended after Midyear 2024",
+  "jll.na_colo": "JLL's North America colocation coverage ended after Midyear 2025",
 };
 
 const TOPICS = ["supply", "space", "rent", "power"] as const;
@@ -74,7 +74,7 @@ export const Route = createFileRoute("/infrastructure")({
     pageHead(
       "/infrastructure",
       "Data Center Infrastructure",
-      "Track data-center construction, vacancy, and pre-leasing in North America.",
+      "Track data-center construction, vacancy, pre-leasing, rents, and power in North America.",
     ),
   validateSearch: (s) => ({
     range: parseRange(s.range, "max"),

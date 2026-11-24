@@ -28,7 +28,7 @@ import {
 } from "~/domain/headlines";
 import { indicatorById } from "~/domain/indicators";
 import { parseRange } from "~/domain/ranges";
-import { formatDate, formatValue } from "~/lib/format";
+import { formatDate, formatValue, seriesStyle } from "~/lib/format";
 import { pageHead } from "~/lib/seo";
 import { getCreditDebt, getRiskRead, getSectionData, type SeriesView } from "~/server/data";
 
@@ -40,7 +40,7 @@ export const Route = createFileRoute("/credit")({
     pageHead(
       "/credit",
       "Credit Risk",
-      "Follow borrowing costs, leverage, and refinancing pressure across AI infrastructure companies.",
+      "Follow borrowing costs, from market credit spreads to the terms and debt of each AI infrastructure company's instruments.",
     ),
   validateSearch: (s) => ({
     range: parseRange(s.range, "3y"),
@@ -65,9 +65,9 @@ export const Route = createFileRoute("/credit")({
 const instrumentLabel = (s: SeriesView) => s.label.split(" — ")[0] ?? s.label;
 
 const KIND_STYLE: Record<IssuedKind, Omit<ScatterSeries, "points">> = {
-  note: { label: "Senior / secured notes", color: "#b5e1cd" },
-  convertible: { label: "Convertible notes", color: "#f5c69c" },
-  loan: { label: "Loan margin over SOFR (hollow)", color: "#9cc3f5", hollow: true },
+  note: { label: "Senior / secured notes", color: seriesStyle(0).color },
+  convertible: { label: "Convertible notes", color: seriesStyle(1).color },
+  loan: { label: "Loan margin over SOFR (hollow)", color: seriesStyle(2).color, hollow: true },
 };
 
 function scatterSeries(list: IssuedInstrument[]): ScatterSeries[] {
@@ -195,7 +195,7 @@ function CreditPage() {
             <ChartBlock
               title="Junk-bond borrowing costs, by rating"
               info={EXPLAINERS.hySpreads}
-              subtitle="Extra interest over US Treasuries, option-adjusted, percentage points"
+              subtitle="Extra interest over US Treasuries · option-adjusted · percentage points"
               series={pick([
                 "fred.BAMLH0A0HYM2",
                 "fred.BAMLH0A1HYBB",
@@ -238,7 +238,7 @@ function CreditPage() {
             <ChartBlock
               title="Borrowing costs, safer companies"
               info={EXPLAINERS.igSpreads}
-              subtitle="BBB spread (last 3 years) and Moody's Baa minus 10-year Treasury (long history)"
+              subtitle="BBB spread (last 3 years) · Moody's Baa minus 10-year Treasury (long history)"
               series={pick(["fred.BAMLC0A4CBBB", "fred.BAA10Y"])}
             />
             <ChartBlock
@@ -290,8 +290,11 @@ function CreditPage() {
               />
             ) : (
               <div className="no-data">
-                <b>No deals recorded since 2025</b>
-                <span>Issue terms are entered by hand from filings, with a quote for each.</span>
+                <b>No data collected yet</b>
+                <span>
+                  No deals recorded since 2025. Issue terms are entered by hand from filings, with a
+                  quote for each.
+                </span>
               </div>
             )}
             <p className="chapter-source">
@@ -314,7 +317,7 @@ function CreditPage() {
                 key={ticker}
                 title={issuerName(ticker)}
                 info={EXPLAINERS.issuerDebt}
-                subtitle="Rates agreed when the debt was issued, from filings. Not today's market price."
+                subtitle="Rates agreed when the debt was issued, from filings · not today's market price"
                 series={issuerSeries.filter((s) => s.id.split(".")[1] === ticker)}
               />
             ))}
@@ -349,14 +352,14 @@ function CreditPage() {
                 value: debt.current.length ? String(debt.current.length) : null,
                 note: latestEnd
                   ? `Latest filing · ${formatDate(latestEnd)}`
-                  : "No filing collected yet",
+                  : "No data collected yet",
               },
               {
                 label: "Total carrying amount",
                 value: debt.current.length ? formatValue(carrying, "USD") : null,
                 note: latestEnd
                   ? `Sum of instruments · ${formatDate(latestEnd)} · calculated`
-                  : "No filing collected yet",
+                  : "No data collected yet",
               },
               {
                 label: "Notes and convertibles issued since 2025",
@@ -369,14 +372,14 @@ function CreditPage() {
             <ChartBlock
               title={`${borrower?.name ?? company}: debt by instrument`}
               info={EXPLAINERS.instrumentDebt}
-              subtitle="Carrying amount at each filing date, instruments with a balance at the latest one"
+              subtitle="Carrying amount at each filing date · instruments with a balance at the latest one"
               series={debt.current}
               labelOf={instrumentLabel}
               emptyReason="No instrument-level debt has been collected from this company's filings yet."
             />
             <TermsTable
               title={`${borrower?.name ?? company}: latest rates`}
-              subtitle="Latest figure filed for each instrument. Not today's market price."
+              subtitle="Latest figure filed for each instrument · not today's market price"
               series={debt.rates}
               labelOf={(s) => s.label}
               hideIssuer

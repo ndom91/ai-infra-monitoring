@@ -1,4 +1,4 @@
-import { formatDate, formatDelta, formatValue } from "~/lib/format";
+import { formatDate, formatDelta, formatPeriod, formatValue } from "~/lib/format";
 import type { Change } from "~/metrics/changes";
 import type { SeriesView } from "~/server/data";
 import { ExternalLink } from "./ExternalLink";
@@ -46,6 +46,12 @@ function SeriesRow({ s }: { s: SeriesView }) {
   const changeLines = deltas.flatMap(([label, c]) =>
     c ? [`${label} vs ${formatDate(c.from.periodEnd)}: ${formatValue(c.from.value, s.unit)}`] : [],
   );
+  // A period still running shows its name, not an end date in the future.
+  const observed = s.latest
+    ? s.inProgress
+      ? `${formatPeriod(s.latest.periodEnd, s.cadence)} · in progress`
+      : formatDate(s.latest.periodEnd)
+    : "";
   return (
     <tr>
       <td className="c-series">
@@ -62,11 +68,11 @@ function SeriesRow({ s }: { s: SeriesView }) {
               href={s.latest.sourceUrl ?? s.sourceUrl}
               context={`source for ${s.label}`}
             >
-              {formatDate(s.latest.periodEnd)}
+              {observed}
             </ExternalLink>
             <ProvenanceTip
               series={s.label}
-              date={formatDate(s.latest.periodEnd)}
+              date={observed}
               methodology={s.methodology}
               quote={s.latest.quote}
               note={s.latest.note}

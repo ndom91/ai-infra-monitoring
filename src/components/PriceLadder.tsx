@@ -20,8 +20,7 @@ export function PriceLadder({ title, rows }: { title: string; rows: LadderRow[] 
       <div className="block-body">
         {rows.length === 0 ? (
           <div className="no-data">
-            <b>No series collected yet</b>
-            <span>No price data collected yet.</span>
+            <b>No data collected yet</b>
           </div>
         ) : (
           <table className="ladder">

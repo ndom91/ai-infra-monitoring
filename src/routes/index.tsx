@@ -10,7 +10,7 @@ import { TimeChart } from "~/components/TimeChart";
 import { EXPLAINERS, type Explainer } from "~/domain/explainers";
 import { type Freshness, freshnessSuffix } from "~/domain/freshness";
 import { homeFigures, usdShort } from "~/domain/narrative";
-import { formatDate } from "~/lib/format";
+import { formatDate, formatValue } from "~/lib/format";
 import { pageHead } from "~/lib/seo";
 import type { Point } from "~/metrics/changes";
 import { getOverviewData } from "~/server/overview";
@@ -89,7 +89,7 @@ function Home() {
       id: "borrowing",
       verb: "Borrow",
       description: "Lenders fund the build-out",
-      figure: ccc ? `${ccc.value.toFixed(2)}%` : null,
+      figure: ccc ? formatValue(ccc.value, "%") : null,
       metric: ccc ? dated("extra interest, riskiest borrowers", ccc, freshness.ccc) : "",
       status: steps.borrow,
     },
@@ -113,7 +113,7 @@ function Home() {
       id: "buildings",
       verb: "Fill",
       description: "Finished buildings need tenants",
-      figure: vacancy ? `${vacancy.value.toFixed(1)}%` : null,
+      figure: vacancy ? formatValue(vacancy.value, "%") : null,
       metric: vacancy ? dated("data-center space sitting empty", vacancy, freshness.vacancy) : "",
       status: steps.fill,
     },
@@ -301,7 +301,7 @@ function Home() {
             <StoryChart
               story={story.rental.story}
               fallbackTitle="GPU rental prices"
-              dek="Nvidia H100 · calculated per GPU per hour: machine list price ÷ GPUs"
+              dek="Nvidia H100 · per GPU per hour: machine list price ÷ GPUs · calculated"
               source="Source: AWS and Azure public price lists, US East. List prices exclude negotiated discounts."
               info={EXPLAINERS.gpuListPrice}
             >
@@ -320,7 +320,7 @@ function Home() {
             <StoryChart
               story={story.resale.story}
               fallbackTitle="Used GPU prices"
-              dek="Resale index of used data-center GPUs · early 2025 = 100"
+              dek="Resale index of used data-center GPUs · H1 2025 = 100"
               source="Source: American Compute GPU Resale Index, entered by hand with credit. Monthly."
               info={EXPLAINERS.gpuResale}
             >
@@ -449,7 +449,7 @@ function Home() {
                 <div className="story-chart-body">
                   {d.awaiting ? (
                     <div className="no-data">
-                      <b>Awaiting data</b>
+                      <b>No data collected yet</b>
                       <span>{d.awaiting}</span>
                     </div>
                   ) : (

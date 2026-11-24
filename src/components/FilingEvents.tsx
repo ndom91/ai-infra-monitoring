@@ -15,7 +15,7 @@ export function FilingEvents({ events }: { events: FilingEventRow[] }) {
       <div className="block-body">
         {events.length === 0 ? (
           <div className="no-data">
-            <b>No filing events collected yet</b>
+            <b>No data collected yet</b>
             <span>The SEC filings collector runs several times each weekday.</span>
           </div>
         ) : (

@@ -46,35 +46,37 @@ function CoveragePage() {
               </tr>
             </thead>
             <tbody>
-              {INDICATORS.map((i) => {
-                const c = COVERAGE[i.id];
-                const n = seriesCounts[i.id] ?? 0;
-                return (
-                  <tr key={i.id}>
-                    <td>
-                      {i.number} {i.title}
-                    </td>
-                    <td className="coverage-status">
-                      <span className="coverage-mobile-label">Status</span>
-                      <span className={`badge cov-${c.status}`}>{COVERAGE_LABEL[c.status]}</span>
-                    </td>
-                    <td className="num coverage-series">
-                      <span className="coverage-mobile-label">Series</span>
-                      {n}
-                    </td>
-                    <td className="coverage-notes">
-                      <p>{c.summary}</p>
-                      {c.gaps.length > 0 && (
-                        <ul>
-                          {c.gaps.map((g) => (
-                            <li key={g}>{g}</li>
-                          ))}
-                        </ul>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
+              {[...INDICATORS]
+                .sort((a, b) => a.number.localeCompare(b.number))
+                .map((i) => {
+                  const c = COVERAGE[i.id];
+                  const n = seriesCounts[i.id] ?? 0;
+                  return (
+                    <tr key={i.id}>
+                      <td>
+                        {i.number} {i.title}
+                      </td>
+                      <td className="coverage-status">
+                        <span className="coverage-mobile-label">Status</span>
+                        <span className={`badge cov-${c.status}`}>{COVERAGE_LABEL[c.status]}</span>
+                      </td>
+                      <td className="num coverage-series">
+                        <span className="coverage-mobile-label">Series</span>
+                        {n}
+                      </td>
+                      <td className="coverage-notes">
+                        <p>{c.summary}</p>
+                        {c.gaps.length > 0 && (
+                          <ul>
+                            {c.gaps.map((g) => (
+                              <li key={g}>{g}</li>
+                            ))}
+                          </ul>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
             </tbody>
           </table>
         </div>
@@ -104,7 +106,7 @@ function CoveragePage() {
                       {COLLECTOR_CADENCE[r.collector] ?? "unscheduled"}
                     </span>
                   </td>
-                  <td className="muted">{formatDateTime(r.startedAt)} UTC</td>
+                  <td className="muted">{formatDateTime(r.startedAt)}</td>
                   <td>
                     <FreshnessBadge
                       state={

@@ -3,6 +3,7 @@
 // too thin to support a sentence, the function returns null instead of
 // guessing. Wording never claims causes, only what the numbers show.
 
+import { formatDate, formatMonthYear, formatValue } from "~/lib/format";
 import { changeOver, type Point, valueAtOrBefore } from "~/metrics/changes";
 import { type Freshness, freshnessSuffix } from "./freshness";
 
@@ -13,15 +14,6 @@ const DAY_MS = 86_400_000;
 export function monthYear(iso: string) {
   return new Date(`${iso.slice(0, 10)}T00:00:00Z`).toLocaleDateString("en-US", {
     month: "long",
-    year: "numeric",
-    timeZone: "UTC",
-  });
-}
-
-export function shortDate(iso: string) {
-  return new Date(`${iso.slice(0, 10)}T00:00:00Z`).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
     year: "numeric",
     timeZone: "UTC",
   });
@@ -116,7 +108,7 @@ export function capexStory(capexTtm: Point[], fcfTtm: Point[]): Story | null {
   const headline = `Big tech spent ${usd(now.value)} on data centers and equipment in a year, ${growth >= 0 ? "up" : "down"} ${pct(growth)}`;
 
   const body = [
-    `Microsoft, Alphabet, Amazon, Meta and Oracle spent ${usd(now.value)} on capital projects in the 12 months to ${shortDate(now.periodEnd)}. A year earlier it was ${usd(then.value)}.`,
+    `Microsoft, Alphabet, Amazon, Meta and Oracle spent ${usd(now.value)} on capital projects in the 12 months to ${formatDate(now.periodEnd)}. A year earlier it was ${usd(then.value)}.`,
     "The companies say a growing share goes to AI data centers and chips. Their filings don't say how much.",
   ];
   const fcfNow = fcfTtm.at(-1);
@@ -153,12 +145,12 @@ export function neocloudStory(
   if (!r) return null;
   const { capex, ocf, ratio } = r;
   const body = [
-    `In the 12 months to ${shortDate(capex.periodEnd)}, ${name} spent ${usd(capex.value)} on capital projects. Its operations brought in ${usd(ocf.value)} in cash.`,
+    `In the 12 months to ${formatDate(capex.periodEnd)}, ${name} spent ${usd(capex.value)} on capital projects. Its operations brought in ${usd(ocf.value)} in cash.`,
   ];
   const d = debt.at(-1);
   if (d) {
     body.push(
-      `Borrowing and leases cover the gap. Its long-term debt was ${usd(d.value)} on ${shortDate(d.periodEnd)}. The Credit page lists each loan and bond.`,
+      `Borrowing and leases cover the gap. Its long-term debt was ${usd(d.value)} on ${formatDate(d.periodEnd)}. The Credit page lists each loan and bond.`,
     );
   }
   body.push(
@@ -224,7 +216,7 @@ export function resaleStory(index: Point[]): Story | null {
   return {
     headline,
     body: [
-      `An index of completed sales stood at ${now.value.toFixed(0)} in ${monthYear(now.periodEnd)}, where 100 is the level of early 2025.`,
+      `An index of completed sales stood at ${now.value.toFixed(0)} in ${monthYear(now.periodEnd)}, where 100 is the level of the first half of 2025.`,
       "Many GPU loans use the chips themselves as collateral. If resale values fall faster than loans are repaid, lenders are less protected.",
     ],
   };
@@ -242,13 +234,13 @@ export function buildingsStory(vacancy: Point[]): Story | null {
   return {
     headline,
     body: [
-      `In North America's main data-center markets, vacancy was ${vac.value.toFixed(1)}% at the end of ${monthYear(vac.periodEnd)}.`,
+      `In North America's main data-center markets, vacancy was ${formatValue(vac.value, "%")} at the end of ${monthYear(vac.periodEnd)}.`,
       "Vacancy usually rises late in a downturn, so it is a slow signal.",
     ],
   };
 }
 
-const mw = (v: number) => `${Math.round(v).toLocaleString("en-US")} MW`;
+const mw = (v: number) => formatValue(v, "MW");
 
 export function constructionStory(construction: Point[], preleased: Point[]): Story | null {
   const build = construction.at(-1);
@@ -322,8 +314,8 @@ export function homeFigures(
     return [
       {
         label,
-        value: `${last.value.toFixed(2)}%`,
-        note: `${shortDate(last.periodEnd)}${move}${freshnessSuffix(state)}`,
+        value: formatValue(last.value, "%"),
+        note: `${formatDate(last.periodEnd)}${move}${freshnessSuffix(state)}`,
       },
     ];
   };
@@ -335,7 +327,7 @@ export function homeFigures(
     build.push({
       label: "Big tech capex, 12 months",
       value: usdShort(capex.value),
-      note: `to ${shortDate(capex.periodEnd)}${
+      note: `to ${formatDate(capex.periodEnd)}${
         then
           ? ` · ${capex.value >= then.value ? "up" : "down"} from ${usd(then.value)} a year earlier`
           : ""
@@ -348,7 +340,7 @@ export function homeFigures(
     build.push({
       label: "Big tech free cash flow, 12 months",
       value: usdShort(fcf.value),
-      note: `${fall ? `${pct(fall.drop)} below its ${monthYear(fall.peak.periodEnd)} peak` : `to ${shortDate(fcf.periodEnd)}`} · calculated${freshnessSuffix(fresh.fcf)}`,
+      note: `${fall ? `${pct(fall.drop)} below its ${formatMonthYear(fall.peak.periodEnd)} peak` : `to ${formatDate(fcf.periodEnd)}`} · calculated${freshnessSuffix(fresh.fcf)}`,
     });
   }
   const crwv = capexToOcf(s.neocloud.capexTtm, s.neocloud.ocfTtm);
@@ -356,7 +348,7 @@ export function homeFigures(
     build.push({
       label: "CoreWeave capex ÷ operating cash flow",
       value: crwv.ratio == null ? "Cash flow negative" : `${crwv.ratio.toFixed(1)}×`,
-      note: `12-month totals to ${shortDate(crwv.capex.periodEnd)} · calculated${freshnessSuffix(fresh.crwv)}`,
+      note: `12-month totals to ${formatDate(crwv.capex.periodEnd)} · calculated${freshnessSuffix(fresh.crwv)}`,
     });
   }
 
@@ -367,12 +359,12 @@ export function homeFigures(
     const change = aws.value / awsFirst.value - 1;
     const vs =
       Math.abs(change) < 0.02
-        ? `unchanged since ${monthYear(awsFirst.periodEnd)}`
-        : `${pct(change)} ${change < 0 ? "below" : "above"} ${monthYear(awsFirst.periodEnd)}`;
+        ? `unchanged since ${formatMonthYear(awsFirst.periodEnd)}`
+        : `${pct(change)} ${change < 0 ? "below" : "above"} ${formatMonthYear(awsFirst.periodEnd)}`;
     rent.push({
       label: "Nvidia H100 on AWS, per GPU-hour",
       value: `$${aws.value.toFixed(2)}`,
-      note: `${shortDate(aws.periodEnd)} · ${vs} · list price${freshnessSuffix(fresh.aws)}`,
+      note: `${formatDate(aws.periodEnd)} · ${vs} · list price${freshnessSuffix(fresh.aws)}`,
     });
   }
   const idx = s.resale.index.at(-1);
@@ -381,7 +373,7 @@ export function homeFigures(
     rent.push({
       label: "Used-GPU resale index",
       value: idx.value.toFixed(0),
-      note: `${monthYear(idx.periodEnd)}${
+      note: `${formatMonthYear(idx.periodEnd)}${
         c?.pct != null ? ` · ${pct(c.pct)} ${c.pct < 0 ? "below" : "above"} six months earlier` : ""
       }${freshnessSuffix(fresh.resale)}`,
     });
@@ -392,8 +384,8 @@ export function homeFigures(
   if (vac) {
     fill.push({
       label: "Empty data-center space",
-      value: `${vac.value.toFixed(1)}%`,
-      note: `${monthYear(vac.periodEnd)} · main North American markets${freshnessSuffix(fresh.vacancy)}`,
+      value: formatValue(vac.value, "%"),
+      note: `${formatMonthYear(vac.periodEnd)} · main North American markets${freshnessSuffix(fresh.vacancy)}`,
     });
   }
   const built = s.buildings.construction.at(-1);
@@ -402,15 +394,15 @@ export function homeFigures(
     fill.push({
       label: "Under construction",
       value: mw(built.value),
-      note: `${monthYear(built.periodEnd)}${then ? ` · ${upDown(built.value / then.value - 1)} in a year` : ""}${freshnessSuffix(fresh.construction)}`,
+      note: `${formatMonthYear(built.periodEnd)}${then ? ` · ${upDown(built.value / then.value - 1)} in a year` : ""}${freshnessSuffix(fresh.construction)}`,
     });
   }
   const pre = s.buildings.preleased.at(-1);
   if (pre) {
     fill.push({
       label: "Already pre-leased",
-      value: `${pre.value.toFixed(1)}%`,
-      note: `${monthYear(pre.periodEnd)} · of capacity under construction${freshnessSuffix(fresh.preleased)}`,
+      value: formatValue(pre.value, "%"),
+      note: `${formatMonthYear(pre.periodEnd)} · of capacity under construction${freshnessSuffix(fresh.preleased)}`,
     });
   }
 

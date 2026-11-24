@@ -45,7 +45,7 @@ export function latestChangeStat(
   s: SeriesView | undefined,
   opts: { bps?: boolean; tone?: Signal } = {},
 ): Stat {
-  if (!s?.latest) return { label, value: null, note: "No observations collected yet" };
+  if (!s?.latest) return { label, value: null, note: "No data collected yet" };
   const y1 = s.changes?.y1;
   let change = "no value a year earlier";
   if (y1) {

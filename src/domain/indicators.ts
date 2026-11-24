@@ -8,6 +8,15 @@ export type Classification =
   | "Mixed"
   | "Structural";
 
+// What each classification means for timing, in plain words.
+export const CLASSIFICATION_TIMING: Record<Classification, string> = {
+  Leading: "An early signal: it tends to move before stress shows elsewhere.",
+  "Leading / coincident": "Moves early or as stress emerges.",
+  "Coincident / lagging": "Moves as stress happens or afterwards.",
+  Mixed: "Combines early and later signs of stress.",
+  Structural: "Describes underlying conditions, not the timing of stress.",
+};
+
 export type IndicatorDef = {
   id: IndicatorId;
   number: string;

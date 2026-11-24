@@ -37,6 +37,9 @@ export type SeriesView = Omit<SeriesDefView, "methodology"> & {
   points: ChartPoint[];
   latest: ChartPoint | null;
   freshness: Freshness;
+  // Set only when the latest period has not ended yet, e.g. this month's
+  // insider sales, so a future end date is not read as a future observation.
+  inProgress?: true;
   changes?: {
     m3: Change | null;
     m6: Change | null;
@@ -79,6 +82,9 @@ export function buildView(
             kind === "reported" ? { periodEnd, value } : { periodEnd, value, kind },
           ),
     latest: latest && trimLatest(latest),
+    ...(latest && latest.periodEnd.slice(0, 10) > ctx.now.toISOString().slice(0, 10)
+      ? { inProgress: true as const }
+      : {}),
     freshness: freshness({
       cadence: def.cadence as Cadence,
       latestPeriodEnd: latest?.periodEnd,
