@@ -904,18 +904,24 @@ h3,
 /* ---- Story homepage ---- */
 
 .story-hero {
-  display: grid;
-  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
-  gap: 64px;
-  align-items: start;
-  margin: 8px 0 36px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 36px 64px;
+  margin: 8px 0 44px;
+}
+
+.story-intro {
+  flex: 3 1 560px;
+  max-width: 900px;
 }
 
 .story-intro h1 {
-  font-size: 50px;
+  font-size: 52px;
   font-weight: 760;
-  letter-spacing: -1.6px;
-  line-height: 1.04;
+  letter-spacing: -1.7px;
+  line-height: 1.03;
   text-wrap: balance;
   margin: 0 0 20px;
 }
@@ -925,38 +931,8 @@ h3,
   font-size: 17px;
   line-height: 1.65;
   margin: 0 0 14px;
-  max-width: 680px;
+  max-width: 720px;
   text-wrap: pretty;
-}
-
-.story-intro p.story-updated {
-  font: 12px var(--mono);
-  color: #7f8d91;
-  margin-top: 18px;
-}
-
-.story-meta-separator {
-  margin: 0 8px;
-}
-
-.story-jump {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px 20px;
-  margin-top: 14px;
-}
-
-.story-jump a {
-  color: var(--text);
-  font-size: 14px;
-  border-bottom: 1px solid var(--line);
-  padding-bottom: 1px;
-}
-
-.story-jump a:hover {
-  text-decoration: none;
-  border-color: var(--teal);
-  color: var(--teal);
 }
 
 .story-aside {
@@ -1117,159 +1093,10 @@ h3,
   margin-top: 14px;
 }
 
-.key-figures {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 1px;
-  background: var(--line);
-  border: 1px solid var(--line);
-  margin-bottom: 12px;
-}
-
-.key-figure {
-  position: relative;
-  display: flex;
-  padding: 15px 16px 16px;
-  background: var(--bg);
-  border-left: 0;
-  container-type: inline-size;
-}
-
-.key-figure:first-child {
-  border-left: 0;
-}
-
-.kf-main {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 0;
-}
-
-.kf-label,
-.kf-value {
-  padding-right: 62px;
-}
-
-.kf-label {
-  font-size: 12px;
-  color: var(--muted);
-}
-
 /* Grows to fill the tile so every note sits on the bottom edge; the font
    scales with the tile width (container query units). */
-.kf-value {
-  flex-grow: 1;
-  display: flex;
-  align-items: center;
-  font: 600 clamp(22px, 13cqi, 38px) / 1.1 var(--mono);
-  letter-spacing: -0.5px;
-  color: var(--text);
-  padding: 4px 0;
-}
-
-.kf-note {
-  font-size: 11.5px;
-  line-height: 1.45;
-  color: var(--muted);
-}
-
-.kf-change {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 2px;
-  font-family: var(--mono);
-  text-align: right;
-}
-
-.kf-arrow {
-  font-size: clamp(16px, 8cqi, 32px);
-  line-height: 1;
-}
-
-.kf-pct {
-  font-size: clamp(17px, 8.5cqi, 26px);
-  line-height: 1.2;
-  font-weight: 600;
-}
-
-.kf-period {
-  font-size: 11px;
-  color: var(--muted);
-}
-
-.kf-change.up {
-  color: #7fd6a4;
-}
-
-.kf-change.down {
-  color: #ff8f88;
-}
-
-.kf-change.flat {
-  color: var(--muted);
-}
-
-.story-section {
-  display: grid;
-  grid-template-columns: minmax(210px, 0.7fr) minmax(0, 2.2fr);
-  column-gap: clamp(40px, 5vw, 88px);
-  margin-top: 104px;
-  scroll-margin-top: 20px;
-}
-
-.story-section-intro {
-  padding-top: 4px;
-}
-
-.story-section-intro > h2 {
-  font-size: 32px;
-  font-weight: 720;
-  letter-spacing: -0.8px;
-  margin: 0 0 14px;
-  text-wrap: balance;
-}
-
-.story-lede {
-  color: var(--reading);
-  font-size: 15px;
-  line-height: 1.6;
-  margin: 0;
-  text-wrap: pretty;
-}
-
-.story-section-content {
-  min-width: 0;
-}
-
-.story-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 52px 56px;
-}
-
-.story-grid.one {
-  grid-template-columns: minmax(0, 1fr);
-}
-
 /* Grid, not CSS columns: column balancing reflowed the summary into the
    first column when the details opened. */
-.story-grid.one .story-analysis {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  align-items: start;
-  column-gap: clamp(32px, 4vw, 64px);
-}
-
-.story-grid.one .story-details {
-  margin-top: 0;
-}
-
 .story-chart {
   margin: 0;
   min-width: 0;
@@ -1346,26 +1173,7 @@ h3,
   margin-top: 10px;
 }
 
-.story-section-content > .more {
-  margin-top: 26px;
-  font-size: 13px;
-}
-
 @media (max-width: 1000px) {
-  .story-section {
-    display: block;
-    margin-top: 76px;
-  }
-
-  .story-section-intro {
-    margin-bottom: 32px;
-  }
-
-  .story-hero {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 32px;
-  }
-
   .story-aside {
     border-left: 0;
     padding-left: 0;
@@ -1373,31 +1181,7 @@ h3,
     padding-top: 20px;
   }
 
-  .key-figures {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .key-figure {
-    border-left: 0;
-    border-top: 1px solid var(--line);
-  }
-
-  .key-figure:nth-child(-n + 2) {
-    border-top: 0;
-  }
-
-  .key-figure:nth-child(even) {
-    border-left: 1px solid var(--line);
-  }
-
   /* An odd last tile spans the full row instead of leaving a hole. */
-  .key-figure:last-child:nth-child(odd) {
-    grid-column: 1 / -1;
-  }
-
-  .story-grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
 }
 
 @media (max-width: 640px) {
@@ -1411,7 +1195,7 @@ h3,
   }
 
   .story-intro h1 {
-    font-size: 34px;
+    font-size: 32px;
     letter-spacing: -1px;
   }
 
@@ -1430,42 +1214,8 @@ h3,
     font-size: 16px;
   }
 
-  .story-section {
-    margin-top: 56px;
-  }
-
-  .story-section-intro {
-    margin-bottom: 24px;
-  }
-
-  .story-section-intro > h2 {
-    font-size: 26px;
-  }
-
-  .story-grid.one .story-analysis {
-    grid-template-columns: 1fr;
-  }
-
-  .story-grid.one .story-details {
-    margin-top: 14px;
-  }
-
   .story-chart-head h3 {
     font-size: 19px;
-  }
-
-  .key-figure {
-    padding: 12px;
-  }
-
-  .kf-label,
-  .kf-value {
-    padding-right: 52px;
-  }
-
-  .kf-change {
-    top: 12px;
-    right: 12px;
   }
 }
 
@@ -2713,5 +2463,297 @@ h3,
 
   .series-stats .deltas span:first-child {
     margin-left: 0;
+  }
+}
+
+/* ---- Homepage: money trail ---- */
+
+.hero-aside {
+  flex: 2 1 340px;
+  max-width: 460px;
+}
+
+.hero-read-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  font: 11px var(--mono);
+}
+
+.hero-read-eyebrow {
+  margin: 0;
+  color: var(--teal);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.hero-read-updated {
+  color: #7f8d91;
+}
+
+.hero-read h2 {
+  margin: 8px 0 6px;
+  font-size: 44px;
+  font-weight: 760;
+  letter-spacing: -1.4px;
+  line-height: 1.05;
+}
+
+.hero-read-detail {
+  margin: 0 0 16px;
+  color: var(--reading);
+  font-size: 13.5px;
+}
+
+.hero-signals {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--line);
+}
+
+.hero-signals li {
+  display: grid;
+  grid-template-columns: 8px 1fr auto;
+  align-items: center;
+  gap: 4px 8px;
+  padding: 11px 0;
+  border-bottom: 1px solid #222a2c;
+  color: var(--muted);
+}
+
+.hero-signals li.sev-warning {
+  color: var(--orange);
+}
+
+.hero-signals li.sev-critical {
+  color: #ffa49e;
+}
+
+.hero-signal-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.hero-signal-sev {
+  font: 10px var(--mono);
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+.hero-signal-date {
+  color: var(--muted);
+  font: 10px var(--mono);
+  text-align: right;
+}
+
+.hero-signal-text {
+  grid-column: 2 / 4;
+  color: var(--reading);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.hero-read .more {
+  margin-top: 14px;
+  font-size: 13px;
+}
+
+.step-nav {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+}
+
+.step-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-height: 44px;
+  padding: 16px 18px 18px;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.step-tile:hover {
+  background: var(--panel);
+  text-decoration: none;
+}
+
+.step-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.step-num {
+  color: var(--teal);
+  font: 600 11px var(--mono);
+}
+
+.step-arrow {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: #7f8d91;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.step-verb {
+  font: 700 24px / 1.15 var(--display);
+  letter-spacing: -0.6px;
+}
+
+.step-desc {
+  margin-bottom: 14px;
+  color: var(--muted);
+  font-size: 12.5px;
+}
+
+.step-figure {
+  font: 600 28px / 1.15 var(--mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.5px;
+}
+
+.step-figure.awaiting {
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.step-metric {
+  color: var(--muted);
+  font-size: 11.5px;
+}
+
+.step-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  color: var(--muted);
+  font: 10px var(--mono);
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+.step-status.elevated {
+  color: #ffa49e;
+}
+
+.step-status.watch {
+  color: var(--orange);
+}
+
+.step-status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.home-chapters {
+  margin-top: 80px;
+}
+
+/* Full-width story: body paragraph and evidence side by side. */
+.chapter-charts.one .story-analysis {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: start;
+  column-gap: clamp(32px, 4vw, 64px);
+}
+
+.chapter-charts.one .story-details {
+  margin-top: 0;
+}
+
+.home-chapters .chapter-charts {
+  gap: 44px 48px;
+}
+
+.more-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 18px;
+  margin: 28px 0 0;
+  font-size: 13px;
+}
+
+.more-row .more {
+  margin: 0;
+  font-size: 13px;
+}
+
+.more-sections {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px 0;
+}
+
+.more-sections a {
+  color: var(--muted);
+}
+
+.more-sections a + a::before {
+  content: "·";
+  margin: 0 8px;
+  color: #7f8d91;
+}
+
+.more-sections a:hover {
+  color: var(--text);
+}
+
+.strain-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+  gap: 40px 48px;
+}
+
+.strain-tag {
+  margin: 0 0 6px;
+  color: var(--teal);
+  font: 10px var(--mono);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* Arrows only make sense while the four tiles sit in one row. */
+@media (max-width: 1100px) {
+  .step-arrow {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .hero-read h2 {
+    font-size: 34px;
+  }
+
+  .home-chapters {
+    margin-top: 56px;
+  }
+
+  .chapter-charts.one .story-analysis {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .home-chapters .chart {
+    height: 200px;
+  }
+
+  .step-figure {
+    font-size: 24px;
   }
 }

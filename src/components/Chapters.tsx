@@ -20,16 +20,19 @@ export function ChapterHeader({
   meta,
   question,
   watchFor,
-  stats,
+  lede,
+  stats = [],
 }: {
   index: number;
   total: number;
   chapter: ChapterDef;
   // "Daily · FRED"; desktop eyebrow only.
-  meta: string;
+  meta?: string;
   question: string;
-  watchFor: ReactNode;
-  stats: Stat[];
+  // Either a "Watch for" line or, for chapters without one, a plain lede.
+  watchFor?: ReactNode;
+  lede?: ReactNode;
+  stats?: Stat[];
 }) {
   return (
     <header className="chapter-head">
@@ -40,17 +43,22 @@ export function ChapterHeader({
           <span className="chapter-eyebrow-label">
             {" "}
             {chapter.label}
-            <span className="chapter-eyebrow-meta"> · {meta}</span>
+            {meta ? <span className="chapter-eyebrow-meta"> · {meta}</span> : null}
           </span>
         </p>
         <h2>{question}</h2>
-        <p className="chapter-watch">
-          <b>Watch for:</b> {watchFor}
-        </p>
+        {watchFor ? (
+          <p className="chapter-watch">
+            <b>Watch for:</b> {watchFor}
+          </p>
+        ) : null}
+        {lede ? <p className="chapter-watch">{lede}</p> : null}
       </div>
-      <div className="chapter-head-stats">
-        <StatList stats={stats} />
-      </div>
+      {stats.length > 0 ? (
+        <div className="chapter-head-stats">
+          <StatList stats={stats} />
+        </div>
+      ) : null}
     </header>
   );
 }

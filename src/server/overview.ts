@@ -3,6 +3,7 @@ import { SEC_COMPANIES } from "~/domain/companies";
 import {
   buildingsStory,
   capexStory,
+  constructionStory,
   creditStory,
   neocloudStory,
   rentalStory,
@@ -16,7 +17,7 @@ import { recentAlerts } from "~/storage/queries";
 import { withCurrentWording } from "./alert-text";
 import { cacheResponse } from "./cache";
 import { loadSection } from "./data";
-import { RISK_READ_ALERT_LIMIT, riskReadFromAlerts } from "./overview-signals";
+import { RISK_READ_ALERT_LIMIT, riskReadFromAlerts, stepReads } from "./overview-signals";
 import type { ObsPoint, SeriesView } from "./views";
 
 export type DivergenceLine = { label: string; unit: string; points: Point[] };
@@ -293,9 +294,11 @@ export const getOverviewData = createServerFn({ method: "GET" }).handler(async (
     rental: { story: rentalStory(awsH100, azureH100), aws: awsH100, azure: azureH100 },
     resale: { story: resaleStory(resaleIdx), index: resaleIdx },
     buildings: {
-      story: buildingsStory(vacancy, constructionMw, preleasedPct),
+      story: buildingsStory(vacancy),
+      constructionStory: constructionStory(constructionMw, preleasedPct),
       vacancy,
       construction: constructionMw,
+      preleased: preleasedPct,
     },
   };
 
@@ -304,6 +307,8 @@ export const getOverviewData = createServerFn({ method: "GET" }).handler(async (
     story,
     alerts: alertHistory,
     riskRead: riskReadFromAlerts(alertHistory),
+    // Same alerts as the overall read, so the two always agree.
+    steps: stepReads(alertHistory),
     divergences,
   };
 });

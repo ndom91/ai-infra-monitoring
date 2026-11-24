@@ -66,3 +66,55 @@ export function riskReadFromAlerts(alerts: OverviewAlert[]): RiskRead {
     signals,
   };
 }
+
+// ---- Per-step status on the homepage ----
+
+export type Step = "borrow" | "build" | "rent" | "fill";
+export const STEPS: Step[] = ["borrow", "build", "rent", "fill"];
+
+const STEP_BY_SERIES_PREFIX: [string, Step][] = [
+  ["fred.", "borrow"],
+  ["sec.", "build"],
+  ["sec_debt.", "borrow"],
+  ["depreciation.", "build"],
+  ["insider.", "build"],
+  ["aws.", "rent"],
+  ["azure.", "rent"],
+  ["gpu_resale.", "rent"],
+  ["salad.", "rent"],
+  ["runcrate.", "rent"],
+  ["cbre.", "fill"],
+  ["jll.", "fill"],
+  ["census.", "fill"],
+  ["eia.", "fill"],
+];
+
+// Every rule in data/alerts.config.yaml. Rules without a series (the
+// borrowing-cost cluster rule) can only be placed this way.
+const STEP_BY_RULE: Record<string, Step> = {
+  hy_oas_widening: "borrow",
+  hy_oas_sharp_widening: "borrow",
+  ccc_oas_widening: "borrow",
+  bbb_oas_widening: "borrow",
+  hy_oas_elevated: "borrow",
+  multi_indicator_deterioration: "borrow",
+  gpu_list_price_cut: "rent",
+  azure_spot_cut: "rent",
+};
+
+export function stepOfAlert(alert: Pick<OverviewAlert, "ruleId" | "seriesId">): Step | null {
+  const bySeries = alert.seriesId
+    ? STEP_BY_SERIES_PREFIX.find(([prefix]) => alert.seriesId?.startsWith(prefix))?.[1]
+    : undefined;
+  return bySeries ?? STEP_BY_RULE[alert.ruleId] ?? null;
+}
+
+// The overall read applied to each step's own alerts. An alert that maps
+// to no step counts toward none.
+export function stepReads(alerts: OverviewAlert[]): Record<Step, RiskRead["label"]> {
+  const out = {} as Record<Step, RiskRead["label"]>;
+  for (const step of STEPS) {
+    out[step] = riskReadFromAlerts(alerts.filter((a) => stepOfAlert(a) === step)).label;
+  }
+  return out;
+}

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { groupAlertSignals, riskReadFromAlerts } from "./overview-signals";
+import { groupAlertSignals, riskReadFromAlerts, stepOfAlert, stepReads } from "./overview-signals";
 
 const warning = {
   ruleId: "gpu-price-fall",
@@ -31,5 +31,56 @@ describe("overview signals", () => {
     ]);
     expect(read.label).toBe("Elevated");
     expect(read.detail).toContain("1 critical and 1 warning");
+  });
+});
+
+describe("step reads", () => {
+  const alert = (
+    ruleId: string,
+    seriesId: string | null,
+    severity: "info" | "warning" | "critical",
+  ) => ({
+    ruleId,
+    seriesId,
+    severity,
+    triggeredAt: "2026-11-05",
+    message: ruleId,
+  });
+
+  it("places alerts by series prefix, then by rule id", () => {
+    expect(stepOfAlert({ ruleId: "x", seriesId: "fred.BAMLH0A3HYC" })).toBe("borrow");
+    expect(stepOfAlert({ ruleId: "x", seriesId: "azure.h100.eastus2.spot" })).toBe("rent");
+    expect(stepOfAlert({ ruleId: "x", seriesId: "cbre.na_primary.vacancy" })).toBe("fill");
+    expect(stepOfAlert({ ruleId: "multi_indicator_deterioration", seriesId: null })).toBe("borrow");
+    expect(stepOfAlert({ ruleId: "unknown", seriesId: null })).toBeNull();
+  });
+
+  it("reads each step from its own alerts, consistent with the overall read", () => {
+    const alerts = [
+      alert("multi_indicator_deterioration", null, "critical"),
+      alert("ccc_oas_widening", "fred.BAMLH0A3HYC", "warning"),
+      alert("gpu_list_price_cut", "aws.h100.us-east-1.ondemand", "info"),
+    ];
+    expect(riskReadFromAlerts(alerts).label).toBe("Elevated");
+    expect(stepReads(alerts)).toEqual({
+      borrow: "Elevated",
+      build: "No recent warnings",
+      rent: "No recent warnings",
+      fill: "No recent warnings",
+    });
+  });
+
+  it("maps every rule in the alert config to a step", async () => {
+    const { parse } = await import("yaml");
+    const { readFileSync } = await import("node:fs");
+    const config = parse(readFileSync("data/alerts.config.yaml", "utf8")) as {
+      rules: { id: string; series?: string }[];
+    };
+    for (const rule of config.rules) {
+      expect(
+        stepOfAlert({ ruleId: rule.id, seriesId: rule.series ?? null }),
+        rule.id,
+      ).not.toBeNull();
+    }
   });
 });
