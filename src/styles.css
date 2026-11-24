@@ -206,17 +206,32 @@ h2 {
 }
 
 .nav {
+  position: relative;
   display: flex;
   gap: 2px;
   flex-wrap: wrap;
 }
 
 .nav a {
+  position: relative;
+  z-index: 1;
   color: var(--muted);
   padding: 6px 11px;
   border-radius: 6px;
   font-size: 13px;
   touch-action: manipulation;
+  transition: color var(--tabs-dur) var(--tabs-ease);
+}
+
+/* Inside the link: the phone strip scrolls and would clip a ring drawn
+   outside it, squaring its corners. Inside, it keeps the pill's rounding. */
+.nav a:focus-visible {
+  outline-offset: -2px;
+}
+
+.nav .t-ind {
+  border-radius: 6px;
+  background: var(--panel2);
 }
 
 .nav a:hover {
@@ -228,6 +243,10 @@ h2 {
 .nav a.active {
   color: var(--teal);
   background: var(--panel2);
+}
+
+.nav.has-indicator a.active {
+  background: none;
 }
 
 .nav a.nav-github {

@@ -5,9 +5,11 @@ import {
   Outlet,
   Scripts,
   useLocation,
+  useRouter,
 } from "@tanstack/react-router";
-import { type ReactNode, useEffect, useRef } from "react";
+import { type ReactNode, useEffect } from "react";
 import { ExternalLink } from "~/components/ExternalLink";
+import { useSlidingIndicator } from "~/components/useSlidingIndicator";
 import { DEFAULT_IMAGE, SITE_NAME, SITE_URL } from "~/lib/seo";
 import { CACHE_CONTROL } from "~/server/cache-control";
 import { getLastUpdated } from "~/server/data";
@@ -110,22 +112,32 @@ function RootComponent() {
 }
 
 function SiteNav() {
-  const navRef = useRef<HTMLElement>(null);
   const pathname = useLocation({ select: (l) => l.pathname });
+  // The active pill slides between pages (transitions.dev tabs sliding).
+  const { bar: navRef, indicator } = useSlidingIndicator<HTMLElement>(pathname);
+
+  const router = useRouter();
 
   // On phones the nav is a horizontal strip; keep the active tab visible
   // without touching the page's vertical scroll (scrollIntoView would).
-  // biome-ignore lint/correctness/useExhaustiveDependencies: pathname triggers the re-scroll after navigation.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: navRef is a stable ref.
   useEffect(() => {
-    const nav = navRef.current;
-    const active = nav?.querySelector<HTMLElement>("a.active");
-    if (!nav || !active || nav.scrollWidth <= nav.clientWidth) return;
-    const target = active.offsetLeft - (nav.clientWidth - active.offsetWidth) / 2;
-    nav.scrollTo({ left: Math.max(0, target), behavior: "smooth" });
-  }, [pathname]);
+    const center = () => {
+      const nav = navRef.current;
+      const active = nav?.querySelector<HTMLElement>("a.active");
+      if (!nav || !active || nav.scrollWidth <= nav.clientWidth) return;
+      const target = active.offsetLeft - (nav.clientWidth - active.offsetWidth) / 2;
+      nav.scrollTo({ left: Math.max(0, target), behavior: "smooth" });
+    };
+    center();
+    // The router restores every scrolled element after a page renders, which
+    // would snap the strip back mid-scroll. Centre after that restore.
+    return router.subscribe("onRendered", center);
+  }, [router]);
 
   return (
     <nav className="nav" ref={navRef} aria-label="Main">
+      <span ref={indicator} className="t-ind" aria-hidden="true" />
       {NAV.map((n) => (
         <Link
           key={n.to}
