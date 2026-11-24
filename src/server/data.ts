@@ -14,7 +14,7 @@ import {
   seriesCountsByIndicator,
   seriesFor,
 } from "~/storage/queries";
-import { withCurrentWording } from "./alert-text";
+import { ruleSummaries, withCurrentWording } from "./alert-text";
 import { cacheResponse } from "./cache";
 import { outstandingDebt } from "./credit-debt";
 import { deriveCompanySeries, TICKERS } from "./derived";
@@ -198,9 +198,15 @@ export const getRiskRead = createServerFn({ method: "GET" }).handler(async () =>
   return loadRiskRead();
 });
 
+const ALERT_LIMIT = 200;
+
 export const getAlertsData = createServerFn({ method: "GET" }).handler(async () => {
   cacheResponse();
-  return withCurrentWording(await recentAlerts(getDb(), 200));
+  return {
+    alerts: withCurrentWording(await recentAlerts(getDb(), ALERT_LIMIT)),
+    limit: ALERT_LIMIT,
+    rules: ruleSummaries(),
+  };
 });
 
 export const getCoverageData = createServerFn({ method: "GET" }).handler(async () => {

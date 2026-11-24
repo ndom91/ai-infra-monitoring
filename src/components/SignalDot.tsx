@@ -2,11 +2,21 @@ import { SIGNAL_LABELS, type Signal } from "~/domain/chapterSignals";
 
 // A 6 px dot plus a small uppercase label. With `labelHidden` the label is
 // kept for screen readers only, for compact lists that sit next to a legend.
-export function SignalDot({ signal, labelHidden }: { signal: Signal; labelHidden?: boolean }) {
+// `label` replaces the default wording where the colour means something else,
+// such as a run status.
+export function SignalDot({
+  signal,
+  labelHidden,
+  label = SIGNAL_LABELS[signal],
+}: {
+  signal: Signal;
+  labelHidden?: boolean;
+  label?: string;
+}) {
   return (
-    <span className={`signal sig-${signal}`} title={SIGNAL_LABELS[signal]}>
+    <span className={`signal sig-${signal}`} title={label}>
       <span className="signal-dot" aria-hidden="true" />
-      <span className={labelHidden ? "sr-only" : "signal-label"}>{SIGNAL_LABELS[signal]}</span>
+      <span className={labelHidden ? "sr-only" : "signal-label"}>{label}</span>
     </span>
   );
 }

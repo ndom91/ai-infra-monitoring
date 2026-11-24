@@ -6,13 +6,37 @@ import * as v from "valibot";
 import { parse } from "yaml";
 import rawConfig from "../../data/alerts.config.yaml?raw";
 
+const SEVERITIES = ["critical", "warning", "info"] as const;
+
 const WordingSchema = v.object({
-  rules: v.array(v.object({ id: v.string(), description: v.string() })),
+  rules: v.array(
+    v.object({
+      id: v.string(),
+      description: v.string(),
+      severity: v.picklist(SEVERITIES),
+      // Breadth rules only: the rules they count.
+      rules: v.optional(v.array(v.string())),
+      min_rules: v.optional(v.number()),
+    }),
+  ),
 });
 
-const DESCRIPTIONS = new Map(
-  v.parse(WordingSchema, parse(rawConfig)).rules.map((r) => [r.id, r.description]),
-);
+const RULES = v.parse(WordingSchema, parse(rawConfig)).rules;
+const DESCRIPTIONS = new Map(RULES.map((r) => [r.id, r.description]));
+
+// One line per rule for the Alerts page: what it watches, in the config's own
+// plain words, and how many of its member rules a breadth rule needs.
+export function ruleSummaries() {
+  return SEVERITIES.flatMap((severity) =>
+    RULES.filter((r) => r.severity === severity).map((r) => ({
+      id: r.id,
+      severity,
+      description: r.description,
+      needs:
+        r.rules && r.min_rules ? `Needs at least ${r.min_rules} of: ${r.rules.join(", ")}` : null,
+    })),
+  );
+}
 
 type StoredAlert = {
   ruleId: string;
