@@ -1,12 +1,12 @@
 import { CLASSIFICATION_TIMING, type IndicatorDef } from "~/domain/indicators";
+import { Disclosure } from "./Disclosure";
 import { ExternalLink } from "./ExternalLink";
 
 // "How to read this": what an indicator measures, its warning signs,
 // caveats and sources, from src/domain/indicators.ts.
 export function IndicatorNotes({ def }: { def: IndicatorDef }) {
   return (
-    <details className="readme indicator-notes">
-      <summary>How to read this</summary>
+    <Disclosure className="readme indicator-notes" summary="How to read this">
       <p className="readme-measures">{CLASSIFICATION_TIMING[def.classification]}</p>
       <p className="readme-measures">{def.measures}</p>
       <div className="readme-body">
@@ -35,6 +35,6 @@ export function IndicatorNotes({ def }: { def: IndicatorDef }) {
           </ul>
         </div>
       </div>
-    </details>
+    </Disclosure>
   );
 }

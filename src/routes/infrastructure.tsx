@@ -6,6 +6,7 @@ import {
 } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { ChartBlock } from "~/components/ChartBlock";
+import { Disclosure } from "~/components/Disclosure";
 import { ExternalLink } from "~/components/ExternalLink";
 import { IndicatorNotes } from "~/components/IndicatorNotes";
 import { PageIntro } from "~/components/PageIntro";
@@ -357,10 +358,9 @@ function InfrastructurePage() {
       </div>
 
       <section aria-label={TOPIC_LABEL[topic].long} className="topic-panel">
-        <details className="reading-tab reading-mobile">
-          <summary>Reading this tab</summary>
+        <Disclosure className="reading-tab reading-mobile" summary="Reading this tab">
           <ReadingBody topic={topic} />
-        </details>
+        </Disclosure>
         <div className="topic-charts">
           {charts.length === 0 && extra.length === 0 ? (
             <ChartBlock
@@ -388,11 +388,11 @@ function InfrastructurePage() {
       </section>
 
       {historical.length > 0 && (
-        <details className="readme infrastructure-history">
-          <summary>
-            Historical JLL coverage ({historical.length} series) · kept for reference, can't be
-            joined to current figures
-          </summary>
+        <Disclosure
+          className="readme infrastructure-history"
+          summary={`Historical JLL coverage (${historical.length} series) · kept for reference, can't be joined to current figures`}
+          lazy
+        >
           <p>
             JLL changed its market coverage, so these series cannot be joined to the current North
             America figures. They are retained for reference only.
@@ -407,7 +407,7 @@ function InfrastructurePage() {
               />
             ))}
           </div>
-        </details>
+        </Disclosure>
       )}
     </>
   );

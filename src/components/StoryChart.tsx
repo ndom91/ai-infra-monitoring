@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import type { Explainer } from "~/domain/explainers";
 import type { Story } from "~/domain/narrative";
+import { Disclosure } from "./Disclosure";
 import { InfoTip } from "./InfoTip";
 
 // One headline finding: headline stating the result, chart, plain-English
@@ -60,14 +61,16 @@ export function StoryChart({
               {footer}
             </div>
             {story.body.length > 1 ? (
-              <details className="story-details">
-                <summary>Evidence and context ({story.body.length - 1} notes)</summary>
+              <Disclosure
+                className="story-details"
+                summary={`Evidence and context (${story.body.length - 1} notes)`}
+              >
                 {story.body.slice(1).map((para) => (
                   <p key={para} className="story-body">
                     {para}
                   </p>
                 ))}
-              </details>
+              </Disclosure>
             ) : null}
           </div>
         ) : (

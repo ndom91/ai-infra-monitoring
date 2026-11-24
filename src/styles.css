@@ -403,35 +403,96 @@ h2 {
 
 .readme {
   margin-top: 14px;
-  border-top: 1px solid var(--line);
-  padding-top: 12px;
 }
 
-/* One look for every disclosure summary. The marker sits inside the box so it
-   never hangs outside the column or clips at a phone's edge. */
-.readme summary,
-.story-details summary,
-.chapter-more summary,
-.reading-mobile summary {
+/* ---- Disclosures (src/components/Disclosure.tsx) ----
+   transitions.dev accordion: the panel grows through grid rows 0fr to 1fr
+   and the chevron flips vertically. */
+:root {
+  --acc-expand: 250ms;
+  --acc-collapse: 250ms;
+  --acc-chevron: 250ms;
+  --acc-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.t-acc-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   min-height: 24px;
+  padding: 0;
+  border: 0;
+  background: none;
   color: var(--reading);
   cursor: pointer;
+  font: inherit;
   font-size: 13px;
-  list-style-position: inside;
+  text-align: left;
 }
 
-.readme summary:hover,
-.story-details summary:hover,
-.chapter-more summary:hover,
-.reading-mobile summary:hover {
+.t-acc-head:hover {
   color: var(--text);
 }
 
-.readme[open] summary,
-.story-details[open] summary,
-.chapter-more[open] summary,
-.reading-mobile[open] summary {
-  margin-bottom: 14px;
+.t-acc-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--acc-collapse) var(--acc-ease);
+}
+.t-acc[data-open="true"] .t-acc-panel {
+  grid-template-rows: 1fr;
+  transition: grid-template-rows var(--acc-expand) var(--acc-ease);
+}
+.t-acc-panel-inner {
+  overflow: hidden;
+  opacity: 0;
+  filter: blur(2px);
+  transition:
+    opacity var(--acc-collapse) var(--acc-ease),
+    filter var(--acc-collapse) var(--acc-ease);
+}
+.t-acc[data-open="true"] .t-acc-panel-inner {
+  opacity: 1;
+  filter: blur(0);
+  transition:
+    opacity var(--acc-expand) var(--acc-ease),
+    filter var(--acc-expand) var(--acc-ease);
+}
+/* Space under the header lives inside the clipped box, so a closed panel
+   is exactly zero tall. */
+.t-acc-body {
+  padding-top: 14px;
+}
+.t-acc-chevron {
+  display: inline-flex;
+  flex: none;
+  transform: scaleY(1);
+  transform-origin: center;
+  transition: transform var(--acc-chevron) var(--acc-ease);
+}
+.t-acc-chevron svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.t-acc-chevron path {
+  vector-effect: non-scaling-stroke;
+}
+.t-acc[data-open="true"] .t-acc-chevron {
+  transform: scaleY(-1);
+}
+
+/* Matches the open-state selectors, so it wins without !important. */
+@media (prefers-reduced-motion: reduce) {
+  .t-acc[data-open] .t-acc-panel,
+  .t-acc[data-open] .t-acc-panel-inner,
+  .t-acc[data-open] .t-acc-chevron {
+    transition: none;
+  }
 }
 
 .readme-body {
@@ -1680,8 +1741,6 @@ h3,
 
 .chapter-more {
   margin-top: 30px;
-  padding-top: 12px;
-  border-top: 1px solid var(--line);
 }
 
 /* Entity band: the first chapter that follows one company. */
@@ -2919,7 +2978,8 @@ h3,
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   align-items: start;
-  column-gap: clamp(32px, 4vw, 64px);
+  /* Same gap as .chapter-charts, so each half lines up with a chart. */
+  gap: 30px 36px;
   margin-top: 30px;
 }
 
@@ -2928,7 +2988,7 @@ h3,
   margin-top: 0;
 }
 
-.chapter-footer > .chapter-more[open] {
+.chapter-footer > .chapter-more[data-open="true"] {
   grid-column: 1 / -1;
 }
 
@@ -2994,28 +3054,22 @@ h3,
    Primary controls get 44 px; dense inline links in tables and lists get
    24 px. Padding on an inline link widens its hit area without moving text. */
 @media (max-width: 640px) {
-  .chapter-more summary,
-  .readme summary,
-  .story-details summary,
-  .reading-mobile summary {
+  .t-acc-head {
     box-sizing: border-box;
     min-height: 44px;
     padding-block: 12px;
     line-height: 20px;
   }
 
-  /* The summary's own padding now supplies the space around it. */
+  /* The header's own padding now supplies the space around it. */
   .chapter-more,
   .readme,
   .story-details {
     padding-top: 0;
   }
 
-  .readme[open] summary,
-  .story-details[open] summary,
-  .chapter-more[open] summary,
-  .reading-mobile[open] summary {
-    margin-bottom: 4px;
+  .t-acc-body {
+    padding-top: 4px;
   }
 
   .page-intro .toolbar-btn {

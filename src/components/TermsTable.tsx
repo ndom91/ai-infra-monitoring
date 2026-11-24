@@ -1,6 +1,7 @@
 import type { Explainer } from "~/domain/explainers";
 import { formatDate, formatValue } from "~/lib/format";
 import type { SeriesView } from "~/server/data";
+import { Disclosure } from "./Disclosure";
 import { ExternalLink } from "./ExternalLink";
 import { InfoTip } from "./InfoTip";
 import { ProvenanceTip } from "./ProvenanceTip";
@@ -71,10 +72,9 @@ export function TermsTable({
           <>
             <RateTable rows={shown} labelOf={labelOf} hideIssuer={hideIssuer} split={split} />
             {rest.length > 0 && (
-              <details className="chapter-more">
-                <summary>Show all {rows.length} rates</summary>
+              <Disclosure className="chapter-more" summary={`Show all ${rows.length} rates`}>
                 <RateTable rows={rest} labelOf={labelOf} hideIssuer={hideIssuer} split headless />
-              </details>
+              </Disclosure>
             )}
           </>
         )}

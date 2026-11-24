@@ -2,6 +2,7 @@ import { useLocation } from "@tanstack/react-router";
 import { type ReactNode, useEffect, useRef, useState } from "react";
 import type { Signal } from "~/domain/chapterSignals";
 import { pickActiveChapter } from "./activeChapter";
+import { Disclosure } from "./Disclosure";
 import { SignalDot, SignalLegend } from "./SignalDot";
 import { type Stat, StatList } from "./StatList";
 
@@ -87,18 +88,10 @@ export function ChapterFooter({ children }: { children: ReactNode }) {
 }
 
 export function ChapterMore({ summary, children }: { summary: string; children: ReactNode }) {
-  const [open, setOpen] = useState(false);
-  const details = useRef<HTMLDetailsElement>(null);
-  // A reader can open the panel before hydration, when no toggle event
-  // reaches React. Read the real state once mounted so it never opens empty.
-  useEffect(() => {
-    if (details.current) setOpen(details.current.open);
-  }, []);
   return (
-    <details ref={details} className="chapter-more" onToggle={(e) => setOpen(e.currentTarget.open)}>
-      <summary>{summary}</summary>
-      {open ? <div className="chapter-more-body">{children}</div> : null}
-    </details>
+    <Disclosure className="chapter-more" summary={summary} lazy>
+      <div className="chapter-more-body">{children}</div>
+    </Disclosure>
   );
 }
 
