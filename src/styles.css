@@ -54,6 +54,39 @@ a:hover {
   outline-offset: 3px;
 }
 
+/* Phones paint the tap highlight as a square box, ignoring rounded corners.
+   Rounded controls drop it and show a rounded pressed state instead. Kept
+   early, so each control's selected state still wins while pressed. */
+.nav a,
+.toolbar-btn,
+.segment,
+.chip,
+.chapter-list a,
+.chapter-bar-btn,
+.infotip-btn {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.nav a:active,
+.segment:active,
+.chapter-list a:active {
+  background: var(--panel);
+}
+
+.toolbar-btn:active,
+.chip:active {
+  border-color: var(--muted);
+}
+
+.chapter-bar-btn:active {
+  background: var(--panel2);
+}
+
+.infotip-btn:active {
+  border-color: var(--teal);
+  color: var(--teal);
+}
+
 .skip-link {
   position: fixed;
   z-index: 100;
@@ -227,16 +260,6 @@ h2 {
    outside it, squaring its corners. Inside, it keeps the pill's rounding. */
 .nav a:focus-visible {
   outline-offset: -2px;
-}
-
-/* Phones paint the tap highlight as a square box; a rounded pressed state
-   replaces it. */
-.nav a {
-  -webkit-tap-highlight-color: transparent;
-}
-
-.nav a:active {
-  background: var(--panel);
 }
 
 .nav .t-ind {
