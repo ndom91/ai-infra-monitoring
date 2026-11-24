@@ -1040,6 +1040,12 @@ h3,
   margin: 2px 0 0;
 }
 
+.chart-gap-note {
+  margin: -4px 0 10px;
+  color: var(--muted-2);
+  font: 11px / 1.4 var(--mono);
+}
+
 /* The legend sits under the fixed-height plot, so labels wrap freely. */
 .chart-legend {
   display: flex;

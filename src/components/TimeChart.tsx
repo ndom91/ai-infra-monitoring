@@ -6,6 +6,7 @@ import {
   LinearScale,
   LineElement,
   PointElement,
+  type ScriptableLineSegmentContext,
   TimeScale,
   Tooltip,
 } from "chart.js";
@@ -15,7 +16,7 @@ import type { Cadence } from "~/domain/types";
 import { formatTick, formatValue, seriesStyle } from "~/lib/format";
 import { ChartLegend } from "./ChartLegend";
 import { GRID, TICK, timeAxis } from "./chartAxis";
-import { chartData, flagStepChanges, type GapPoint } from "./chartGaps";
+import { chartData, flagStepChanges, type GapPoint, hasGap, wrapText } from "./chartGaps";
 import { isDerivedKind, sortTooltipDescending } from "./chartTooltip";
 
 Chart.register(TimeScale, LinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
@@ -23,7 +24,7 @@ Chart.register(TimeScale, LinearScale, PointElement, LineElement, Filler, Toolti
 export type ChartLine = {
   label: string;
   // `kind` is left out for reported points to keep payloads small.
-  points: { periodEnd: string; value: number; kind?: string }[];
+  points: { periodEnd: string; value: number; kind?: string; note?: string | null }[];
   color?: string;
   // Lets the chart leave a break where observations are missing. Without it
   // consecutive points are always joined.
@@ -48,6 +49,8 @@ type Props = {
 export { GRID, TICK };
 
 const DEFAULT_HEIGHT = 220;
+
+const GAP_DASH = [3, 4];
 
 export function TimeChart({
   lines,
@@ -90,8 +93,14 @@ export function TimeChart({
       pointHoverRadius: 4,
       stepped: stepped ? ("before" as const) : false,
       tension: 0,
-      // A null point is a real hole in the data, not something to bridge.
-      spanGaps: false,
+      // A null point marks periods with no report. The line crosses them
+      // dashed, so the gap is visible and nothing is drawn as if reported.
+      spanGaps: true,
+      segment: {
+        borderDash: (ctx: ScriptableLineSegmentContext) =>
+          ctx.p0.skip || ctx.p1.skip ? GAP_DASH : undefined,
+      },
+      gap: hasGap(data),
     };
   });
 
@@ -125,13 +134,21 @@ export function TimeChart({
               tooltip: {
                 itemSort: sortTooltipDescending,
                 callbacks: {
+                  // One line needs no series name: the chart title says it.
                   label: (ctx) => {
                     const kind = (ctx.raw as GapPoint | undefined)?.kind;
                     const v = rebase
                       ? `${ctx.parsed.y?.toFixed(1)} (index)`
                       : formatValue(ctx.parsed.y ?? 0, unit);
                     const suffix = isDerivedKind(kind) ? ` · ${kind}` : "";
-                    return ` ${ctx.dataset.label}: ${v}${suffix}`;
+                    const text =
+                      lines.length > 1 ? `${ctx.dataset.label}: ${v}${suffix}` : `${v}${suffix}`;
+                    return wrapText(text).map((l) => ` ${l}`);
+                  },
+                  // A derived point says how it was worked out.
+                  afterLabel: (ctx) => {
+                    const p = ctx.raw as GapPoint | undefined;
+                    return isDerivedKind(p?.kind) && p?.note ? wrapText(p.note) : [];
                   },
                 },
               },
@@ -151,6 +168,9 @@ export function TimeChart({
         />
       </div>
       {lines.length > 1 && <ChartLegend items={legend} chartRef={chartRef} />}
+      {datasets.some((d) => d.gap) ? (
+        <p className="chart-gap-note">Dashed: no value for that period. Nothing is filled in.</p>
+      ) : null}
     </>
   );
 }

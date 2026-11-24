@@ -16,13 +16,20 @@ const MAX_GAP_DAYS: Partial<Record<Cadence, number>> = {
 
 const DAY_MS = 86_400_000;
 
-export type GapPoint = { x: number; y: number | null; kind?: string; marker?: boolean };
+export type GapPoint = {
+  x: number;
+  y: number | null;
+  kind?: string;
+  // Explains a derived point, e.g. how a calculated figure was worked out.
+  note?: string | null;
+  marker?: boolean;
+};
 
-type Input = { periodEnd: string; value: number; kind?: string };
+type Input = { periodEnd: string; value: number; kind?: string; note?: string | null };
 
 // Chart data for one line. Where two neighbours are further apart than the
-// cadence allows, a null point sits between them so Chart.js leaves the line
-// open instead of drawing a straight run across missing periods. Points must
+// cadence allows, a null point marks the missing periods; the chart draws
+// that stretch dashed, so a missing report never looks like a real value. Points must
 // be ascending by `periodEnd`. `kind` rides along so tooltips and marker
 // styles can read it from the data item, whose index shifts when a break is
 // inserted.
@@ -39,7 +46,7 @@ export function chartData(
     if (limit !== undefined && prev !== undefined && x - prev > limit * DAY_MS) {
       out.push({ x: prev + (x - prev) / 2, y: null });
     }
-    out.push({ x, y: yOf(p), kind: p.kind });
+    out.push({ x, y: yOf(p), kind: p.kind, note: p.note });
     prev = x;
   }
   return out;
@@ -64,4 +71,23 @@ export function flagStepChanges(data: GapPoint[]): GapPoint[] {
     prev = d.y;
     return marker ? { ...d, marker } : d;
   });
+}
+
+export const hasGap = (data: GapPoint[]) => data.some((d) => d.y === null);
+
+// Splits tooltip text into short lines, so a long series label or note
+// cannot run past the edge of the chart.
+export function wrapText(text: string, width = 46): string[] {
+  const lines: string[] = [];
+  let line = "";
+  for (const word of text.split(/\s+/)) {
+    if (line && line.length + word.length + 1 > width) {
+      lines.push(line);
+      line = word;
+    } else {
+      line = line ? `${line} ${word}` : word;
+    }
+  }
+  if (line) lines.push(line);
+  return lines;
 }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { chartData, flagStepChanges } from "./chartGaps";
+import { chartData, flagStepChanges, wrapText } from "./chartGaps";
 
 const p = (periodEnd: string, value = 1) => ({ periodEnd, value });
 const breaks = (data: { y: number | null }[]) => data.filter((d) => d.y === null).length;
@@ -78,5 +78,18 @@ describe("flagStepChanges", () => {
   it("keeps each point's kind", () => {
     const out = flagStepChanges([{ x: 0, y: 1, kind: "calculated" }]);
     expect(out[0]).toEqual({ x: 0, y: 1, kind: "calculated", marker: true });
+  });
+});
+
+describe("wrapText", () => {
+  it("splits long text into short lines without breaking words", () => {
+    const lines = wrapText(
+      "CBRE North America primary-market share of under-construction capacity preleased: 78.9%",
+      30,
+    );
+    expect(lines.every((l) => l.length <= 30 || !l.includes(" "))).toBe(true);
+    expect(lines.join(" ")).toBe(
+      "CBRE North America primary-market share of under-construction capacity preleased: 78.9%",
+    );
   });
 });
