@@ -18,6 +18,7 @@ import { withCurrentWording } from "./alert-text";
 import { cacheResponse } from "./cache";
 import { outstandingDebt } from "./credit-debt";
 import { deriveCompanySeries, TICKERS } from "./derived";
+import { RISK_READ_ALERT_LIMIT, riskReadFromAlerts } from "./overview-signals";
 import { buildView, groupBySeries, type ObsPoint, type SeriesView } from "./views";
 
 export type { ObsPoint, SeriesView } from "./views";
@@ -164,21 +165,38 @@ export const getCompanySeries = createServerFn({ method: "GET" })
 // page uses, so the reduction happens here and not in the browser.
 export const loadCreditDebt = createServerOnlyFn(async function loadCreditDebt(
   range: RangeKey,
+  company: string,
   now: Date,
 ) {
   const { series } = await loadSection(
-    { indicators: ["credit"], range, collectors: ["sec_debt"] },
+    { indicators: ["credit"], range, collectors: ["sec_debt"], entity: company },
     now,
   );
-  return SEC_DEBT_COMPANIES.map((c) => ({ name: c.name, ...outstandingDebt(series, c.ticker) }));
+  return outstandingDebt(series, company);
 });
 
 export const getCreditDebt = createServerFn({ method: "GET" })
-  .validator(v.object({ range: RangeKeyInput }))
+  .validator(
+    v.object({
+      range: RangeKeyInput,
+      company: v.picklist(SEC_DEBT_COMPANIES.map((c) => c.ticker)),
+    }),
+  )
   .handler(async ({ data }) => {
     cacheResponse();
-    return loadCreditDebt(data.range, new Date());
+    return loadCreditDebt(data.range, data.company, new Date());
   });
+
+// The homepage "Current read", shared so the credit page's market-stress
+// status always agrees with it.
+export const loadRiskRead = createServerOnlyFn(async function loadRiskRead() {
+  return riskReadFromAlerts(withCurrentWording(await recentAlerts(getDb(), RISK_READ_ALERT_LIMIT)));
+});
+
+export const getRiskRead = createServerFn({ method: "GET" }).handler(async () => {
+  cacheResponse();
+  return loadRiskRead();
+});
 
 export const getAlertsData = createServerFn({ method: "GET" }).handler(async () => {
   cacheResponse();

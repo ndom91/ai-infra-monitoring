@@ -12,6 +12,9 @@ export type AlertSignal = OverviewAlert & {
   occurrences: number;
 };
 
+// How many recent alerts the "Current read" looks at.
+export const RISK_READ_ALERT_LIMIT = 6;
+
 export type RiskRead = {
   label: "Elevated" | "Watch" | "No recent warnings";
   detail: string;

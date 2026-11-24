@@ -9,6 +9,7 @@ import {
   TimeScale,
   Tooltip,
 } from "chart.js";
+import type { CSSProperties } from "react";
 import { Line } from "react-chartjs-2";
 import { formatValue, PALETTE } from "~/lib/format";
 import { sortTooltipDescending } from "./chartTooltip";
@@ -34,7 +35,8 @@ type Props = {
   minUnit?: "day" | "month";
 };
 
-const TICK = "#86969a";
+export const TICK = "#86969a";
+export const GRID = "#252d2f";
 
 export function TimeChart({ lines, unit, height = 220, stepped, rebase, minUnit = "day" }: Props) {
   const datasets = lines.map((line, i) => {
@@ -63,7 +65,7 @@ export function TimeChart({ lines, unit, height = 220, stepped, rebase, minUnit 
   });
 
   return (
-    <div className="chart" style={{ height }}>
+    <div className="chart" style={{ "--chart-h": `${height}px` } as CSSProperties}>
       <Line
         data={{ datasets }}
         options={{
@@ -110,7 +112,7 @@ export function TimeChart({ lines, unit, height = 220, stepped, rebase, minUnit 
                 maxTicksLimit: 5,
                 callback: (v) => (rebase ? String(v) : formatValue(Number(v), unit)),
               },
-              grid: { color: "#252d2f" },
+              grid: { color: GRID },
             },
           },
         }}

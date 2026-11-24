@@ -16,7 +16,7 @@ import { recentAlerts } from "~/storage/queries";
 import { withCurrentWording } from "./alert-text";
 import { cacheResponse } from "./cache";
 import { loadSection } from "./data";
-import { riskReadFromAlerts } from "./overview-signals";
+import { RISK_READ_ALERT_LIMIT, riskReadFromAlerts } from "./overview-signals";
 import type { ObsPoint, SeriesView } from "./views";
 
 export type DivergenceLine = { label: string; unit: string; points: Point[] };
@@ -114,7 +114,7 @@ export const getOverviewData = createServerFn({ method: "GET" }).handler(async (
       { indicators: [], range: "max", fullHistory: true, seriesIds: [...CREDIT_IDS, ...STORY_IDS] },
       now,
     ),
-    recentAlerts(getDb(), 6),
+    recentAlerts(getDb(), RISK_READ_ALERT_LIMIT),
   ]);
   const { raw } = rest;
   const creditFrom = rangeStart(CREDIT_WINDOW, now) ?? "";

@@ -6,7 +6,7 @@ import {
   Scripts,
   useLocation,
 } from "@tanstack/react-router";
-import { type ReactNode, useEffect, useRef } from "react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 import { DEFAULT_IMAGE, SITE_NAME, SITE_URL } from "~/lib/seo";
 import { CACHE_CONTROL } from "~/server/cache-control";
 import { getLastUpdated } from "~/server/data";
@@ -81,6 +81,8 @@ const NAV = [
 ] as const;
 
 function RootComponent() {
+  const pathname = useLocation({ select: (l) => l.pathname });
+  const page = NAV.find((n) => n.to !== "/" && pathname.startsWith(n.to))?.label;
   return (
     <RootDocument>
       <div className="wrap">
@@ -89,7 +91,12 @@ function RootComponent() {
         </a>
         <header className="topbar">
           <Link to="/" className="brand">
-            <span className="kicker">Tracking the balance sheet behind the AI build-out</span>
+            <span className="kicker">
+              <span className={page ? "kicker-tagline" : undefined}>
+                Tracking the balance sheet behind the AI build-out
+              </span>
+              {page ? <span className="kicker-page">{page}</span> : null}
+            </span>
             <span className="brand-name">
               Artificial Liabilities<span className="accent">.</span>
             </span>
@@ -109,45 +116,65 @@ function RootComponent() {
 }
 
 function SiteNav() {
-  const navRef = useRef<HTMLElement>(null);
+  const toggleRef = useRef<HTMLButtonElement>(null);
   const pathname = useLocation({ select: (l) => l.pathname });
+  // Phones: the nav collapses behind a menu button.
+  const [open, setOpen] = useState(false);
 
-  // On phones the nav is a horizontal strip; keep the active tab visible
-  // without touching the page's vertical scroll (scrollIntoView would).
-  // biome-ignore lint/correctness/useExhaustiveDependencies: pathname triggers the re-scroll after navigation.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: pathname closes the menu after navigation.
+  useEffect(() => setOpen(false), [pathname]);
+
   useEffect(() => {
-    const nav = navRef.current;
-    const active = nav?.querySelector<HTMLElement>("a.active");
-    if (!nav || !active || nav.scrollWidth <= nav.clientWidth) return;
-    const target = active.offsetLeft - (nav.clientWidth - active.offsetWidth) / 2;
-    nav.scrollTo({ left: Math.max(0, target), behavior: "smooth" });
-  }, [pathname]);
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      setOpen(false);
+      toggleRef.current?.focus();
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [open]);
 
   return (
-    <nav className="nav" ref={navRef} aria-label="Main">
-      {NAV.map((n) => (
-        <Link
-          key={n.to}
-          to={n.to}
-          activeOptions={{ exact: n.to === "/", includeSearch: false }}
-          activeProps={{ className: "active" }}
-        >
-          {n.label}
-        </Link>
-      ))}
-      <a
-        className="nav-github"
-        href="https://github.com/ndom91/ai-infra-monitoring"
-        target="_blank"
-        rel="noreferrer"
-        aria-label="GitHub repository (opens in a new tab)"
+    <div className="nav-wrap">
+      <button
+        ref={toggleRef}
+        type="button"
+        className="nav-toggle"
+        aria-expanded={open}
+        aria-controls="site-nav"
+        onClick={() => setOpen((o) => !o)}
       >
-        <span className="sr-only">GitHub repository (opens in a new tab)</span>
-        <svg aria-hidden="true" viewBox="0 0 24 24">
-          <path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.683-.217.683-.481 0-.237-.009-.866-.013-1.699-2.782.604-3.369-1.34-3.369-1.34-.455-1.156-1.11-1.464-1.11-1.464-.908-.62.069-.608.069-.608 1.004.071 1.532 1.031 1.532 1.031.892 1.529 2.341 1.087 2.91.831.091-.646.349-1.087.635-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.092.39-1.986 1.029-2.686-.103-.253-.446-1.271.098-2.65 0 0 .84-.269 2.75 1.026A9.564 9.564 0 0 1 12 6.756a9.59 9.59 0 0 1 2.504.337c1.909-1.295 2.748-1.026 2.748-1.026.546 1.379.203 2.397.1 2.65.64.7 1.028 1.594 1.028 2.686 0 3.842-2.339 4.687-4.566 4.935.359.309.678.92.678 1.852 0 1.337-.012 2.418-.012 2.747 0 .267.18.578.688.48A10.003 10.003 0 0 0 22 12c0-5.523-4.477-10-10-10Z" />
+        <span className="sr-only">Menu</span>
+        <svg aria-hidden="true" viewBox="0 0 20 20">
+          <path d={open ? "M5 5l10 10M15 5L5 15" : "M3 6h14M3 10h14M3 14h14"} />
         </svg>
-      </a>
-    </nav>
+      </button>
+      <nav className={`nav${open ? " open" : ""}`} id="site-nav" aria-label="Main">
+        {NAV.map((n) => (
+          <Link
+            key={n.to}
+            to={n.to}
+            activeOptions={{ exact: n.to === "/", includeSearch: false }}
+            activeProps={{ className: "active" }}
+          >
+            {n.label}
+          </Link>
+        ))}
+        <a
+          className="nav-github"
+          href="https://github.com/ndom91/ai-infra-monitoring"
+          target="_blank"
+          rel="noreferrer"
+          aria-label="GitHub repository (opens in a new tab)"
+        >
+          <span className="sr-only">GitHub repository (opens in a new tab)</span>
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.683-.217.683-.481 0-.237-.009-.866-.013-1.699-2.782.604-3.369-1.34-3.369-1.34-.455-1.156-1.11-1.464-1.11-1.464-.908-.62.069-.608.069-.608 1.004.071 1.532 1.031 1.532 1.031.892 1.529 2.341 1.087 2.91.831.091-.646.349-1.087.635-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.092.39-1.986 1.029-2.686-.103-.253-.446-1.271.098-2.65 0 0 .84-.269 2.75 1.026A9.564 9.564 0 0 1 12 6.756a9.59 9.59 0 0 1 2.504.337c1.909-1.295 2.748-1.026 2.748-1.026.546 1.379.203 2.397.1 2.65.64.7 1.028 1.594 1.028 2.686 0 3.842-2.339 4.687-4.566 4.935.359.309.678.92.678 1.852 0 1.337-.012 2.418-.012 2.747 0 .267.18.578.688.48A10.003 10.003 0 0 0 22 12c0-5.523-4.477-10-10-10Z" />
+          </svg>
+        </a>
+      </nav>
+    </div>
   );
 }
 

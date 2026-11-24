@@ -87,3 +87,29 @@ export function snapToCalendarQuarter(date: string): string | undefined {
   if (!best || Math.abs(best.getTime() - d.getTime()) > 45 * 86_400_000) return undefined;
   return best.toISOString().slice(0, 10);
 }
+
+// Half-yearly reports compare H1 with H1 and H2 with H2. A change is kept
+// only when its two points fall in the same calendar month a year apart, so
+// a missing report never turns into an 18-month or 6-month comparison.
+export function matchedYearChange(change: Change | null): Change | null {
+  if (!change) return null;
+  const [fy, fm] = change.from.periodEnd.split("-").map(Number);
+  const [ty, tm] = change.to.periodEnd.split("-").map(Number);
+  return fy === (ty ?? 0) - 1 && fm === tm ? change : null;
+}
+
+// The same-month point one year before the latest, from a full history.
+export function matchedYearOverYear(points: Point[]): Change | null {
+  const to = points.at(-1);
+  if (!to) return null;
+  const [y, m] = to.periodEnd.split("-");
+  const prefix = `${Number(y) - 1}-${m}`;
+  const from = points.findLast((p) => p.periodEnd.startsWith(prefix));
+  if (!from) return null;
+  return {
+    from,
+    to,
+    delta: to.value - from.value,
+    pct: from.value === 0 ? null : (to.value - from.value) / Math.abs(from.value),
+  };
+}

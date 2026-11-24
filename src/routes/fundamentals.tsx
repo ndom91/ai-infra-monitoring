@@ -1,31 +1,34 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import {
+  Chapter,
+  ChapterCharts,
+  type ChapterDef,
+  ChapterHeader,
+  ChapterLayout,
+  ChapterMore,
+} from "~/components/Chapters";
 import { ChartBlock } from "~/components/ChartBlock";
-import { CompanyPicker } from "~/components/CompanyPicker";
+import { EntityBand, EntityPicker } from "~/components/EntityPicker";
 import { FilingEvents } from "~/components/FilingEvents";
-import { IndicatorPanel } from "~/components/IndicatorPanel";
-import { PageLead } from "~/components/PageLead";
-import { SectionHeader } from "~/components/SectionHeader";
+import { PageIntro } from "~/components/PageIntro";
+import type { Stat } from "~/components/StatList";
 import { TermsTable } from "~/components/TermsTable";
-import { type CompanyGroup, SEC_COMPANIES } from "~/domain/companies";
+import { cashSignal } from "~/domain/chapterSignals";
+import { GROUP_BLURBS, SEC_COMPANIES, SEC_DEBT_COMPANIES } from "~/domain/companies";
 import { EXPLAINERS } from "~/domain/explainers";
-import { indicatorById, SECTIONS } from "~/domain/indicators";
+import { groupMedianAtLatestQuarter, insiderWindow } from "~/domain/headlines";
 import { parseRange } from "~/domain/ranges";
+import { formatMonthYear, formatPeriod, formatValue } from "~/lib/format";
 import { pageHead } from "~/lib/seo";
 import { getCompanySeries, getFundamentalsData, type SeriesView } from "~/server/data";
 
 const TICKERS = SEC_COMPANIES.map((c) => c.ticker);
-const GROUP_BLURBS: Record<CompanyGroup, string> = {
-  hyperscaler: "Hyperscaler: pays for most of its capex from its own cash.",
-  neocloud: "Neocloud: pays for most of its capex with debt and leases.",
-  supplier: "Hardware supplier: sells the chips and servers. Watch receivables and inventory.",
-  dc_reit: "Datacenter REIT: owns and leases the buildings, funded mostly with debt and equity.",
-  ai_lab: "AI lab that develops and sells access to models.",
-};
 // The order-book peer chart predates the supplier and REIT groups and stays
 // limited to the companies that disclose comparable backlogs.
 const BACKLOG_PEERS = SEC_COMPANIES.filter(
   (c) => c.group === "hyperscaler" || c.group === "neocloud",
 ).map((c) => c.ticker);
+const HYPERSCALERS = SEC_COMPANIES.filter((c) => c.group === "hyperscaler").map((c) => c.ticker);
 
 export const Route = createFileRoute("/fundamentals")({
   head: () =>
@@ -51,17 +54,45 @@ export const Route = createFileRoute("/fundamentals")({
   component: FundamentalsPage,
 });
 
-// "customer_concentration.CRWV.top2_pct_fy" -> "CRWV top2"
+// "customer_concentration.CRWV.largest_customer_pct_fy" -> "largest customer"
 const concentrationLabel = (s: SeriesView) => {
-  const [, ticker = "", metric = ""] = s.id.split(".");
-  return `${ticker} ${metric.replace(/_pct_(fy|q)$/, "").replaceAll("_", " ")}`;
+  const metric = s.id.split(".")[2] ?? "";
+  const words = metric.replace(/_pct_(fy|q)$/, "").replaceAll("_", " ");
+  return words.charAt(0).toUpperCase() + words.slice(1);
 };
 
+const LIFE_SERIES = /\.(server|hpc_hardware)_useful_life$/;
+
+// Latest value with its period; `null` value when nothing is stored.
+function latestStat(
+  label: string,
+  s: SeriesView | undefined,
+  note: string,
+  opts: { tone?: Stat["tone"]; missing?: string; format?: (v: number) => string } = {},
+): Stat {
+  if (!s?.latest) return { label, value: null, note: opts.missing ?? "Not reported" };
+  const format = opts.format ?? ((v: number) => formatValue(v, s.unit));
+  return {
+    label,
+    value: format(s.latest.value),
+    note: `${formatPeriod(s.latest.periodEnd, s.cadence)} · ${note}`,
+    tone: opts.tone,
+  };
+}
+
+function insiderSalesValue(collected: boolean, w: { total: number; months: number }) {
+  if (!collected) return null;
+  return w.months ? formatValue(w.total, "USD") : "None found";
+}
+
+const pct0 = (v: number) => `${Math.round(v)}%`;
+const years = (v: number) => `${+v.toFixed(1)} yrs`;
+
 function FundamentalsPage() {
-  const { series, filingEvents } = Route.useLoaderData();
+  const { series, filingEvents, now } = Route.useLoaderData();
   const { range, company } = Route.useSearch();
-  const section = SECTIONS.find((s) => s.id === "fundamentals");
   const selected = SEC_COMPANIES.find((c) => c.ticker === company);
+  const name = selected?.name ?? company;
   const awaitingFundamentals =
     selected?.allowMissingPeriodicFilings &&
     !series.some((s) => s.collector === "sec" && s.entity === company);
@@ -69,6 +100,7 @@ function FundamentalsPage() {
   const pick = (ids: string[]) => ids.flatMap((id) => byId.get(id) ?? []);
   const sec = (concepts: string[]) => pick(concepts.map((c) => `sec.${company}.${c}`));
   const derived = (ids: string[]) => pick(ids.map((d) => `derived.${company}.${d}`));
+  const one = (id: string) => byId.get(id);
   const acrossGroup = (group: string, metric: string) =>
     pick(
       SEC_COMPANIES.filter((c) => c.group === group).map((c) => `derived.${c.ticker}.${metric}`),
@@ -76,234 +108,460 @@ function FundamentalsPage() {
   const tickerLabel = (s: SeriesView) => s.entity ?? s.label;
   const manual = (indicator: string) =>
     series.filter((s) => s.indicator === indicator && s.collector === "manual");
+  const own = (list: SeriesView[]) => list.filter((s) => s.id.split(".")[1] === company);
+
+  // ---- Headline figures ----
+  const capexOcf = one(`derived.${company}.capex_ocf_ttm`);
+  const groupMedian = (group: string): Stat | null => {
+    const m = groupMedianAtLatestQuarter(acrossGroup(group, "capex_ocf_ttm").map((s) => s.points));
+    if (!m) return null;
+    return {
+      label: `${group === "hyperscaler" ? "Hyperscalers" : "Neoclouds"}, capex ÷ cash flow`,
+      value: formatValue(m.value, "×"),
+      note: `Median of ${m.n} · ${formatPeriod(m.quarter, "quarterly")} · 12 months · calculated`,
+    };
+  };
+
+  const concentration = own(manual("customer_concentration"));
+  const insiderTotal = one(`insider.${company}.open_market_sales_usd`);
+  const insiderPlanned = one(`insider.${company}.open_market_sales_10b5_1_usd`);
+  const endMonth = now.slice(0, 7);
+  const insider = insiderWindow(insiderTotal?.points ?? [], insiderPlanned?.points ?? [], endMonth);
+  const windowNote = `3 months to ${formatMonthYear(endMonth)} · calculated`;
+
+  const lives = manual("depreciation").filter((s) => LIFE_SERIES.test(s.id));
+  const ownLife = lives.find((s) => s.id.split(".")[1] === company);
+  const ownLifePrior = ownLife?.points.at(-2);
+  const hyperLives = lives.filter((s) => HYPERSCALERS.includes(s.id.split(".")[1] ?? ""));
+  const hyperLatest = hyperLives.flatMap((s) => (s.latest ? [s.latest.value] : []));
+  const maxLife = hyperLatest.length ? Math.max(...hyperLatest) : null;
+
+  const chapters: ChapterDef[] = [
+    { slug: "peers", label: "Across peers", sub: "Same for every company", signal: "context" },
+    {
+      slug: "cash",
+      label: "Cash & spending",
+      sub: `${company} · quarterly`,
+      signal: cashSignal(capexOcf?.latest?.value),
+    },
+    { slug: "orders", label: "Order book", sub: `${company} · quarterly`, signal: "context" },
+    { slug: "customers", label: "Customers", sub: `${company} · from filings`, signal: "context" },
+    { slug: "insiders", label: "Insider sales", sub: `${company} · monthly`, signal: "context" },
+    { slug: "depreciation", label: "Depreciation", sub: "All companies", signal: "context" },
+  ];
+  const [peers, cash, orders, customers, insiders, depreciation] = chapters as [
+    ChapterDef,
+    ChapterDef,
+    ChapterDef,
+    ChapterDef,
+    ChapterDef,
+    ChapterDef,
+  ];
+  const total = chapters.length;
+  const cashTone = cash.signal === "context" ? undefined : cash.signal;
+
+  const picker = (variant: "rail" | "row") => (
+    <EntityPicker companies={SEC_COMPANIES} active={company} variant={variant} label="Company" />
+  );
+  const hasDebtPage = SEC_DEBT_COMPANIES.some((c) => c.ticker === company);
 
   return (
     <>
-      <SectionHeader
-        title={section?.label ?? "Fundamentals"}
-        blurb={section?.blurb ?? ""}
+      <PageIntro
+        eyebrow="Fundamentals"
+        title="Who is paying for the build-out, and with what?"
         range={range}
-      />
-      <PageLead title="Compare the funding behind the build-out">
-        Start with the peer charts: they show which companies are spending against internally
-        generated cash and which carry more debt. Then choose a company for its reported financial
-        detail. Latest filings cover every tracked issuer and do not change with the selector.
-      </PageLead>
-      <section className="panel">
-        <header className="panel-head">
-          <div>
-            <h2>Peer comparison</h2>
-            <p className="measures">
-              These charts compare peers with available data and stay the same when you pick a
-              company.
+      >
+        Six chapters. The first compares peers inside each group; the rest follow one company. Each
+        opens with the question it answers and shows the two charts that answer it. Everything else
+        is one click away.
+      </PageIntro>
+      <ChapterLayout
+        chapters={chapters}
+        picker={{ heading: "Company · chapters 02–06", node: picker("rail") }}
+      >
+        <Chapter chapter={peers}>
+          <ChapterHeader
+            index={1}
+            total={total}
+            chapter={peers}
+            meta="Same for every company"
+            question="Who is spending beyond the cash their business brings in?"
+            watchFor="neoclouds whose capex runs well above operating cash flow while their debt keeps rising."
+            stats={[
+              latestStat(
+                `${name}, capex ÷ operating cash flow`,
+                capexOcf,
+                "12 months · calculated",
+                {
+                  tone: cashTone,
+                  missing: "Not calculated: needs positive 12-month operating cash flow",
+                },
+              ),
+              ...[groupMedian("hyperscaler"), groupMedian("neocloud")].flatMap((s) => s ?? []),
+            ]}
+          />
+          <ChapterCharts>
+            <ChartBlock
+              title="Big tech: spending vs cash coming in"
+              info={EXPLAINERS.capexIntensityHyper}
+              subtitle="12-month capex ÷ 12-month operating cash flow. Calculated"
+              series={acrossGroup("hyperscaler", "capex_ocf_ttm")}
+              labelOf={tickerLabel}
+            />
+            <ChartBlock
+              title="Neoclouds: spending vs cash coming in"
+              info={EXPLAINERS.capexIntensityNeo}
+              subtitle="Blank where cash flow was negative. Calculated"
+              series={acrossGroup("neocloud", "capex_ocf_ttm")}
+              labelOf={tickerLabel}
+            />
+          </ChapterCharts>
+          <ChapterMore summary="Show 4 more peer charts: neocloud debt, order-book conversion, supplier payment days, supplier inventory days, and latest filings">
+            <ChapterCharts>
+              <ChartBlock
+                title="Neoclouds: debt vs cash coming in"
+                info={EXPLAINERS.leverageNeo}
+                subtitle="(Debt + finance leases) ÷ 12-month operating cash flow. Calculated"
+                series={acrossGroup("neocloud", "debt_to_ocf")}
+                labelOf={tickerLabel}
+              />
+              <ChartBlock
+                title="How fast the order book turns into revenue"
+                info={EXPLAINERS.conversionPeers}
+                subtitle="12-month revenue ÷ order book (RPO) a year earlier. Calculated"
+                series={BACKLOG_PEERS.flatMap((t) => byId.get(`derived.${t}.rpo_conversion`) ?? [])}
+                labelOf={tickerLabel}
+              />
+              <ChartBlock
+                title="Suppliers: how long customers take to pay"
+                info={EXPLAINERS.dsoPeers}
+                subtitle="Days sales outstanding: receivables ÷ quarterly revenue × 91. Calculated"
+                series={acrossGroup("supplier", "dso")}
+                labelOf={tickerLabel}
+              />
+              <ChartBlock
+                title="Suppliers: how long stock sits unsold"
+                info={EXPLAINERS.inventoryDays}
+                subtitle="Inventory days: inventory ÷ quarterly cost of revenue × 91. Calculated"
+                series={acrossGroup("supplier", "inventory_days")}
+                labelOf={tickerLabel}
+              />
+            </ChapterCharts>
+            <FilingEvents events={filingEvents.slice(0, 12)} />
+          </ChapterMore>
+        </Chapter>
+
+        {selected ? (
+          <EntityBand
+            eyebrow="Chapters 02–06 follow one company"
+            company={selected}
+            blurb={`${GROUP_BLURBS[selected.group]} Switch company in the side rail.`}
+            link={
+              hasDebtPage ? (
+                <Link to="/credit" search={{ company, range: "3y" }} hash="bycompany">
+                  {name}'s debt, instrument by instrument →
+                </Link>
+              ) : null
+            }
+          />
+        ) : null}
+
+        <Chapter chapter={cash}>
+          {picker("row")}
+          {awaitingFundamentals ? (
+            <p className="chapter-notice">
+              Quarterly figures appear here once we collect XBRL data from a 10-K or 10-Q.{" "}
+              <a href={`https://www.sec.gov/edgar/browse/?CIK=${selected.cik}`}>
+                Browse {selected.name}'s SEC filings
+              </a>
             </p>
-          </div>
-        </header>
-        <div className="grid-2">
-          <ChartBlock
-            title="Big tech: spending vs cash coming in"
-            info={EXPLAINERS.capexIntensityHyper}
-            subtitle="12-month capital spending ÷ 12-month operating cash flow"
-            series={acrossGroup("hyperscaler", "capex_ocf_ttm")}
-            labelOf={tickerLabel}
+          ) : null}
+          <ChapterHeader
+            index={2}
+            total={total}
+            chapter={cash}
+            meta="SEC, quarterly"
+            question={`Can ${name} pay for what it is building?`}
+            watchFor="free cash flow staying negative while debt and leases grow faster than cash from operations."
+            stats={[
+              latestStat("Capex ÷ operating cash flow", capexOcf, "12 months · calculated", {
+                tone: cashTone,
+                missing: "Not calculated: needs positive 12-month operating cash flow",
+              }),
+              latestStat(
+                "Free cash flow",
+                one(`derived.${company}.fcf_ttm`),
+                "12 months · calculated",
+              ),
+              latestStat(
+                "Debt + leases ÷ cash flow",
+                one(`derived.${company}.debt_to_ocf`),
+                "latest quarter · calculated",
+                { missing: "Not calculated: needs positive 12-month operating cash flow" },
+              ),
+            ]}
           />
-          <ChartBlock
-            title="Neoclouds: spending vs cash coming in"
-            info={EXPLAINERS.capexIntensityNeo}
-            subtitle="12-month capex ÷ 12-month operating cash flow. Blank where cash flow was negative"
-            series={acrossGroup("neocloud", "capex_ocf_ttm")}
-            labelOf={tickerLabel}
-          />
-          <ChartBlock
-            title="Neoclouds: debt vs cash coming in"
-            info={EXPLAINERS.leverageNeo}
-            subtitle="(Debt + finance leases) ÷ 12-month operating cash flow"
-            series={acrossGroup("neocloud", "debt_to_ocf")}
-            labelOf={tickerLabel}
-          />
-          <ChartBlock
-            title="How fast the order book turns into revenue"
-            info={EXPLAINERS.conversionPeers}
-            subtitle="12-month revenue ÷ order book (RPO) a year earlier"
-            series={BACKLOG_PEERS.flatMap((t) => byId.get(`derived.${t}.rpo_conversion`) ?? [])}
-            labelOf={tickerLabel}
-          />
-          <ChartBlock
-            title="Suppliers: how long customers take to pay"
-            info={EXPLAINERS.dsoPeers}
-            subtitle="Days sales outstanding: receivables ÷ quarterly revenue × 91. Calculated"
-            series={acrossGroup("supplier", "dso")}
-            labelOf={tickerLabel}
-          />
-          <ChartBlock
-            title="Suppliers: how long stock sits unsold"
-            info={EXPLAINERS.inventoryDays}
-            subtitle="Inventory days: inventory ÷ quarterly cost of revenue × 91. Calculated"
-            series={acrossGroup("supplier", "inventory_days")}
-            labelOf={tickerLabel}
-          />
-        </div>
-      </section>
-      <FilingEvents events={filingEvents.slice(0, 12)} />
+          <ChapterCharts>
+            <ChartBlock
+              title="Capex vs cash from the business"
+              info={EXPLAINERS.capexVsOcf}
+              subtitle="Quarterly. Some quarters are worked out from year-to-date totals"
+              series={sec(["capex", "ocf"])}
+            />
+            <ChartBlock
+              title="Debt and leases"
+              info={EXPLAINERS.debtLeases}
+              subtitle="What it owes at each quarter end"
+              series={sec(["debt", "finance_leases", "operating_leases", "cash"])}
+            />
+          </ChapterCharts>
+          <ChapterMore summary="Show 4 more: free cash flow, can it carry its debt, interest costs, purchase commitments">
+            <ChapterCharts>
+              <ChartBlock
+                title="Free cash flow"
+                info={EXPLAINERS.fcf}
+                subtitle="Last 12 months: operating cash flow minus capex. Calculated"
+                series={derived(["fcf_ttm"])}
+              />
+              <ChartBlock
+                title="Can it carry its debt?"
+                info={EXPLAINERS.leverageCoverage}
+                subtitle="Calculated ratios. Each line means something different, so compare it with its own history"
+                series={derived(["debt_to_ocf", "interest_coverage_ttm"])}
+              />
+              <ChartBlock
+                title="Interest costs"
+                info={EXPLAINERS.interest}
+                subtitle="Interest on the books vs interest actually paid"
+                series={sec(["interest_expense", "interest_paid"])}
+              />
+              <ChartBlock
+                title="Purchase commitments"
+                info={EXPLAINERS.purchaseObligations}
+                subtitle="Unconditional purchase obligations from the filing notes. Missing for most companies"
+                series={sec(["purchase_obligations"])}
+              />
+            </ChapterCharts>
+          </ChapterMore>
+        </Chapter>
 
-      <div className="section-head company-head">
-        <div>
-          <div className="eyebrow">Company detail</div>
-          <h1>
-            {selected?.name ?? company} <span className="ticker">{company}</span>
-          </h1>
-          <p>
-            {selected ? GROUP_BLURBS[selected.group] : ""} Most charts below are for this company.
-            Customer concentration, announced contracts and server useful lives cover every tracked
-            company.
-          </p>
-        </div>
-      </div>
-      <CompanyPicker active={company} />
-      {awaitingFundamentals ? (
-        <p className="measures">
-          Quarterly figures appear here once we collect XBRL data from a 10-K or 10-Q.{" "}
-          <a href={`https://www.sec.gov/edgar/browse/?CIK=${selected.cik}`}>
-            Browse {selected.name}'s SEC filings
-          </a>
-        </p>
-      ) : null}
+        <Chapter chapter={orders}>
+          <ChapterHeader
+            index={3}
+            total={total}
+            chapter={orders}
+            meta="SEC, quarterly"
+            question="Is the order book turning into revenue?"
+            watchFor="the order book growing much faster than revenue, or receivables piling up."
+            stats={[
+              latestStat("Order book (RPO)", one(`sec.${company}.rpo`), "quarter end"),
+              latestStat(
+                "Revenue ÷ order book a year earlier",
+                one(`derived.${company}.rpo_conversion`),
+                "12 months · calculated",
+              ),
+              latestStat("Days to collect payment", one(`derived.${company}.dso`), "calculated"),
+            ]}
+          />
+          <ChapterCharts>
+            <ChartBlock
+              title="Order book vs revenue"
+              info={EXPLAINERS.backlog}
+              subtitle="Order book (RPO) at quarter end, quarterly revenue and receivables"
+              series={sec(["rpo", "revenue", "ar"])}
+            />
+            <ChartBlock
+              title="Growth vs a year ago"
+              info={EXPLAINERS.growth}
+              subtitle="Order book, 12-month revenue and receivables, year on year. Calculated"
+              series={derived(["rpo_yoy", "revenue_ttm_yoy", "ar_yoy"])}
+            />
+          </ChapterCharts>
+          <ChapterMore summary="Show 3 more: conversion ratio, collection and stock days, inventory">
+            <ChapterCharts>
+              <ChartBlock
+                title="Order book to revenue"
+                info={EXPLAINERS.conversion}
+                subtitle="12-month revenue ÷ order book a year earlier. Calculated"
+                series={derived(["rpo_conversion"])}
+              />
+              <ChartBlock
+                title="Collection and stock days"
+                info={EXPLAINERS.dsoInventory}
+                subtitle="Calculated: receivables and inventory in days of quarterly revenue and cost of revenue"
+                series={derived(["dso", "inventory_days"])}
+              />
+              <ChartBlock
+                title="Inventory"
+                info={EXPLAINERS.inventoryBalance}
+                subtitle="Net inventory and quarterly cost of revenue"
+                series={sec(["inventory", "cogs"])}
+              />
+            </ChapterCharts>
+          </ChapterMore>
+        </Chapter>
 
-      <IndicatorPanel def={indicatorById("capex_cashflow")}>
-        <div className="grid-2">
-          <ChartBlock
-            title={`${company}: capex vs cash from the business`}
-            info={EXPLAINERS.capexVsOcf}
-            subtitle="Quarterly. Some quarters are worked out from year-to-date totals"
-            series={sec(["capex", "ocf"])}
+        <Chapter chapter={customers}>
+          <ChapterHeader
+            index={4}
+            total={total}
+            chapter={customers}
+            meta="From filings"
+            question="How much depends on a handful of customers?"
+            watchFor="one or two customers making up most of revenue, or a single customer's share swinging sharply between quarters."
+            stats={[
+              latestStat(
+                "Largest customer, full year",
+                one(`customer_concentration.${company}.largest_customer_pct_fy`),
+                "share of revenue",
+                { format: pct0 },
+              ),
+              latestStat(
+                "Largest customer, latest quarter",
+                one(`customer_concentration.${company}.largest_customer_pct_q`),
+                "single quarter",
+                { format: pct0 },
+              ),
+              latestStat(
+                "Top two customers, latest quarter",
+                one(`customer_concentration.${company}.top2_pct_q`),
+                "single quarter",
+                { format: pct0 },
+              ),
+            ]}
           />
-          <ChartBlock
-            title={`${company}: free cash flow`}
-            info={EXPLAINERS.fcf}
-            subtitle="Last 12 months: operating cash flow minus capex"
-            series={derived(["fcf_ttm"])}
+          <ChapterCharts>
+            <ChartBlock
+              title="Biggest customer's share of revenue, full year"
+              info={EXPLAINERS.concentrationFy}
+              subtitle="As disclosed in annual filings"
+              series={concentration.filter((s) => s.id.endsWith("_pct_fy"))}
+              labelOf={concentrationLabel}
+              emptyReason="This company has not disclosed customer shares, or none are entered yet."
+            />
+            <ChartBlock
+              title="Biggest customers' share, single quarters"
+              info={EXPLAINERS.concentrationQ}
+              subtitle="Kept apart from full-year disclosures"
+              series={concentration.filter((s) => s.id.endsWith("_pct_q"))}
+              labelOf={concentrationLabel}
+              emptyReason="This company has not disclosed customer shares, or none are entered yet."
+            />
+          </ChapterCharts>
+          <TermsTable
+            title="Announced customer contracts"
+            info={EXPLAINERS.contracts}
+            subtitle="Total value as announced. Not guaranteed revenue."
+            series={concentration.filter((s) => s.id.includes("contract_value"))}
           />
-          <ChartBlock
-            title={`${company}: debt and leases`}
-            info={EXPLAINERS.debtLeases}
-            subtitle="What it owes at each quarter end"
-            series={sec(["debt", "finance_leases", "operating_leases", "cash"])}
-          />
-          <ChartBlock
-            title={`${company}: can it carry its debt?`}
-            info={EXPLAINERS.leverageCoverage}
-            subtitle="Calculated ratios. Each line means something different, so compare it with its own history"
-            series={derived(["debt_to_ocf", "interest_coverage_ttm"])}
-          />
-          <ChartBlock
-            title={`${company}: interest costs`}
-            info={EXPLAINERS.interest}
-            subtitle="Interest on the books vs interest actually paid"
-            series={sec(["interest_expense", "interest_paid"])}
-          />
-          <ChartBlock
-            title={`${company}: purchase commitments`}
-            info={EXPLAINERS.purchaseObligations}
-            subtitle="Unconditional purchase obligations from the filing notes. Missing for most companies"
-            series={sec(["purchase_obligations"])}
-          />
-        </div>
-      </IndicatorPanel>
+        </Chapter>
 
-      <IndicatorPanel def={indicatorById("contract_conversion")}>
-        <div className="grid-2">
-          <ChartBlock
-            title={`${company}: order book vs revenue`}
-            info={EXPLAINERS.backlog}
-            subtitle="Order book (RPO) at quarter end, and quarterly revenue"
-            series={sec(["rpo", "revenue", "ar"])}
+        <Chapter chapter={insiders}>
+          <ChapterHeader
+            index={5}
+            total={total}
+            chapter={insiders}
+            meta="SEC Form 4, monthly"
+            question="Are insiders selling?"
+            watchFor="large open-market sales outside pre-arranged 10b5-1 plans."
+            stats={[
+              {
+                label: "Open-market sales",
+                value: insiderSalesValue(insiderTotal != null, insider),
+                note: insiderTotal ? windowNote : "No Form 4 sales collected for this company",
+              },
+              {
+                label: "Of which under 10b5-1 plans",
+                value: insider.plannedShare == null ? null : pct0(insider.plannedShare * 100),
+                note:
+                  insider.plannedShare == null
+                    ? "Needs the 10b5-1 flag on every month with sales"
+                    : windowNote,
+              },
+            ]}
           />
-          <ChartBlock
-            title={`${company}: order book to revenue`}
-            info={EXPLAINERS.conversion}
-            subtitle="12-month revenue ÷ order book a year earlier"
-            series={derived(["rpo_conversion"])}
-          />
-          <ChartBlock
-            title={`${company}: growth vs a year ago`}
-            info={EXPLAINERS.growth}
-            subtitle="Watch for the order book growing much faster than revenue"
-            series={derived(["rpo_yoy", "revenue_ttm_yoy", "ar_yoy"])}
-          />
-          <ChartBlock
-            title={`${company}: collection and stock days`}
-            info={EXPLAINERS.dsoInventory}
-            subtitle="Calculated: receivables and inventory in days of quarterly revenue and cost of revenue"
-            series={derived(["dso", "inventory_days"])}
-          />
-          <ChartBlock
-            title={`${company}: inventory`}
-            info={EXPLAINERS.inventoryBalance}
-            subtitle="Net inventory and quarterly cost of revenue"
-            series={sec(["inventory", "cogs"])}
-          />
-        </div>
-      </IndicatorPanel>
+          <ChapterCharts one>
+            <ChartBlock
+              title="Insider open-market sales"
+              info={EXPLAINERS.insiderSales}
+              subtitle="Calculated monthly: shares × price on Form 4 sales. The second line is sales under 10b5-1 plans"
+              series={pick([
+                `insider.${company}.open_market_sales_usd`,
+                `insider.${company}.open_market_sales_10b5_1_usd`,
+              ])}
+              emptyReason="No priced open-market sales found for this company yet."
+            />
+          </ChapterCharts>
+        </Chapter>
 
-      <IndicatorPanel def={indicatorById("insider_activity")}>
-        <div className="grid-2">
-          <ChartBlock
-            title={`${company}: insider open-market sales`}
-            info={EXPLAINERS.insiderSales}
-            subtitle="Calculated monthly: shares x price on Form 4 sales. The second line is sales under 10b5-1 plans"
-            series={pick([
-              `insider.${company}.open_market_sales_usd`,
-              `insider.${company}.open_market_sales_10b5_1_usd`,
-            ])}
-            emptyReason="No priced open-market sales found for this company yet."
+        <Chapter chapter={depreciation}>
+          <ChapterHeader
+            index={6}
+            total={total}
+            chapter={depreciation}
+            meta="From filings"
+            question="Are servers assumed to last longer than they should?"
+            watchFor="longer assumed lifespans, which flatter profits, while spare cash shrinks."
+            stats={[
+              ownLife?.latest
+                ? {
+                    label: `${name}, assumed server life`,
+                    value: years(ownLife.latest.value),
+                    note: `Since ${formatMonthYear(ownLife.latest.periodEnd)}${
+                      ownLifePrior ? `, from ${years(ownLifePrior.value)}` : ""
+                    }`,
+                  }
+                : {
+                    label: `${name}, assumed server life`,
+                    value: null,
+                    note: "No useful-life disclosure entered for this company",
+                  },
+              {
+                label: `Hyperscalers at ${maxLife == null ? "the longest life" : years(maxLife)}`,
+                value:
+                  maxLife == null
+                    ? null
+                    : `${hyperLatest.filter((v) => v === maxLife).length} of ${hyperLatest.length}`,
+                note: "Latest disclosed server life · calculated",
+              },
+              latestStat("Depreciation, latest quarter", one(`sec.${company}.da`), "SEC"),
+            ]}
           />
-        </div>
-      </IndicatorPanel>
-
-      <IndicatorPanel def={indicatorById("customer_concentration")}>
-        <div className="grid-2">
-          <ChartBlock
-            title="Biggest customers' share of revenue, full year"
-            info={EXPLAINERS.concentrationFy}
-            subtitle="As disclosed in company filings"
-            series={manual("customer_concentration").filter((s) => s.id.endsWith("_pct_fy"))}
-            labelOf={concentrationLabel}
-          />
-          <ChartBlock
-            title="Biggest customers' share of revenue, one quarter"
-            info={EXPLAINERS.concentrationQ}
-            subtitle="Single-quarter disclosures, kept apart from full-year ones"
-            series={manual("customer_concentration").filter((s) => s.id.endsWith("_pct_q"))}
-            labelOf={concentrationLabel}
-          />
-        </div>
-        <TermsTable
-          title="Announced customer contracts"
-          info={EXPLAINERS.contracts}
-          subtitle="Total value as announced. Not guaranteed revenue."
-          series={manual("customer_concentration").filter((s) => s.id.includes("contract_value"))}
-        />
-      </IndicatorPanel>
-
-      <IndicatorPanel def={indicatorById("depreciation")}>
-        <div className="grid-2">
-          <ChartBlock
-            title="How long servers are assumed to last"
-            info={EXPLAINERS.usefulLife}
-            subtitle="Each step is a change the company announced"
-            series={manual("depreciation")}
-            stepped
-            labelOf={tickerLabel}
-            emptyReason="Changes are added by hand from company filings, with citations."
-          />
-          <ChartBlock
-            title={`${company}: depreciation & amortization`}
-            info={EXPLAINERS.da}
-            subtitle="Quarterly cost of equipment wearing out"
-            series={sec(["da"])}
-          />
-        </div>
-      </IndicatorPanel>
+          <ChapterCharts one>
+            <ChartBlock
+              title="How long servers are assumed to last"
+              info={EXPLAINERS.usefulLife}
+              subtitle="Each step is a change the company announced"
+              series={lives}
+              stepped
+              labelOf={tickerLabel}
+              emptyReason="Changes are added by hand from company filings, with citations."
+            />
+          </ChapterCharts>
+          <ChapterMore
+            summary={`Show depreciation & amortization for ${name}, and network-equipment lifespans`}
+          >
+            <ChapterCharts>
+              <ChartBlock
+                title={`${name}: depreciation & amortization`}
+                info={EXPLAINERS.da}
+                subtitle="Quarterly cost of equipment wearing out"
+                series={sec(["da"])}
+              />
+              <ChartBlock
+                title="How long network equipment is assumed to last"
+                info={EXPLAINERS.usefulLife}
+                subtitle="Each step is a change the company announced"
+                series={manual("depreciation").filter((s) => !LIFE_SERIES.test(s.id))}
+                stepped
+                labelOf={tickerLabel}
+                emptyReason="Changes are added by hand from company filings, with citations."
+              />
+            </ChapterCharts>
+          </ChapterMore>
+        </Chapter>
+      </ChapterLayout>
     </>
   );
 }

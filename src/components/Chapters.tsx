@@ -1,0 +1,259 @@
+import { type ReactNode, useEffect, useRef, useState } from "react";
+import type { Signal } from "~/domain/chapterSignals";
+import { SignalDot, SignalLegend } from "./SignalDot";
+import { type Stat, StatList } from "./StatList";
+
+export type ChapterDef = {
+  slug: string;
+  label: string;
+  // Cadence or scope, shown under the label in the rail and the sheet.
+  sub: string;
+  signal: Signal;
+};
+
+const pad = (n: number) => String(n).padStart(2, "0");
+
+export function ChapterHeader({
+  index,
+  total,
+  chapter,
+  meta,
+  question,
+  watchFor,
+  stats,
+}: {
+  index: number;
+  total: number;
+  chapter: ChapterDef;
+  // "Daily · FRED"; desktop eyebrow only.
+  meta: string;
+  question: string;
+  watchFor: ReactNode;
+  stats: Stat[];
+}) {
+  return (
+    <header className="chapter-head">
+      <div className="chapter-head-text">
+        <p className="chapter-eyebrow">
+          <span className="chapter-num">{pad(index)}</span>
+          <span className="chapter-total">/{pad(total)}</span>
+          <span className="chapter-eyebrow-label">
+            {" "}
+            {chapter.label}
+            <span className="chapter-eyebrow-meta"> · {meta}</span>
+          </span>
+        </p>
+        <h2>{question}</h2>
+        <p className="chapter-watch">
+          <b>Watch for:</b> {watchFor}
+        </p>
+      </div>
+      <div className="chapter-head-stats">
+        <StatList stats={stats} />
+      </div>
+    </header>
+  );
+}
+
+export function Chapter({ chapter, children }: { chapter: ChapterDef; children: ReactNode }) {
+  return (
+    <section id={chapter.slug} className="chapter" aria-label={chapter.label}>
+      {children}
+    </section>
+  );
+}
+
+export function ChapterCharts({ children, one }: { children: ReactNode; one?: boolean }) {
+  return <div className={`chapter-charts${one ? " one" : ""}`}>{children}</div>;
+}
+
+// Collapsed charts mount only once opened, so Chart.js does no work for
+// charts nobody asked to see.
+export function ChapterMore({ summary, children }: { summary: string; children: ReactNode }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <details className="chapter-more" onToggle={(e) => setOpen(e.currentTarget.open)}>
+      <summary>{summary}</summary>
+      {open ? <div className="chapter-more-body">{children}</div> : null}
+    </details>
+  );
+}
+
+// The chapter whose section is nearest the top of the viewport.
+function useActiveChapter(slugs: string[]) {
+  const [active, setActive] = useState(slugs[0] ?? "");
+  const key = slugs.join(",");
+  // biome-ignore lint/correctness/useExhaustiveDependencies: `key` stands in for the slug list.
+  useEffect(() => {
+    const visible = new Set<string>();
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) visible.add(e.target.id);
+          else visible.delete(e.target.id);
+        }
+        const first = slugs.find((s) => visible.has(s));
+        if (first) setActive(first);
+      },
+      // A band near the top third of the screen.
+      { rootMargin: "-15% 0px -60% 0px" },
+    );
+    for (const s of slugs) {
+      const el = document.getElementById(s);
+      if (el) observer.observe(el);
+    }
+    return () => observer.disconnect();
+  }, [key]);
+  return active;
+}
+
+function ChapterList({
+  chapters,
+  active,
+  onPick,
+}: {
+  chapters: ChapterDef[];
+  active: string;
+  onPick?: () => void;
+}) {
+  return (
+    <ol className="chapter-list">
+      {chapters.map((c, i) => (
+        <li key={c.slug}>
+          <a
+            href={`#${c.slug}`}
+            aria-current={c.slug === active ? "location" : undefined}
+            onClick={onPick}
+          >
+            <span className="chapter-list-num">{pad(i + 1)}</span>
+            <span className="chapter-list-text">
+              <span className="chapter-list-label">{c.label}</span>
+              <span className="chapter-list-sub">{c.sub}</span>
+            </span>
+            <SignalDot signal={c.signal} labelHidden />
+          </a>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+const LEGEND: Signal[] = ["worsening", "mixed", "reassuring", "context"];
+
+// Layout A: sticky chapter rail on the left (desktop), a sticky chapter bar
+// with a bottom sheet on phones.
+export function ChapterLayout({
+  chapters,
+  picker,
+  children,
+}: {
+  chapters: ChapterDef[];
+  picker?: { heading: string; node: ReactNode };
+  children: ReactNode;
+}) {
+  const active = useActiveChapter(chapters.map((c) => c.slug));
+  const used = LEGEND.filter((s) => chapters.some((c) => c.signal === s));
+  return (
+    <div className="chapter-layout">
+      <aside className="chapter-rail" aria-label="On this page">
+        <p className="rail-heading">On this page</p>
+        <ChapterList chapters={chapters} active={active} />
+        <SignalLegend signals={used} />
+        {picker ? (
+          <div className="rail-picker">
+            <p className="rail-heading">{picker.heading}</p>
+            {picker.node}
+          </div>
+        ) : null}
+      </aside>
+      <div className="chapter-main">
+        <MobileChapterBar chapters={chapters} active={active} />
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function MobileChapterBar({ chapters, active }: { chapters: ChapterDef[]; active: string }) {
+  const [open, setOpen] = useState(false);
+  const opener = useRef<HTMLButtonElement>(null);
+  const sheet = useRef<HTMLDivElement>(null);
+  const index = Math.max(
+    0,
+    chapters.findIndex((c) => c.slug === active),
+  );
+  const current = chapters[index];
+
+  useEffect(() => {
+    if (!open) return;
+    const root = sheet.current;
+    const focusables = () =>
+      [...(root?.querySelectorAll<HTMLElement>("a[href], button") ?? [])].filter(
+        (el) => !el.hasAttribute("disabled"),
+      );
+    (root?.querySelector<HTMLElement>("[aria-current]") ?? focusables()[0])?.focus();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setOpen(false);
+        return;
+      }
+      if (e.key !== "Tab") return;
+      const list = focusables();
+      const first = list[0];
+      const last = list.at(-1);
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last?.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first?.focus();
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      opener.current?.focus({ preventScroll: true });
+    };
+  }, [open]);
+
+  return (
+    <div className="chapter-bar">
+      <span className="chapter-bar-current">
+        <span className="chapter-num">{pad(index + 1)}</span>/{pad(chapters.length)} ·{" "}
+        {current?.label}
+      </span>
+      <button
+        ref={opener}
+        type="button"
+        className="chapter-bar-btn"
+        aria-haspopup="dialog"
+        aria-expanded={open}
+        onClick={() => setOpen(true)}
+      >
+        Chapters <span aria-hidden="true">⌄</span>
+      </button>
+      {open ? (
+        <div className="sheet-backdrop" onClick={() => setOpen(false)} aria-hidden="true" />
+      ) : null}
+      {open ? (
+        <div
+          ref={sheet}
+          className="sheet"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="chapter-sheet-title"
+        >
+          <div className="sheet-head">
+            <p id="chapter-sheet-title" className="rail-heading">
+              Chapters
+            </p>
+            <button type="button" className="sheet-close" onClick={() => setOpen(false)}>
+              Close
+            </button>
+          </div>
+          <ChapterList chapters={chapters} active={active} onPick={() => setOpen(false)} />
+        </div>
+      ) : null}
+    </div>
+  );
+}

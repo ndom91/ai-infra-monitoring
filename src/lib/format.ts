@@ -53,3 +53,29 @@ export const PALETTE = [
   "#e8dc9a",
   "#91a0a4",
 ];
+
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const QUARTER_ENDS: Record<string, number> = { "03-31": 1, "06-30": 2, "09-30": 3, "12-31": 4 };
+
+// The period an observation covers, in the words of its cadence: "H1 2026",
+// "Q3 2026", "FY 2025", "Oct 2026". Fiscal quarters that do not end on a
+// calendar quarter keep their real end date.
+export function formatPeriod(periodEnd: string, cadence: string) {
+  const [y = "", m = "", d = ""] = periodEnd.slice(0, 10).split("-");
+  const md = `${m}-${d}`;
+  if (cadence === "semiannual" && (md === "06-30" || md === "12-31")) {
+    return `${md === "06-30" ? "H1" : "H2"} ${y}`;
+  }
+  if (cadence === "annual") return `FY ${y}`;
+  if (cadence === "quarterly") {
+    const q = QUARTER_ENDS[md];
+    return q ? `Q${q} ${y}` : `qtr to ${formatDate(periodEnd)}`;
+  }
+  if (cadence === "monthly") return `${MONTHS[Number(m) - 1]} ${y}`;
+  return formatDate(periodEnd);
+}
+
+export function formatMonthYear(iso: string) {
+  const [y = "", m = ""] = iso.split("-");
+  return `${MONTHS[Number(m) - 1]} ${y}`;
+}

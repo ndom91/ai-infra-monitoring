@@ -1,0 +1,32 @@
+import type { Signal } from "~/domain/chapterSignals";
+
+export type Stat = {
+  label: string;
+  // null when the figure cannot be computed from stored data.
+  value: string | null;
+  // Period, change, and "calculated" where it applies.
+  note: string;
+  tone?: Signal;
+  // Text-like values ("1 critical · 2 warning") render smaller.
+  small?: boolean;
+};
+
+export function StatList({ stats }: { stats: Stat[] }) {
+  return (
+    <dl className="stat-list">
+      {stats.map((s) => (
+        <div key={s.label} className="stat-row">
+          <dt className="stat-label">{s.label}</dt>
+          <dd
+            className={`stat-value${s.small ? " is-text" : ""}${s.tone ? ` tone-${s.tone}` : ""}${
+              s.value == null ? " awaiting" : ""
+            }`}
+          >
+            {s.value ?? "Awaiting data"}
+          </dd>
+          <dd className="stat-note">{s.note}</dd>
+        </div>
+      ))}
+    </dl>
+  );
+}

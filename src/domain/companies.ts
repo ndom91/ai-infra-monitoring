@@ -13,6 +13,14 @@ export const COMPANY_GROUP_LABELS: Record<CompanyGroup, string> = {
   ai_lab: "AI labs",
 };
 
+export const GROUP_BLURBS: Record<CompanyGroup, string> = {
+  hyperscaler: "Hyperscaler: pays for most of its capex from its own cash.",
+  neocloud: "Neocloud: pays for most of its capex with debt and leases.",
+  supplier: "Hardware supplier: sells the chips and servers. Watch receivables and inventory.",
+  dc_reit: "Datacenter REIT: owns and leases the buildings, funded mostly with debt and equity.",
+  ai_lab: "AI lab that develops and sells access to models.",
+};
+
 export type SecCompany = {
   ticker: string;
   name: string;

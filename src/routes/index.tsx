@@ -197,7 +197,7 @@ function Home() {
             />
           </StoryChart>
         </div>
-        <Link to="/credit" search={{ range: "3y" }} className="more">
+        <Link to="/credit" search={{ range: "3y", company: "CRWV" }} className="more">
           More on credit →
         </Link>
       </StorySection>
@@ -329,7 +329,11 @@ function Home() {
             />
           </StoryChart>
         </div>
-        <Link to="/infrastructure" search={{ range: "max" }} className="more">
+        <Link
+          to="/infrastructure"
+          search={{ range: "max", topic: "supply", publisher: "cbre" }}
+          className="more"
+        >
           More on data-center supply →
         </Link>
       </StorySection>
