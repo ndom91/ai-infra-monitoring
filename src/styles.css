@@ -366,6 +366,8 @@ h2 {
 }
 
 .block {
+  /* Lets the series table stack by the block's own width (see below). */
+  container: chart-block / inline-size;
   position: relative;
   background: var(--bg);
   border: 1px solid var(--line);
@@ -771,55 +773,8 @@ code {
     flex-wrap: wrap;
   }
 
-  /* Series tables: one small card per row. */
-  .series-stats thead,
   .stack-table thead {
     display: none;
-  }
-
-  .series-stats tr {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    grid-template-areas:
-      "series series series"
-      "latest observed status"
-      "change change change";
-    column-gap: 10px;
-    row-gap: 2px;
-    padding: 8px 0;
-    border-bottom: 1px solid #222a2c;
-  }
-
-  .series-stats td {
-    padding: 0;
-    border: 0;
-  }
-
-  .series-stats .c-series {
-    grid-area: series;
-  }
-
-  .series-stats .c-latest {
-    grid-area: latest;
-    text-align: left;
-  }
-
-  .series-stats .c-observed {
-    grid-area: observed;
-  }
-
-  .series-stats .c-status {
-    grid-area: status;
-  }
-
-  .series-stats .c-change {
-    grid-area: change;
-    text-align: left;
-    white-space: normal;
-  }
-
-  .series-stats .deltas span:first-child {
-    margin-left: 0;
   }
 
   .readme-body {
@@ -1905,7 +1860,7 @@ h3,
 /* Charts inside chapters are flat: no boxes, just the hairline rhythm. */
 .chapter-charts {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 400px), 1fr));
   gap: 40px 36px;
 }
 
@@ -2240,7 +2195,7 @@ h3,
   flex: 999 1 640px;
   min-width: 0;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 400px), 1fr));
   gap: 40px 36px;
 }
 
@@ -2709,5 +2664,58 @@ h3,
     font: 11px var(--mono);
     letter-spacing: 1.4px;
     text-transform: uppercase;
+  }
+}
+
+/* Series tables: one small card per row whenever the chart column is
+   narrow, on any screen size, so the table never spills into a neighbour. */
+@container chart-block (max-width: 560px) {
+  .series-stats thead {
+    display: none;
+  }
+
+  .series-stats tr {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    grid-template-areas:
+      "series series series"
+      "latest observed status"
+      "change change change";
+    column-gap: 10px;
+    row-gap: 2px;
+    padding: 8px 0;
+    border-bottom: 1px solid #222a2c;
+  }
+
+  .series-stats td {
+    padding: 0;
+    border: 0;
+  }
+
+  .series-stats .c-series {
+    grid-area: series;
+  }
+
+  .series-stats .c-latest {
+    grid-area: latest;
+    text-align: left;
+  }
+
+  .series-stats .c-observed {
+    grid-area: observed;
+  }
+
+  .series-stats .c-status {
+    grid-area: status;
+  }
+
+  .series-stats .c-change {
+    grid-area: change;
+    text-align: left;
+    white-space: normal;
+  }
+
+  .series-stats .deltas span:first-child {
+    margin-left: 0;
   }
 }

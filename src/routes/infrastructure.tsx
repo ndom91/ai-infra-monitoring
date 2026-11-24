@@ -118,7 +118,14 @@ function groups(series: SeriesView[]) {
     g.list.push(s);
     map.set(key, g);
   }
-  return [...map.values()];
+  // Charts follow the order of METRIC_TITLES (construction, pre-leasing,
+  // inventory, ...); anything unnamed goes last.
+  const rank = (g: { list: SeriesView[] }) => {
+    const metric = g.list[0]?.id.split(".").slice(2).join(".") ?? "";
+    const i = METRIC_TITLES.findIndex(([re]) => re.test(metric));
+    return i === -1 ? METRIC_TITLES.length : i;
+  };
+  return [...map.values()].sort((a, b) => rank(a) - rank(b));
 }
 
 function chartTitle(
