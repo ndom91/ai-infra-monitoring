@@ -2801,6 +2801,15 @@ h3,
     grid-template-columns: minmax(0, 1fr);
   }
 
+  /* One column: paragraph, evidence, source, then the links. */
+  .chapter-charts.one .story-analysis-main {
+    display: contents;
+  }
+
+  .chapter-charts.one .story-analysis .more-row {
+    order: 2;
+  }
+
   .home-chapters .chart {
     height: 200px;
   }

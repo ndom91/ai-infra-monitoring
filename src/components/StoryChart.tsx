@@ -12,6 +12,7 @@ export function StoryChart({
   source,
   info,
   fallbackTitle,
+  footer,
   children,
 }: {
   story: Story | null;
@@ -19,6 +20,9 @@ export function StoryChart({
   source: string;
   info?: Explainer;
   fallbackTitle: string;
+  // Shown under the source, in the paragraph's column, so opening the
+  // evidence beside it does not push it down.
+  footer?: ReactNode;
   // A chart, or a function of the headline for charts that need it as a name.
   children: ReactNode | ((title: string) => ReactNode);
 }) {
@@ -53,6 +57,7 @@ export function StoryChart({
             <div className="story-analysis-main">
               <p className="story-body">{story.body[0]}</p>
               <figcaption className="story-source">{source}</figcaption>
+              {footer}
             </div>
             {story.body.length > 1 ? (
               <details className="story-details">
@@ -66,7 +71,10 @@ export function StoryChart({
             ) : null}
           </div>
         ) : (
-          <figcaption className="story-source">{source}</figcaption>
+          <>
+            <figcaption className="story-source">{source}</figcaption>
+            {footer}
+          </>
         )}
       </div>
     </figure>

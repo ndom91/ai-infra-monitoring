@@ -160,6 +160,24 @@ function Home() {
               dek="Extra interest over US Treasuries, percentage points"
               source="Source: ICE BofA bond indexes, via FRED. Updated daily."
               info={EXPLAINERS.hySpreads}
+              footer={
+                <MoreLink
+                  sections={[
+                    ["market", "Market stress"],
+                    ["rates", "Rate backdrop"],
+                    ["issued", "What AI companies pay"],
+                    ["bycompany", "Debt by company"],
+                  ].map(([hash, label]) => (
+                    <Link key={hash} to="/credit" hash={hash}>
+                      {label}
+                    </Link>
+                  ))}
+                >
+                  <Link to="/credit" className="more">
+                    More on credit →
+                  </Link>
+                </MoreLink>
+              }
             >
               {(title) => (
                 <TimeChart
@@ -178,22 +196,6 @@ function Home() {
               )}
             </StoryChart>
           </ChapterCharts>
-          <MoreLink
-            sections={[
-              ["market", "Market stress"],
-              ["rates", "Rate backdrop"],
-              ["issued", "What AI companies pay"],
-              ["bycompany", "Debt by company"],
-            ].map(([hash, label]) => (
-              <Link key={hash} to="/credit" hash={hash}>
-                {label}
-              </Link>
-            ))}
-          >
-            <Link to="/credit" className="more">
-              More on credit →
-            </Link>
-          </MoreLink>
         </Chapter>
 
         <Chapter chapter={CHAPTERS.build}>
