@@ -1,5 +1,7 @@
+import { useLocation } from "@tanstack/react-router";
 import { type ReactNode, useEffect, useRef, useState } from "react";
 import type { Signal } from "~/domain/chapterSignals";
+import { pickActiveChapter } from "./activeChapter";
 import { SignalDot, SignalLegend } from "./SignalDot";
 import { type Stat, StatList } from "./StatList";
 
@@ -65,7 +67,8 @@ export function ChapterHeader({
 
 export function Chapter({ chapter, children }: { chapter: ChapterDef; children: ReactNode }) {
   return (
-    <section id={chapter.slug} className="chapter" aria-label={chapter.label}>
+    // tabIndex lets the phone sheet move focus here after a chapter is chosen.
+    <section id={chapter.slug} className="chapter" aria-label={chapter.label} tabIndex={-1}>
       {children}
     </section>
   );
@@ -93,6 +96,9 @@ export function ChapterMore({ summary, children }: { summary: string; children: 
   );
 }
 
+// The reading band starts this share of the viewport height from the top.
+const BAND_TOP = 0.15;
+
 // The chapter whose section is nearest the top of the viewport.
 function useActiveChapter(slugs: string[]) {
   const [active, setActive] = useState(slugs[0] ?? "");
@@ -106,11 +112,15 @@ function useActiveChapter(slugs: string[]) {
           if (e.isIntersecting) visible.add(e.target.id);
           else visible.delete(e.target.id);
         }
-        const first = slugs.find((s) => visible.has(s));
-        if (first) setActive(first);
+        const tops = slugs.map(
+          (s) => document.getElementById(s)?.getBoundingClientRect().top ?? null,
+        );
+        setActive((current) =>
+          pickActiveChapter(slugs, visible, tops, window.innerHeight * BAND_TOP, current),
+        );
       },
       // A band near the top third of the screen.
-      { rootMargin: "-15% 0px -60% 0px" },
+      { rootMargin: `-${BAND_TOP * 100}% 0px -60% 0px` },
     );
     for (const s of slugs) {
       const el = document.getElementById(s);
@@ -128,7 +138,7 @@ function ChapterList({
 }: {
   chapters: ChapterDef[];
   active: string;
-  onPick?: () => void;
+  onPick?: (slug: string) => void;
 }) {
   return (
     <ol className="chapter-list">
@@ -137,7 +147,7 @@ function ChapterList({
           <a
             href={`#${c.slug}`}
             aria-current={c.slug === active ? "location" : undefined}
-            onClick={onPick}
+            onClick={() => onPick?.(c.slug)}
           >
             <span className="chapter-list-num">{pad(i + 1)}</span>
             <span className="chapter-list-text">
@@ -185,22 +195,39 @@ export function ChapterLayout({
         {note ? <p className="rail-note">{note}</p> : null}
       </aside>
       <div className="chapter-main">
-        <MobileChapterBar chapters={chapters} active={active} />
+        <MobileChapterBar chapters={chapters} active={active} legend={used} />
         {children}
       </div>
     </div>
   );
 }
 
-function MobileChapterBar({ chapters, active }: { chapters: ChapterDef[]; active: string }) {
+// Phones only. Matches the 640 px breakpoint in styles.css.
+const PHONE = "(max-width: 640px)";
+
+function MobileChapterBar({
+  chapters,
+  active,
+  legend,
+}: {
+  chapters: ChapterDef[];
+  active: string;
+  legend: Signal[];
+}) {
   const [open, setOpen] = useState(false);
   const opener = useRef<HTMLButtonElement>(null);
   const sheet = useRef<HTMLDivElement>(null);
+  // The chapter chosen in the sheet, so focus can follow the reader there.
+  const picked = useRef<string | null>(null);
+  const pathname = useLocation({ select: (l) => l.pathname });
   const index = Math.max(
     0,
     chapters.findIndex((c) => c.slug === active),
   );
   const current = chapters[index];
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: pathname closes the sheet after navigation.
+  useEffect(() => setOpen(false), [pathname]);
 
   useEffect(() => {
     if (!open) return;
@@ -228,9 +255,31 @@ function MobileChapterBar({ chapters, active }: { chapters: ChapterDef[]; active
       }
     };
     document.addEventListener("keydown", onKey);
+
+    // The page must not scroll behind the sheet. Overflow keeps the scroll
+    // position, so closing it puts the reader back exactly where they were.
+    const { documentElement: html, body } = document;
+    const before = [html.style.overflow, body.style.overflow];
+    html.style.overflow = "hidden";
+    body.style.overflow = "hidden";
+
+    // A sheet left open while the screen grows past a phone would reappear on shrink.
+    const wide = window.matchMedia(PHONE);
+    const onWide = () => {
+      if (!wide.matches) setOpen(false);
+    };
+    wide.addEventListener("change", onWide);
+
     return () => {
       document.removeEventListener("keydown", onKey);
-      opener.current?.focus({ preventScroll: true });
+      wide.removeEventListener("change", onWide);
+      html.style.overflow = before[0] ?? "";
+      body.style.overflow = before[1] ?? "";
+      const slug = picked.current;
+      picked.current = null;
+      // After a pick, focus belongs to the chapter, not the bar above it.
+      const target = slug ? document.getElementById(slug) : opener.current;
+      target?.focus({ preventScroll: true });
     };
   }, [open]);
 
@@ -269,7 +318,15 @@ function MobileChapterBar({ chapters, active }: { chapters: ChapterDef[]; active
               Close
             </button>
           </div>
-          <ChapterList chapters={chapters} active={active} onPick={() => setOpen(false)} />
+          <ChapterList
+            chapters={chapters}
+            active={active}
+            onPick={(slug) => {
+              picked.current = slug;
+              setOpen(false);
+            }}
+          />
+          <SignalLegend signals={legend} />
         </div>
       ) : null}
     </div>

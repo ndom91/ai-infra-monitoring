@@ -1,7 +1,9 @@
 import { formatDate, formatDelta, formatValue } from "~/lib/format";
 import type { Change } from "~/metrics/changes";
 import type { SeriesView } from "~/server/data";
+import { ExternalLink } from "./ExternalLink";
 import { FreshnessBadge } from "./FreshnessBadge";
+import { ProvenanceTip } from "./ProvenanceTip";
 
 const HIGH_FREQUENCY = new Set(["daily", "weekdays", "weekly", "monthly"]);
 
@@ -40,12 +42,14 @@ function SeriesRow({ s }: { s: SeriesView }) {
         ["Prior", s.changes?.prior ?? null],
         ["YoY", s.changes?.y1 ?? null],
       ];
+  // The base of each change figure, for the row's popover.
+  const changeLines = deltas.flatMap(([label, c]) =>
+    c ? [`${label} vs ${formatDate(c.from.periodEnd)}: ${formatValue(c.from.value, s.unit)}`] : [],
+  );
   return (
     <tr>
       <td className="c-series">
-        <a href={s.sourceUrl} target="_blank" rel="noopener noreferrer" title={s.methodology}>
-          {s.label}
-        </a>
+        <ExternalLink href={s.sourceUrl}>{s.label}</ExternalLink>
         {s.latest?.kind && <span className="kind">{s.latest.kind}</span>}
       </td>
       <td className="num strong c-latest">
@@ -53,16 +57,23 @@ function SeriesRow({ s }: { s: SeriesView }) {
       </td>
       <td className="muted c-observed">
         {s.latest ? (
-          <a
-            href={s.latest.sourceUrl ?? s.sourceUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            title={[s.latest.quote && `“${s.latest.quote}”`, s.latest.note]
-              .filter(Boolean)
-              .join("\n\n")}
-          >
-            {formatDate(s.latest.periodEnd)}
-          </a>
+          <>
+            <ExternalLink
+              href={s.latest.sourceUrl ?? s.sourceUrl}
+              context={`source for ${s.label}`}
+            >
+              {formatDate(s.latest.periodEnd)}
+            </ExternalLink>
+            <ProvenanceTip
+              series={s.label}
+              date={formatDate(s.latest.periodEnd)}
+              methodology={s.methodology}
+              quote={s.latest.quote}
+              note={s.latest.note}
+              sourceUrl={s.latest.sourceUrl ?? s.sourceUrl}
+              changes={changeLines}
+            />
+          </>
         ) : (
           "—"
         )}
@@ -70,10 +81,7 @@ function SeriesRow({ s }: { s: SeriesView }) {
       <td className="num deltas c-change">
         {deltas.map(([label, c]) =>
           c ? (
-            <span
-              key={label}
-              title={`vs ${formatDate(c.from.periodEnd)}: ${formatValue(c.from.value, s.unit)}`}
-            >
+            <span key={label}>
               <em>{label}</em> {formatDelta(c, s.unit, bps)}
             </span>
           ) : null,

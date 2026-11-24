@@ -1,5 +1,6 @@
 import type { LadderRow } from "~/domain/market";
 import { formatDate } from "~/lib/format";
+import { ExternalLink } from "./ExternalLink";
 import { FreshnessBadge } from "./FreshnessBadge";
 
 // Sellers of one chip, cheapest first. The bar is decorative: its width is
@@ -36,9 +37,7 @@ export function PriceLadder({ title, rows }: { title: string; rows: LadderRow[] 
               {rows.map((r, i) => (
                 <tr key={r.id}>
                   <th scope="row" className="ladder-offer">
-                    <a href={r.sourceUrl} target="_blank" rel="noopener noreferrer">
-                      {r.label}
-                    </a>
+                    <ExternalLink href={r.sourceUrl}>{r.label}</ExternalLink>
                     <span className="ladder-meta">
                       {r.region}
                       {r.kind && r.kind !== "reported" ? (

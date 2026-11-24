@@ -1,7 +1,9 @@
 import type { Explainer } from "~/domain/explainers";
 import { formatDate, formatValue } from "~/lib/format";
 import type { SeriesView } from "~/server/data";
+import { ExternalLink } from "./ExternalLink";
 import { InfoTip } from "./InfoTip";
+import { ProvenanceTip } from "./ProvenanceTip";
 
 // One-off disclosed figures (debt issue terms, contract announcements) are
 // events, not time series, so they are listed rather than charted.
@@ -106,19 +108,24 @@ function RateTable({
         {rows.map(({ s, p }) => (
           <tr key={`${s.id}-${p.periodEnd}`}>
             {hideIssuer ? null : <td className="strong st-meta c-issuer">{s.entity}</td>}
-            <td className="st-title c-item" title={s.methodology}>
-              {labelOf(s)}
-            </td>
+            <td className="st-title c-item">{labelOf(s)}</td>
             <td className="num strong st-fig c-value">{formatValue(p.value, s.unit)}</td>
             <td className="muted st-meta c-date">
-              <a
+              <ExternalLink
                 href={p.sourceUrl ?? s.sourceUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                title={[p.quote && `“${p.quote}”`, p.note].filter(Boolean).join("\n\n")}
+                arrow
+                context={`source for ${labelOf(s)}`}
               >
-                {formatDate(p.periodEnd)} ↗
-              </a>
+                {formatDate(p.periodEnd)}
+              </ExternalLink>
+              <ProvenanceTip
+                series={labelOf(s)}
+                date={formatDate(p.periodEnd)}
+                methodology={s.methodology}
+                quote={p.quote}
+                note={p.note}
+                sourceUrl={p.sourceUrl ?? s.sourceUrl}
+              />
             </td>
           </tr>
         ))}

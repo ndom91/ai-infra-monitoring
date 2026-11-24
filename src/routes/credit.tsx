@@ -326,7 +326,8 @@ function CreditPage() {
             <EntityBand
               eyebrow="This chapter follows one borrower"
               company={borrower}
-              blurb={`${GROUP_BLURBS[borrower.group]} Switch borrower in the side rail.`}
+              blurb={GROUP_BLURBS[borrower.group]}
+              switches="borrower"
               link={
                 <Link to="/fundamentals" search={{ company, range: "5y" }}>
                   Company fundamentals for {company} →

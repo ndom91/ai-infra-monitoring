@@ -1,4 +1,5 @@
 import type { IndicatorDef } from "~/domain/indicators";
+import { ExternalLink } from "./ExternalLink";
 
 // "How to read this": what an indicator measures, its warning signs,
 // caveats and sources, from src/domain/indicators.ts.
@@ -27,9 +28,9 @@ export function IndicatorNotes({ def }: { def: IndicatorDef }) {
           <ul>
             {def.sources.map((s) => (
               <li key={s.url}>
-                <a href={s.url} target="_blank" rel="noopener noreferrer">
-                  {s.label} ↗
-                </a>
+                <ExternalLink href={s.url} arrow>
+                  {s.label}
+                </ExternalLink>
               </li>
             ))}
           </ul>

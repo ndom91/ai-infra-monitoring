@@ -1,5 +1,6 @@
 import { formatIssuedRate, ISSUED_KIND_LABELS, type IssuedInstrument } from "~/domain/headlines";
 import { formatMonthYear } from "~/lib/format";
+import { ExternalLink } from "./ExternalLink";
 
 // Debt deals at issue. Below 640 px each row stacks: title, a muted meta
 // line, and the rate on the right (see .stack-table).
@@ -20,9 +21,7 @@ export function IssuedTable({ rows, caption }: { rows: IssuedInstrument[]; capti
         {rows.map((r) => (
           <tr key={r.id}>
             <td className="st-title">
-              <a href={r.sourceUrl} target="_blank" rel="noopener noreferrer">
-                {r.title}
-              </a>
+              <ExternalLink href={r.sourceUrl}>{r.title}</ExternalLink>
             </td>
             <td className="st-meta">{r.issuer}</td>
             <td className="st-meta">{ISSUED_KIND_LABELS[r.kind]}</td>

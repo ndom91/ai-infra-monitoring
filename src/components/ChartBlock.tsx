@@ -62,6 +62,7 @@ export function ChartBlock({
             }))}
             bareTicks={bareTicks}
             height={height}
+            ariaLabel={title}
           />
         ) : (
           <div className="no-data">

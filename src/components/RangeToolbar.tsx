@@ -9,7 +9,7 @@ export function RangeToolbar({ active }: { active: RangeKey }) {
           key={k}
           to="."
           search={(prev: Record<string, unknown>) => ({ ...prev, range: k })}
-          aria-pressed={k === active}
+          aria-current={k === active ? "true" : undefined}
           className="toolbar-btn"
         >
           {RANGES[k].label}

@@ -41,6 +41,8 @@ type Props = {
   // Coarsest tick unit worth showing; quarterly data should never get day ticks.
   minUnit?: "day" | "month";
   bareTicks?: boolean;
+  // The chart's accessible name; a canvas has no text of its own.
+  ariaLabel: string;
 };
 
 export { GRID, TICK };
@@ -55,6 +57,7 @@ export function TimeChart({
   rebase,
   minUnit = "day",
   bareTicks,
+  ariaLabel,
 }: Props) {
   const chartRef = useRef<Chart<"line"> | null>(null);
   const datasets = lines.map((line, i) => {
@@ -108,6 +111,8 @@ export function TimeChart({
       >
         <Line
           ref={chartRef}
+          role="img"
+          aria-label={ariaLabel}
           data={{ datasets }}
           options={{
             responsive: true,

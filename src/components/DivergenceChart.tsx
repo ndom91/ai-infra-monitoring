@@ -12,7 +12,13 @@ import "./TimeChart";
 
 // Two series, each on its own axis and in its own unit: no rebasing, so a
 // negative or near-zero starting value can't distort the picture.
-export function DivergenceChart({ lines }: { lines: DivergenceLine[] }) {
+export function DivergenceChart({
+  lines,
+  ariaLabel,
+}: {
+  lines: DivergenceLine[];
+  ariaLabel: string;
+}) {
   const chartRef = useRef<Chart<"line"> | null>(null);
   const [a, b] = lines;
   if (!a || !b) return null;
@@ -44,6 +50,8 @@ export function DivergenceChart({ lines }: { lines: DivergenceLine[] }) {
       <div className="chart" style={{ height: 200 }}>
         <Line
           ref={chartRef}
+          role="img"
+          aria-label={ariaLabel}
           data={{ datasets: [ds(a, "y", ca), ds(b, "y1", cb)] }}
           options={{
             responsive: true,

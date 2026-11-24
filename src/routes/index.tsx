@@ -161,14 +161,21 @@ function Home() {
               source="Source: ICE BofA bond indexes, via FRED. Updated daily."
               info={EXPLAINERS.hySpreads}
             >
-              <TimeChart
-                unit="%"
-                height={260}
-                lines={[
-                  { label: "CCC-rated (riskiest)", points: story.credit.ccc, cadence: "weekdays" },
-                  { label: "All junk-rated", points: story.credit.hy, cadence: "weekdays" },
-                ]}
-              />
+              {(title) => (
+                <TimeChart
+                  ariaLabel={title}
+                  unit="%"
+                  height={260}
+                  lines={[
+                    {
+                      label: "CCC-rated (riskiest)",
+                      points: story.credit.ccc,
+                      cadence: "weekdays",
+                    },
+                    { label: "All junk-rated", points: story.credit.hy, cadence: "weekdays" },
+                  ]}
+                />
+              )}
             </StoryChart>
           </ChapterCharts>
           <MoreLink
@@ -207,22 +214,25 @@ function Home() {
               source="Source: company filings via SEC EDGAR. Quarterly; 12-month totals are calculated."
               info={EXPLAINERS.capexIntensityHyper}
             >
-              <TimeChart
-                unit="USD"
-                lines={[
-                  {
-                    label: "Capital spending",
-                    points: calculated(story.capex.capexTtm),
-                    cadence: "quarterly",
-                  },
-                  {
-                    label: "Free cash flow after it",
-                    points: calculated(story.capex.fcfTtm),
-                    cadence: "quarterly",
-                  },
-                ]}
-                minUnit="month"
-              />
+              {(title) => (
+                <TimeChart
+                  ariaLabel={title}
+                  unit="USD"
+                  lines={[
+                    {
+                      label: "Capital spending",
+                      points: calculated(story.capex.capexTtm),
+                      cadence: "quarterly",
+                    },
+                    {
+                      label: "Free cash flow after it",
+                      points: calculated(story.capex.fcfTtm),
+                      cadence: "quarterly",
+                    },
+                  ]}
+                  minUnit="month"
+                />
+              )}
             </StoryChart>
             <StoryChart
               story={story.neocloud.story}
@@ -231,22 +241,25 @@ function Home() {
               source="Source: CoreWeave filings via SEC EDGAR. 12-month totals are calculated."
               info={EXPLAINERS.capexIntensityNeo}
             >
-              <TimeChart
-                unit="USD"
-                lines={[
-                  {
-                    label: "Capital spending",
-                    points: calculated(story.neocloud.capexTtm),
-                    cadence: "quarterly",
-                  },
-                  {
-                    label: "Cash from operations",
-                    points: calculated(story.neocloud.ocfTtm),
-                    cadence: "quarterly",
-                  },
-                ]}
-                minUnit="month"
-              />
+              {(title) => (
+                <TimeChart
+                  ariaLabel={title}
+                  unit="USD"
+                  lines={[
+                    {
+                      label: "Capital spending",
+                      points: calculated(story.neocloud.capexTtm),
+                      cadence: "quarterly",
+                    },
+                    {
+                      label: "Cash from operations",
+                      points: calculated(story.neocloud.ocfTtm),
+                      cadence: "quarterly",
+                    },
+                  ]}
+                  minUnit="month"
+                />
+              )}
             </StoryChart>
           </ChapterCharts>
           <MoreLink
@@ -292,14 +305,17 @@ function Home() {
               source="Source: AWS and Azure public price lists, US East. List prices exclude negotiated discounts."
               info={EXPLAINERS.gpuListPrice}
             >
-              <TimeChart
-                unit="USD/GPU-hr"
-                stepped
-                lines={[
-                  { label: "AWS on-demand", points: calculated(story.rental.aws) },
-                  { label: "Azure on-demand", points: calculated(story.rental.azure) },
-                ]}
-              />
+              {(title) => (
+                <TimeChart
+                  ariaLabel={title}
+                  unit="USD/GPU-hr"
+                  stepped
+                  lines={[
+                    { label: "AWS on-demand", points: calculated(story.rental.aws) },
+                    { label: "Azure on-demand", points: calculated(story.rental.azure) },
+                  ]}
+                />
+              )}
             </StoryChart>
             <StoryChart
               story={story.resale.story}
@@ -308,10 +324,15 @@ function Home() {
               source="Source: American Compute GPU Resale Index, entered by hand with credit. Monthly."
               info={EXPLAINERS.gpuResale}
             >
-              <TimeChart
-                unit="index"
-                lines={[{ label: "Resale index", points: story.resale.index, cadence: "monthly" }]}
-              />
+              {(title) => (
+                <TimeChart
+                  ariaLabel={title}
+                  unit="index"
+                  lines={[
+                    { label: "Resale index", points: story.resale.index, cadence: "monthly" },
+                  ]}
+                />
+              )}
             </StoryChart>
           </ChapterCharts>
           <MoreLink>
@@ -339,13 +360,16 @@ function Home() {
               source="Source: CBRE North America Data Center Trends, half-yearly. Entered by hand with a quote from each report."
               info={EXPLAINERS.vacancy}
             >
-              <TimeChart
-                unit="%"
-                minUnit="month"
-                lines={[
-                  { label: "Vacancy", points: story.buildings.vacancy, cadence: "semiannual" },
-                ]}
-              />
+              {(title) => (
+                <TimeChart
+                  ariaLabel={title}
+                  unit="%"
+                  minUnit="month"
+                  lines={[
+                    { label: "Vacancy", points: story.buildings.vacancy, cadence: "semiannual" },
+                  ]}
+                />
+              )}
             </StoryChart>
             <StoryChart
               story={story.buildings.constructionStory}
@@ -354,17 +378,20 @@ function Home() {
               source="Source: CBRE North America Data Center Trends, half-yearly. Entered by hand with a quote from each report."
               info={EXPLAINERS.construction}
             >
-              <TimeChart
-                unit="MW"
-                minUnit="month"
-                lines={[
-                  {
-                    label: "Under construction",
-                    points: story.buildings.construction,
-                    cadence: "semiannual",
-                  },
-                ]}
-              />
+              {(title) => (
+                <TimeChart
+                  ariaLabel={title}
+                  unit="MW"
+                  minUnit="month"
+                  lines={[
+                    {
+                      label: "Under construction",
+                      points: story.buildings.construction,
+                      cadence: "semiannual",
+                    },
+                  ]}
+                />
+              )}
             </StoryChart>
           </ChapterCharts>
           <MoreLink
@@ -426,7 +453,7 @@ function Home() {
                       <span>{d.awaiting}</span>
                     </div>
                   ) : (
-                    <DivergenceChart lines={d.lines} />
+                    <DivergenceChart lines={d.lines} ariaLabel={d.title} />
                   )}
                   {d.note && <figcaption className="story-source">{d.note}</figcaption>}
                 </div>

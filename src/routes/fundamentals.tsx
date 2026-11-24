@@ -319,7 +319,8 @@ function FundamentalsPage() {
           <EntityBand
             eyebrow="Chapters 02–06 follow one company"
             company={selected}
-            blurb={`${GROUP_BLURBS[selected.group]} Switch company in the side rail.`}
+            blurb={GROUP_BLURBS[selected.group]}
+            switches="company"
             link={
               hasDebtPage ? (
                 <Link to="/credit" search={{ company, range: "3y" }} hash="bycompany">

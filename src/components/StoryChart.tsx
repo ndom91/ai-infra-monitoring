@@ -19,21 +19,27 @@ export function StoryChart({
   source: string;
   info?: Explainer;
   fallbackTitle: string;
-  children: ReactNode;
+  // A chart, or a function of the headline for charts that need it as a name.
+  children: ReactNode | ((title: string) => ReactNode);
 }) {
+  const title = story?.headline ?? fallbackTitle;
   return (
     // Two children, a head and a body, so charts in a row can share a head row.
     <figure className="story-chart">
       <div className="story-chart-top">
         <div className="story-chart-head">
-          <h3>{story?.headline ?? fallbackTitle}</h3>
-          {info && <InfoTip label={story?.headline ?? fallbackTitle} info={info} />}
+          <h3>{title}</h3>
+          {info && <InfoTip label={title} info={info} />}
         </div>
         <p className="story-dek">{dek}</p>
       </div>
       <div className="story-chart-body">
         {story ? (
-          children
+          typeof children === "function" ? (
+            children(title)
+          ) : (
+            children
+          )
         ) : (
           <div className="no-data">
             <b>Not enough data yet</b>

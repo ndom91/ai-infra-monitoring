@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { ExternalLink } from "~/components/ExternalLink";
 import { PageLead } from "~/components/PageLead";
 import { SectionHeader } from "~/components/SectionHeader";
 import { formatDate, formatValue } from "~/lib/format";
@@ -59,9 +60,9 @@ function AlertsPage() {
                       <td className="muted">{formatDate(o.periodEnd)}</td>
                       <td className="num strong">{formatValue(o.value, o.unit)}</td>
                       <td>
-                        <a href={o.sourceUrl} target="_blank" rel="noopener noreferrer">
-                          {o.source} ↗
-                        </a>
+                        <ExternalLink href={o.sourceUrl} arrow>
+                          {o.source}
+                        </ExternalLink>
                       </td>
                     </tr>
                   ))}

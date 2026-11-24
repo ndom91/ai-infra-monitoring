@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { ChartBlock } from "~/components/ChartBlock";
+import { ExternalLink } from "~/components/ExternalLink";
 import { IndicatorNotes } from "~/components/IndicatorNotes";
 import { PageIntro } from "~/components/PageIntro";
 import { SignalDot } from "~/components/SignalDot";
@@ -245,8 +246,6 @@ function InfrastructurePage() {
   const extra = topic === "supply" ? census : [];
   const count = (t: Topic) => forTopic(t, publisher).length + (t === "supply" ? census.length : 0);
 
-  const tabId = (t: Topic) => `infra-tab-${t}`;
-
   return (
     <>
       <PageIntro
@@ -280,8 +279,7 @@ function InfrastructurePage() {
               search={(prev: Record<string, unknown>) => ({ ...prev, topic: t.topic })}
               resetScroll={false}
               className="tile"
-              aria-pressed={t.topic === topic}
-              aria-controls="infra-panel"
+              aria-current={t.topic === topic ? "true" : undefined}
             >
               <span className="tile-label">{TOPIC_LABEL[t.topic].long}</span>
               <span className={`tile-value${t.value == null ? " awaiting" : ""}`}>
@@ -296,17 +294,14 @@ function InfrastructurePage() {
       </section>
 
       <div className="topic-bar">
-        <div className="topic-tabs" role="tablist" aria-label="Topic">
+        <nav className="topic-tabs" aria-label="Topic">
           {TOPICS.map((t) => (
             <Link
               key={t}
-              id={tabId(t)}
               to="."
               search={(prev: Record<string, unknown>) => ({ ...prev, topic: t })}
               resetScroll={false}
-              role="tab"
-              aria-selected={t === topic}
-              aria-controls="infra-panel"
+              aria-current={t === topic ? "true" : undefined}
               className="topic-tab"
             >
               <span className="long">{TOPIC_LABEL[t].long}</span>
@@ -314,7 +309,7 @@ function InfrastructurePage() {
               <span className="topic-count">{count(t)}</span>
             </Link>
           ))}
-        </div>
+        </nav>
         {topic !== "power" ? (
           <div className="segmented-wrap">
             <span className="segmented-label">Publisher</span>
@@ -336,7 +331,7 @@ function InfrastructurePage() {
         ) : null}
       </div>
 
-      <div id="infra-panel" role="tabpanel" aria-labelledby={tabId(topic)} className="topic-panel">
+      <section aria-label={TOPIC_LABEL[topic].long} className="topic-panel">
         <details className="reading-tab reading-mobile">
           <summary>Reading this tab</summary>
           <ReadingBody topic={topic} />
@@ -365,7 +360,7 @@ function InfrastructurePage() {
         <div className="topic-notes">
           <IndicatorNotes def={indicatorById(TOPIC_INDICATOR[topic])} />
         </div>
-      </div>
+      </section>
 
       {historical.length > 0 && (
         <details className="readme infrastructure-history">
@@ -438,13 +433,9 @@ function InfraChart({
             {formatPeriod(only.latest.periodEnd, only.cadence)} ·{" "}
             {note ? "one report, and coverage has ended" : "one report so far"}, so there is no
             trend to chart.{" "}
-            <a
-              href={only.latest.sourceUrl ?? only.sourceUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Source ↗
-            </a>
+            <ExternalLink href={only.latest.sourceUrl ?? only.sourceUrl} arrow>
+              Source
+            </ExternalLink>
           </p>
         </div>
       </div>
@@ -469,7 +460,7 @@ function SegmentedSwitch({
           to="."
           search={(prev: Record<string, unknown>) => ({ ...prev, ...o.search })}
           resetScroll={false}
-          aria-pressed={o.active}
+          aria-current={o.active ? "true" : undefined}
           className="segment"
         >
           {o.children}

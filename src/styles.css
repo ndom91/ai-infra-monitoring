@@ -47,7 +47,7 @@ a:hover {
   text-decoration: underline;
 }
 
-:where(a, button, [role="button"]):focus-visible {
+:where(a, button, [role="button"], summary):focus-visible {
   outline: 2px solid var(--teal);
   outline-offset: 3px;
 }
@@ -149,7 +149,9 @@ h2 {
   border-color: var(--muted);
 }
 
-.toolbar-btn[aria-pressed="true"] {
+/* TanStack Link sets aria-current="page" on a link it finds active, so the
+   selected state matches any value. */
+.toolbar-btn[aria-current] {
   border-color: var(--teal);
   color: var(--teal);
 }
@@ -463,13 +465,13 @@ h2 {
 .deltas em {
   font-style: normal;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 11px;
   margin-right: 2px;
 }
 
 .kind {
   margin-left: 6px;
-  font: 10px var(--mono);
+  font: 11px var(--mono);
   color: var(--orange);
   text-transform: uppercase;
 }
@@ -478,7 +480,7 @@ h2 {
 
 .badge {
   display: inline-block;
-  font: 10px var(--mono);
+  font: 11px var(--mono);
   padding: 1px 6px;
   border-radius: 4px;
   border: 1px solid var(--line);
@@ -795,10 +797,37 @@ code {
   z-index: 5;
 }
 
+/* A quiet text trigger inside a table row; the popover opens beside it. */
 .infotip-inline {
   position: relative;
   top: auto;
   right: auto;
+  /* The round tip's z-index would trap the popover beneath later rows. */
+  z-index: auto;
+  display: inline-block;
+  margin-left: 6px;
+  vertical-align: baseline;
+  white-space: normal;
+}
+
+.infotip-inline:has(.infotip-body) {
+  z-index: 25;
+}
+
+.infotip-btn.infotip-text {
+  width: auto;
+  height: auto;
+  /* A 24 px target that adds nothing to the row's height. */
+  min-height: 24px;
+  min-width: 24px;
+  margin-block: -5px;
+  padding: 0 4px;
+  border: 0;
+  border-bottom: 1px dotted var(--line);
+  border-radius: 0;
+  background: none;
+  font: 11px var(--mono);
+  letter-spacing: 0;
 }
 
 .infotip-btn {
@@ -818,45 +847,94 @@ code {
     border-color 120ms ease;
 }
 
-.pill.infotip-btn {
-  width: auto;
-  height: auto;
-  border-color: #446759;
-  background: #233a34;
-  color: var(--teal);
-  padding: 3px 9px;
-  border-radius: 20px;
-  font: 11px var(--mono);
-  white-space: nowrap;
-}
-
-.pill.infotip-btn.cls-structural,
-.pill.infotip-btn.cls-coincident {
-  background: #293239;
-  color: #c0cbd1;
-  border-color: #465861;
-}
-
-.pill.infotip-btn.cls-mixed {
-  background: #3c3329;
-  color: var(--orange);
-  border-color: #75604a;
-}
-
-.infotip-btn:not(.pill):hover,
-.infotip-btn:not(.pill):focus-visible,
-.infotip-btn:not(.pill)[aria-expanded="true"] {
+.infotip-btn:hover,
+.infotip-btn:focus-visible,
+.infotip-btn[aria-expanded="true"] {
   color: var(--teal);
   border-color: var(--teal);
 }
 
 .infotip-body {
   position: absolute;
-  top: 28px;
+  top: calc(100% + 6px);
   right: 0;
   width: 320px;
-  max-width: calc(100vw - 40px);
+  max-width: calc(100vw - 16px);
   z-index: 20;
+  white-space: normal;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.infotip-body.up {
+  top: auto;
+  bottom: calc(100% + 6px);
+}
+
+/* Bridges the gap so the pointer can travel from the trigger to the popover. */
+.infotip-body::before {
+  content: "";
+  position: absolute;
+  top: -6px;
+  right: 0;
+  left: 0;
+  height: 6px;
+}
+
+.infotip-body.up::before {
+  top: auto;
+  bottom: -6px;
+}
+
+/* Each block is its own stacking context, so a popover would sit under the
+   next block. Lift the block that holds the open one. */
+.block:has(.infotip-body) {
+  z-index: 30;
+}
+
+.infotip-inline .infotip-body {
+  right: auto;
+  left: 0;
+}
+
+.infotip-inline .infotip-bubble {
+  max-height: min(60vh, 360px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.infotip-quote,
+.infotip-note,
+.infotip-line {
+  display: block;
+}
+
+.infotip-quote {
+  color: var(--reading);
+  quotes: none;
+}
+
+.infotip-quote::before {
+  content: "\201C";
+}
+
+.infotip-quote::after {
+  content: "\201D";
+}
+
+.infotip-note {
+  margin-top: 6px;
+  color: var(--muted);
+}
+
+.infotip-line {
+  color: var(--reading);
+  font-variant-numeric: tabular-nums;
+}
+
+.stats td .infotip-source a {
+  color: var(--teal);
 }
 
 .infotip-bubble {
@@ -874,18 +952,13 @@ code {
   text-align: left;
 }
 
-.infotip-body.infotip-body-brief {
-  width: max-content;
-  max-width: min(320px, calc(100vw - 40px));
-}
-
 .infotip-row {
   display: block;
 }
 
 .infotip-row b {
   display: block;
-  font: 600 10px var(--mono);
+  font: 600 11px var(--mono);
   letter-spacing: 0.6px;
   text-transform: uppercase;
   color: var(--teal);
@@ -977,7 +1050,7 @@ h3,
 
 .dual-axis-note {
   color: var(--muted);
-  font: 10px / 1.4 var(--mono);
+  font: 11px / 1.4 var(--mono);
   margin: 2px 0 0;
 }
 
@@ -1008,7 +1081,7 @@ h3,
 }
 
 .chart-legend.many .chart-legend-item {
-  font-size: 10px;
+  font-size: 11px;
   line-height: 1.3;
 }
 
@@ -1100,7 +1173,7 @@ h3,
 
 @media (max-width: 640px) {
   .kicker {
-    font-size: 10px;
+    font-size: 11px;
     letter-spacing: 1.4px;
   }
 
@@ -1196,7 +1269,7 @@ h3,
 }
 
 .signal-label {
-  font: 10.5px var(--mono);
+  font: 11px var(--mono);
   letter-spacing: 0.8px;
   text-transform: uppercase;
 }
@@ -1301,11 +1374,16 @@ h3,
   gap: 48px;
 }
 
+/* The rail scrolls, which clips focus rings at its edges. Padding makes room
+   for the 3 px offset and 2 px ring; the negative margin and the extra basis
+   keep everything where it was. */
 .chapter-rail {
   position: sticky;
-  top: 20px;
-  flex: 0 0 236px;
-  max-height: calc(100vh - 40px);
+  top: 15px;
+  flex: 0 0 246px;
+  max-height: calc(100vh - 30px);
+  margin: -5px;
+  padding: 5px;
   overflow-y: auto;
   scrollbar-width: thin;
 }
@@ -1313,7 +1391,7 @@ h3,
 .rail-heading {
   margin: 0 0 10px;
   color: var(--muted);
-  font: 10.5px var(--mono);
+  font: 11px var(--mono);
   letter-spacing: 1.4px;
   text-transform: uppercase;
 }
@@ -1347,6 +1425,11 @@ h3,
 .chapter-list-num {
   color: var(--muted);
   font: 11px var(--mono);
+}
+
+/* #7f8d91 on the active row's lighter background is only 4.47:1. */
+.chapter-list a[aria-current] .chapter-list-sub {
+  color: var(--muted);
 }
 
 .chapter-list a[aria-current] .chapter-list-num {
@@ -1412,7 +1495,7 @@ h3,
   text-decoration: none;
 }
 
-.chip[aria-pressed="true"] {
+.chip[aria-current] {
   background: #233a34;
   border-color: var(--teal);
   color: var(--teal);
@@ -1430,6 +1513,11 @@ h3,
 
 .chapter {
   scroll-margin-top: 20px;
+}
+
+/* Focus lands here after a pick in the phone sheet; it is not a control. */
+.chapter:focus {
+  outline: none;
 }
 
 .chapter + .chapter,
@@ -1645,7 +1733,7 @@ h3,
 .entity-band-eyebrow {
   margin: 0 0 6px;
   color: var(--muted);
-  font: 10.5px var(--mono);
+  font: 11px var(--mono);
   letter-spacing: 1.4px;
   text-transform: uppercase;
 }
@@ -1675,6 +1763,11 @@ h3,
 
 .entity-band-link a {
   font-size: 13px;
+}
+
+/* The rail is gone on phones; the chips sit in a row under the band. */
+.hint-row {
+  display: none;
 }
 
 /* Mobile chapter bar and sheet (hidden on desktop). */
@@ -1755,7 +1848,7 @@ h3,
   text-decoration: none;
 }
 
-.tile[aria-pressed="true"] {
+.tile[aria-current] {
   background: var(--panel);
 }
 
@@ -1765,7 +1858,7 @@ h3,
   font-size: 12.5px;
 }
 
-.tile[aria-pressed="true"] .tile-label {
+.tile[aria-current] .tile-label {
   color: var(--teal);
 }
 
@@ -1820,7 +1913,7 @@ h3,
   text-decoration: none;
 }
 
-.topic-tab[aria-selected="true"] {
+.topic-tab[aria-current] {
   border-bottom-color: var(--teal);
   color: var(--text);
 }
@@ -1873,7 +1966,7 @@ h3,
   text-decoration: none;
 }
 
-.segment[aria-pressed="true"] {
+.segment[aria-current] {
   background: var(--panel2);
   color: var(--teal);
 }
@@ -1943,7 +2036,7 @@ h3,
 
 @media (max-width: 1000px) {
   .chapter-rail {
-    flex-basis: 200px;
+    flex-basis: 210px;
   }
 
   .chapter-layout {
@@ -2107,6 +2200,7 @@ h3,
     left: 0;
     max-height: 80vh;
     overflow-y: auto;
+    overscroll-behavior: contain;
     padding: 12px 12px calc(16px + env(safe-area-inset-bottom));
     border-top: 1px solid var(--line);
     border-radius: 14px 14px 0 0;
@@ -2138,13 +2232,31 @@ h3,
     min-height: 56px;
   }
 
+  .sheet .signal-legend {
+    margin-top: 8px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+  }
+
+  /* Scrolls sideways, which clips rings; padding makes room for them. */
   .chip-row {
     display: flex;
     flex-wrap: nowrap;
-    margin: 0 -12px 20px;
-    padding: 0 12px;
+    align-items: center;
+    margin: -5px -12px 15px;
+    padding: 5px 12px;
     overflow-x: auto;
     scrollbar-width: none;
+  }
+
+  .chip-row .chip-group-label {
+    flex: none;
+    margin: 0 0 0 10px;
+    white-space: nowrap;
+  }
+
+  .chip-row .chip-group-label:first-child {
+    margin-left: 0;
   }
 
   .chip-row::-webkit-scrollbar {
@@ -2153,7 +2265,7 @@ h3,
 
   .chip-row .chip {
     flex: none;
-    min-height: 36px;
+    min-height: 44px;
     padding: 0 12px;
   }
 
@@ -2214,6 +2326,14 @@ h3,
 
   .entity-band {
     padding: 16px;
+  }
+
+  .hint-rail {
+    display: none;
+  }
+
+  .hint-row {
+    display: inline;
   }
 
   .entity-band-name {
@@ -2303,6 +2423,12 @@ h3,
     border-bottom: 1px solid var(--line);
     overflow-x: auto;
     scrollbar-width: none;
+  }
+
+  /* The tab strip scrolls and its underline is the container's own edge, so
+     the ring sits inside the tab instead of being clipped outside it. */
+  .topic-tab:focus-visible {
+    outline-offset: -2px;
   }
 
   .topic-tab .long,
@@ -2483,14 +2609,14 @@ h3,
 }
 
 .hero-signal-sev {
-  font: 10px var(--mono);
+  font: 11px var(--mono);
   letter-spacing: 0.8px;
   text-transform: uppercase;
 }
 
 .hero-signal-date {
   color: var(--muted);
-  font: 10px var(--mono);
+  font: 11px var(--mono);
   text-align: right;
 }
 
@@ -2586,7 +2712,7 @@ h3,
   gap: 6px;
   margin-top: 10px;
   color: var(--muted);
-  font: 10px var(--mono);
+  font: 11px var(--mono);
   letter-spacing: 0.8px;
   text-transform: uppercase;
 }
@@ -2670,7 +2796,7 @@ h3,
 .strain-tag {
   margin: 0 0 6px;
   color: var(--teal);
-  font: 10px var(--mono);
+  font: 11px var(--mono);
   letter-spacing: 1px;
   text-transform: uppercase;
 }
@@ -2830,7 +2956,7 @@ h3,
 }
 
 .terms-split .c-date {
-  width: 118px;
+  width: 160px;
 }
 
 .terms-split .c-issuer {
@@ -2845,4 +2971,108 @@ h3,
 
 .infrastructure-history .single-point-value {
   color: var(--text);
+}
+
+/* ---- Tap targets on phones ----
+   Primary controls get 44 px; dense inline links in tables and lists get
+   24 px. Padding on an inline link widens its hit area without moving text. */
+@media (max-width: 640px) {
+  .chapter-more summary,
+  .readme summary,
+  .story-details summary,
+  .reading-mobile summary {
+    box-sizing: border-box;
+    min-height: 44px;
+    padding-block: 12px;
+    line-height: 20px;
+  }
+
+  /* The summary's own padding now supplies the space around it. */
+  .chapter-more {
+    padding-top: 2px;
+  }
+
+  .chapter-more[open] summary {
+    margin-bottom: 14px;
+  }
+
+  .readme {
+    padding-top: 0;
+  }
+
+  .story-details {
+    padding-top: 0;
+  }
+
+  .story-details[open] summary {
+    margin-bottom: 0;
+  }
+
+  .page-intro .toolbar-btn,
+  .section-head .toolbar-btn {
+    min-height: 44px;
+  }
+
+  .more,
+  .entity-band-link a,
+  .more-sections a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  /* A "·" between links would be stranded at the start of a wrapped line. */
+  .more-sections {
+    gap: 0 20px;
+  }
+
+  .more-sections a + a::before {
+    content: none;
+  }
+
+  /* The visible circle stays 20 px; the hit area grows around it. Heads
+     keep clear of it so it never covers a title. */
+  .infotip-btn:not(.infotip-text) {
+    position: relative;
+  }
+
+  /* The 1 px border is outside the padding box the inset counts from. */
+  .infotip-btn:not(.infotip-text)::after {
+    content: "";
+    position: absolute;
+    inset: -13px;
+  }
+
+  .chapter .block-head,
+  .topic-panel .block-head,
+  .infrastructure-history .block-head {
+    padding-right: 48px;
+  }
+
+  .story-chart-head {
+    padding-right: 36px;
+  }
+
+  .chart-legend-item {
+    min-height: 24px;
+    align-items: center;
+  }
+
+  .stats td a,
+  .ladder-offer a,
+  .single-point a,
+  .readme-body li a {
+    display: inline-block;
+    margin-block: -4px;
+    padding-block: 4px;
+  }
+
+  /* Leaves room so neighbouring hit areas do not overlap. */
+  .readme-body li {
+    margin-bottom: 8px;
+  }
+
+  .series-stats tr {
+    row-gap: 8px;
+  }
 }
