@@ -53,6 +53,18 @@ export function formatDate(iso: string) {
   return `${Number(d)} ${MONTHS[Number(m) - 1]} ${y}`;
 }
 
+// A span of days, as short as stays clear: "24 Nov", "5–6 Nov",
+// "28 Oct – 6 Nov", or with years when they differ: "28 Dec 2025 – 6 Jan 2026".
+export function formatDayRange(fromIso: string, toIso: string) {
+  const [fy = "", fm = "", fd = ""] = fromIso.slice(0, 10).split("-");
+  const [ty = "", tm = "", td = ""] = toIso.slice(0, 10).split("-");
+  const day = (d: string, m: string) => `${Number(d)} ${MONTHS[Number(m) - 1]}`;
+  if (fy !== ty) return `${formatDate(fromIso)} – ${formatDate(toIso)}`;
+  if (fm !== tm) return `${day(fd, fm)} – ${day(td, tm)}`;
+  if (fd !== td) return `${Number(fd)}–${day(td, tm)}`;
+  return day(td, tm);
+}
+
 // Day style plus a 24-hour UTC time: "20 Nov 2026, 14:05 UTC".
 export function formatDateTime(iso: string) {
   const d = new Date(iso);

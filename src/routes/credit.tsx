@@ -11,6 +11,7 @@ import {
   ChapterHeader,
   ChapterLayout,
   ChapterMore,
+  chapterStatus,
 } from "~/components/Chapters";
 import { ChartBlock } from "~/components/ChartBlock";
 import { EntityBand, EntityPicker } from "~/components/EntityPicker";
@@ -37,6 +38,7 @@ import { parseRange, type RangeKey } from "~/domain/ranges";
 import { formatDate, formatValue, seriesStyle } from "~/lib/format";
 import { pageHead } from "~/lib/seo";
 import { getCreditDebt, getRiskRead, getSectionData, type SeriesView } from "~/server/data";
+import { stepAlertDetail } from "~/server/overview-signals";
 
 const BORROWERS = SEC_DEBT_COMPANIES.map((c) => c.ticker);
 const ISSUED_SINCE = "2025-01-01";
@@ -187,6 +189,8 @@ function CreditPage() {
             index={1}
             total={4}
             chapter={market}
+            // Follows the alert history, so the pill counts the alerts behind it.
+            status={chapterStatus(market.signal, stepAlertDetail(riskRead.signals, "borrow"))}
             meta="ICE BofA via FRED, daily"
             question="Are lenders getting nervous about the riskiest borrowers?"
             watchFor="the CCC spread rising faster than the broad junk index. The weakest borrowers are usually cut off first."

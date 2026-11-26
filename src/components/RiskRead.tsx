@@ -12,11 +12,12 @@ export const READ_CLASS: Record<RiskReadData["label"], string> = {
   "No recent warnings": "quiet",
 };
 
-// The chapter eyebrow status for a read: only Elevated and Watch show one.
-export function readStatus(label: RiskReadData["label"]): ChapterStatus | null {
-  if (label === "Elevated") return { tone: "worsening", label };
-  if (label === "Watch") return { tone: "mixed", label };
-  return null;
+// A homepage chapter's status from its step's read. `detail` counts the
+// alerts behind it (stepAlertDetail).
+export function readStatus(label: RiskReadData["label"], detail?: string): ChapterStatus {
+  if (label === "Elevated") return { tone: "worsening", label, detail };
+  if (label === "Watch") return { tone: "mixed", label, detail };
+  return { tone: "reassuring", label };
 }
 
 // The homepage "Current read": label, detail, up to three signals.

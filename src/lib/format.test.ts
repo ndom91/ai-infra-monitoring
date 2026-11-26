@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   formatDate,
   formatDateTime,
+  formatDayRange,
   formatDelta,
   formatTick,
   formatValue,
@@ -31,6 +32,15 @@ describe("seriesStyle", () => {
     for (const signal of ["#e07a6e", "#dd9a5c", "#74c49a"]) {
       expect(PALETTE).not.toContain(signal);
     }
+  });
+});
+
+describe("formatDayRange", () => {
+  it("shortens the range as far as stays clear", () => {
+    expect(formatDayRange("2026-11-24", "2026-11-24T10:00:00Z")).toBe("24 Nov");
+    expect(formatDayRange("2026-11-05", "2026-11-06")).toBe("5–6 Nov");
+    expect(formatDayRange("2026-10-28", "2026-11-06")).toBe("28 Oct – 6 Nov");
+    expect(formatDayRange("2025-12-28", "2026-01-06")).toBe("28 Dec 2025 – 6 Jan 2026");
   });
 });
 

@@ -1,3 +1,5 @@
+import { formatDayRange } from "~/lib/format";
+
 export type OverviewAlert = {
   ruleId: string;
   seriesId: string | null;
@@ -107,6 +109,18 @@ export function stepOfAlert(alert: Pick<OverviewAlert, "ruleId" | "seriesId">): 
     ? STEP_BY_SERIES_PREFIX.find(([prefix]) => alert.seriesId?.startsWith(prefix))?.[1]
     : undefined;
   return bySeries ?? STEP_BY_RULE[alert.ruleId] ?? null;
+}
+
+// The warning and critical alerts behind a step's status, for its chapter
+// pill: "3 alerts · 5–6 Nov". Counted the way the current read counts them
+// (one per rule and series), dated from the first to the latest firing.
+// Undefined when the step has none, so a calm chapter carries no detail.
+export function stepAlertDetail(signals: AlertSignal[], step: Step): string | undefined {
+  const mine = signals.filter((s) => s.severity !== "info" && stepOfAlert(s) === step);
+  if (mine.length === 0) return undefined;
+  const first = mine.reduce((a, s) => (s.firstTriggeredAt < a ? s.firstTriggeredAt : a), "9999");
+  const last = mine.reduce((a, s) => (s.triggeredAt > a ? s.triggeredAt : a), "");
+  return `${mine.length} alert${mine.length === 1 ? "" : "s"} · ${formatDayRange(first, last)}`;
 }
 
 // The overall read applied to each step's own alerts. An alert that maps

@@ -33,6 +33,8 @@
   --critical: #e07a6e;
   --warning: #dd9a5c;
   --good: #74c49a;
+  --critical-tint: #291b1a; /* 14% --critical over --bg; label 5.7:1 */
+  --warning-tint: #281f17; /* 14% --warning over --bg; label 6.8:1 */
   /* charts */
   --chart-grid: #1f1f22;
   --chart-tick: #83838a;
@@ -1641,48 +1643,45 @@ code {
 
 /* ---- Stat list (chapter headline figures) ---- */
 
+/* A plain stack of figures: label, value, note. No rules; the column's
+   own hairline (.chapter-head-stats) sets it apart from the text. */
 .stat-list {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
   margin: 0;
-  border-top: 1px solid var(--line);
 }
 
 /* The figure spans both text lines and sits centred against them. */
 .stat-row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  grid-template-areas:
-    "label value"
-    "note value";
-  column-gap: 16px;
-  align-items: center;
-  padding: 11px 0;
-  border-bottom: 1px solid var(--line-soft);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .stat-label {
-  color: var(--reading);
+  color: var(--muted);
   font-size: var(--fs-13);
 }
 
 .stat-list .stat-value {
-  grid-area: value;
   margin: 0;
-}
-
-.stat-label {
-  grid-area: label;
 }
 
 .stat-value {
   color: var(--text);
-  font: 500 var(--fs-20) / var(--lh-20) var(--mono);
+  font: 500 var(--fs-24) / 1.1 var(--mono);
   font-variant-numeric: tabular-nums;
-  text-align: right;
   white-space: nowrap;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
 }
 
-.stat-value.awaiting,
+.stat-value.awaiting {
+  color: var(--faint);
+  font: 500 var(--fs-15) / var(--lh-15) var(--sans);
+  letter-spacing: 0;
+}
+
 .tile-value.awaiting {
   color: var(--muted);
   font-size: var(--fs-13);
@@ -1692,10 +1691,10 @@ code {
 }
 
 .stat-note {
-  grid-area: note;
-  margin: 2px 0 0;
+  margin: 0;
   color: var(--faint);
   font-size: var(--fs-12);
+  line-height: var(--lh-12);
 }
 
 /* ---- Layout A: chapters with a side rail ---- */
@@ -1873,23 +1872,93 @@ code {
 }
 
 .chapter-head {
+  /* Anchors the status pill on the top rule. */
+  position: relative;
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
-  gap: 24px 48px;
+  gap: 24px 56px;
   padding-top: 18px;
   border-top: 1px solid var(--line);
-  margin-bottom: 30px;
+  margin-bottom: 48px;
 }
 
 .chapter-head-text {
-  flex: 3 1 420px;
+  flex: 3 1 460px;
   min-width: 0;
 }
 
+/* Starts 18 px down so it clears the pill on the rule above it. */
 .chapter-head-stats {
-  flex: 2 1 300px;
-  max-width: 420px;
+  flex: 1 1 240px;
+  max-width: 320px;
+  margin: 18px 0 8px;
+  padding: 6px 0 6px 28px;
+  border-left: 1px solid var(--line);
+}
+
+/* The status sits centred on the chapter's top rule at the right end. Its
+   background and left padding make the rule appear to stop at it. */
+.chapter-status {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding-left: 12px;
+  background: var(--bg);
+  transform: translateY(-50%);
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 12px 5px 10px;
+  border-radius: 999px;
+  font: 600 var(--fs-13) / var(--lh-13) var(--sans);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.status-pill.sig-worsening {
+  background: var(--critical-tint);
+  color: var(--critical);
+}
+
+.status-pill.sig-mixed {
+  background: var(--warning-tint);
+  color: var(--warning);
+}
+
+.status-pill .chapter-status-dot {
+  width: 7px;
+  height: 7px;
+}
+
+.status-pill-detail {
+  color: var(--reading);
+  font-weight: 400;
+  transition: color var(--hover-dur) ease;
+}
+
+a.status-pill:hover .status-pill-detail {
+  color: var(--text);
+}
+
+.chapter-status-quiet {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--faint);
+  font: var(--fs-12) / var(--lh-12) var(--sans);
+  white-space: nowrap;
+}
+
+.chapter-status-dot {
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: currentColor;
 }
 
 .chapter-eyebrow {
@@ -1918,23 +1987,6 @@ code {
 
 .chapter-eyebrow-meta {
   margin-left: 4px;
-}
-
-/* Only worsening or mixed chapters show one, in the signal colour. */
-.chapter-eyebrow-status {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin-left: 4px;
-  font: 500 var(--fs-12) / var(--lh-12) var(--sans);
-}
-
-.chapter-eyebrow-dot {
-  flex: none;
-  width: 6px;
-  height: 6px;
-  border-radius: 999px;
-  background: currentColor;
 }
 
 .chapter-head h2 {
@@ -2698,6 +2750,40 @@ code {
     flex: none;
     width: 100%;
     max-width: none;
+  }
+
+  /* The status leaves the rule for its own line above the eyebrow. */
+  .chapter-head-text {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .chapter-status {
+    position: static;
+    order: -1;
+    align-self: flex-start;
+    margin-bottom: 12px;
+    padding-left: 0;
+    background: none;
+    transform: none;
+  }
+
+  /* Under the Watch-for line, set off by a top hairline; two per row where
+     they fit. */
+  .chapter-head-stats {
+    margin: 0;
+    padding: 16px 0 0;
+    border-left: 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .stat-list {
+    flex-flow: row wrap;
+    gap: 18px 24px;
+  }
+
+  .stat-row {
+    flex: 1 1 140px;
   }
 
   .chapter-total {

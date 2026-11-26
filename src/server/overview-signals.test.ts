@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { groupAlertSignals, riskReadFromAlerts, stepOfAlert, stepReads } from "./overview-signals";
+import {
+  groupAlertSignals,
+  riskReadFromAlerts,
+  stepAlertDetail,
+  stepOfAlert,
+  stepReads,
+} from "./overview-signals";
 
 const warning = {
   ruleId: "gpu-price-fall",
@@ -82,5 +88,39 @@ describe("step reads", () => {
         rule.id,
       ).not.toBeNull();
     }
+  });
+});
+
+describe("stepAlertDetail", () => {
+  const alert = (
+    ruleId: string,
+    seriesId: string | null,
+    triggeredAt: string,
+    severity = "warning",
+  ) => ({
+    ruleId,
+    seriesId,
+    triggeredAt,
+    severity: severity as "critical" | "warning" | "info",
+    message: "m",
+  });
+
+  it("counts a step's warning and critical alerts and spans their dates", () => {
+    const signals = groupAlertSignals([
+      alert("multi_indicator_deterioration", null, "2026-11-06", "critical"),
+      alert("ccc_oas_widening", "fred.BAMLH0A3HYC", "2026-11-05"),
+      alert("hy_oas_widening", "fred.BAMLH0A0HYM2", "2026-11-05"),
+      // Repeats of one rule and series count once, from their first firing.
+      alert("hy_oas_widening", "fred.BAMLH0A0HYM2", "2026-11-04"),
+      // Info alerts and other steps' alerts are left out.
+      alert("hy_oas_elevated", "fred.BAMLH0A0HYM2", "2026-11-10", "info"),
+      alert("gpu_list_price_cut", "aws.h100.us-east-1.ondemand", "2026-11-12"),
+    ]);
+    expect(stepAlertDetail(signals, "borrow")).toBe("3 alerts · 4–6 Nov");
+    expect(stepAlertDetail(signals, "rent")).toBe("1 alert · 12 Nov");
+  });
+
+  it("gives no detail for a step without warnings", () => {
+    expect(stepAlertDetail([], "fill")).toBeUndefined();
   });
 });

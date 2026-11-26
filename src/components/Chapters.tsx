@@ -1,4 +1,4 @@
-import { useLocation } from "@tanstack/react-router";
+import { Link, useLocation } from "@tanstack/react-router";
 import { type ReactNode, useEffect, useRef, useState } from "react";
 import { SIGNAL_LABELS, type Signal } from "~/domain/chapterSignals";
 import { pickActiveChapter } from "./activeChapter";
@@ -18,14 +18,51 @@ export type ChapterDef = {
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
-// A warning shown after the eyebrow's cadence text.
-export type ChapterStatus = { tone: "worsening" | "mixed"; label: string };
+// A chapter's status, shown on its top rule: a pill when worsening or
+// mixed, a quiet note when reassuring. `detail` ("3 alerts · 5–6 Nov") is
+// set only where the status comes from the alert history; the pill then
+// links to /alerts.
+export type ChapterStatus = {
+  tone: "worsening" | "mixed" | "reassuring";
+  label: string;
+  detail?: string;
+};
 
-// Only worsening and mixed chapters carry a status; calm ones stay quiet.
-const statusOf = (signal: Signal): ChapterStatus | null =>
-  signal === "worsening" || signal === "mixed"
-    ? { tone: signal, label: SIGNAL_LABELS[signal] }
-    : null;
+// A chapter rule's status; context chapters show none.
+export function chapterStatus(signal: Signal, detail?: string): ChapterStatus | null {
+  if (signal === "context") return null;
+  return { tone: signal, label: SIGNAL_LABELS[signal], detail };
+}
+
+function StatusMark({ status }: { status: ChapterStatus }) {
+  // Read after the question: "Status: Elevated, 3 alerts · 5–6 Nov".
+  const prefix = <span className="sr-only">Status: </span>;
+  if (status.tone === "reassuring") {
+    return (
+      <span className="chapter-status-quiet">
+        {prefix}
+        <span className="chapter-status-dot" aria-hidden="true" />
+        {status.label}
+      </span>
+    );
+  }
+  const body = (
+    <>
+      {prefix}
+      <span className="chapter-status-dot" aria-hidden="true" />
+      {status.label}
+      {status.detail ? <span className="status-pill-detail"> {status.detail}</span> : null}
+    </>
+  );
+  const className = `status-pill sig-${status.tone}`;
+  return status.detail ? (
+    <Link to="/alerts" className={className}>
+      {body}
+    </Link>
+  ) : (
+    <span className={className}>{body}</span>
+  );
+}
 
 export function ChapterHeader({
   index,
@@ -36,7 +73,7 @@ export function ChapterHeader({
   watchFor,
   lede,
   stats = [],
-  status = statusOf(chapter.signal),
+  status = chapterStatus(chapter.signal),
 }: {
   index: number;
   total: number;
@@ -60,15 +97,15 @@ export function ChapterHeader({
           {/* Spaces keep the read-aloud text apart; CSS sets the visual gaps. */}{" "}
           <span className="chapter-eyebrow-label">{chapter.label}</span>
           {meta ? <span className="chapter-eyebrow-meta"> {meta}</span> : null}
-          {status ? (
-            <span className={`chapter-eyebrow-status sig-${status.tone}`}>
-              {" "}
-              <span className="chapter-eyebrow-dot" aria-hidden="true" />
-              {status.label}
-            </span>
-          ) : null}
         </p>
         <h2>{question}</h2>
+        {/* After the question in the DOM so it is read after it; CSS places
+            it on the chapter's top rule (or above the eyebrow on phones). */}
+        {status ? (
+          <div className="chapter-status">
+            <StatusMark status={status} />
+          </div>
+        ) : null}
         {watchFor ? (
           <p className="chapter-watch">
             <b>Watch for:</b> {watchFor}

@@ -14,6 +14,7 @@ import { formatDate, formatValue } from "~/lib/format";
 import { pageHead } from "~/lib/seo";
 import type { Point } from "~/metrics/changes";
 import { getOverviewData } from "~/server/overview";
+import { stepAlertDetail } from "~/server/overview-signals";
 import { Route as RootRoute } from "./__root";
 
 const DIVERGENCE_INFO: Record<string, Explainer> = {
@@ -151,7 +152,7 @@ function Home() {
             index={1}
             total={TOTAL}
             chapter={CHAPTERS.borrow}
-            status={readStatus(steps.borrow)}
+            status={readStatus(steps.borrow, stepAlertDetail(riskRead.signals, "borrow"))}
             meta="Daily · FRED"
             question="Is money getting more expensive for the riskiest borrowers?"
             watchFor="spreads widening for the weakest borrowers first. They are usually the first to be cut off."
@@ -207,7 +208,7 @@ function Home() {
             index={2}
             total={TOTAL}
             chapter={CHAPTERS.build}
-            status={readStatus(steps.build)}
+            status={readStatus(steps.build, stepAlertDetail(riskRead.signals, "build"))}
             meta="Quarterly · SEC"
             question="Is the spending still paid for out of cash?"
             watchFor="capex running ahead of the cash the business brings in, which leaves lenders to fill the gap."
@@ -294,7 +295,7 @@ function Home() {
             index={3}
             total={TOTAL}
             chapter={CHAPTERS.rent}
-            status={readStatus(steps.rent)}
+            status={readStatus(steps.rent, stepAlertDetail(riskRead.signals, "rent"))}
             meta="Weekly and monthly"
             question="Is the price of computing holding up?"
             watchFor="rental and resale prices falling together. Rental prices are what data centers earn; used-chip values are what lenders can recover."
@@ -350,7 +351,7 @@ function Home() {
             index={4}
             total={TOTAL}
             chapter={CHAPTERS.fill}
-            status={readStatus(steps.fill)}
+            status={readStatus(steps.fill, stepAlertDetail(riskRead.signals, "fill"))}
             meta="Half-yearly · CBRE"
             question="Are finished data centers finding tenants?"
             watchFor="vacancy rising from its low while construction is still climbing, or less new space being leased in advance."
