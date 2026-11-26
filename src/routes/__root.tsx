@@ -8,6 +8,7 @@ import {
   useRouter,
 } from "@tanstack/react-router";
 import { type ReactNode, useEffect } from "react";
+import { BrandMark } from "~/components/BrandMark";
 import { ExternalLink } from "~/components/ExternalLink";
 import { useSlidingIndicator } from "~/components/useSlidingIndicator";
 import { DEFAULT_IMAGE, SITE_NAME, SITE_URL } from "~/lib/seo";
@@ -94,7 +95,7 @@ function RootComponent() {
           <Link to="/" className="brand">
             <span className="kicker">Tracking the balance sheet behind the AI build-out</span>
             <span className="brand-name">
-              <span className="brand-bar" aria-hidden="true" />
+              <BrandMark />
               Artificial Liabilities
             </span>
           </Link>

@@ -344,13 +344,20 @@ h2 {
   color: var(--text);
 }
 
-/* Accent bar before the name; decorative, so aria-hidden in the markup. */
-.brand-bar {
+/* The site mark before the name: the favicon's shapes in the theme's
+   colours. Decorative, so aria-hidden in the markup. */
+.brand-mark {
   flex: none;
-  width: 4px;
-  height: 20px;
-  border-radius: 2px;
-  background: var(--accent);
+  width: 22px;
+  height: 22px;
+}
+
+.brand-mark rect {
+  fill: var(--accent);
+}
+
+.brand-mark path {
+  fill: var(--bg);
 }
 
 .brand-name {
