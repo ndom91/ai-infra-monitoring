@@ -124,7 +124,8 @@ function Home() {
       <section className="story-hero">
         <div className="story-intro">
           <h1>
-            Is the AI build-out running <span className="hero-accent">ahead of itself?</span>
+            Is AI being built faster than it can <span className="hero-accent">pay for itself</span>
+            ?
           </h1>
           <p>
             Building AI data centers is one of the largest investment waves in modern history.
