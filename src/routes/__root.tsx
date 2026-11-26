@@ -93,7 +93,6 @@ function RootComponent() {
         </a>
         <header className="topbar">
           <Link to="/" className="brand">
-            <span className="kicker">Tracking the balance sheet behind the AI build-out</span>
             <span className="brand-name">
               <BrandMark />
               Artificial Liabilities

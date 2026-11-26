@@ -318,17 +318,11 @@ h2 {
   }
 }
 
-.kicker {
-  font: 500 var(--fs-13) / var(--lh-13) var(--sans);
-  color: var(--muted);
-}
-
 /* ---- App shell ---- */
 
 .topbar {
   display: flex;
-  /* Brand name, updated date and nav labels share one text baseline. */
-  align-items: last baseline;
+  align-items: center;
   justify-content: space-between;
   gap: 24px;
   border-bottom: 1px solid var(--line);
@@ -339,8 +333,6 @@ h2 {
 
 .brand {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
   color: var(--text);
 }
 
@@ -348,8 +340,8 @@ h2 {
    colours. Decorative, so aria-hidden in the markup. */
 .brand-mark {
   flex: none;
-  width: 22px;
-  height: 22px;
+  width: 28px;
+  height: 28px;
 }
 
 .brand-mark rect {
@@ -363,11 +355,11 @@ h2 {
 .brand-name {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  font-size: var(--fs-18);
+  gap: 12px;
+  font-size: var(--fs-22);
   font-weight: 600;
-  letter-spacing: -0.01em;
-  line-height: var(--lh-18);
+  letter-spacing: -0.015em;
+  line-height: var(--lh-22);
 }
 
 .nav {
