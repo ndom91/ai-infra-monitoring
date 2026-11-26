@@ -37,7 +37,6 @@ import { parseRange, type RangeKey } from "~/domain/ranges";
 import { formatDate, formatValue, seriesStyle } from "~/lib/format";
 import { pageHead } from "~/lib/seo";
 import { getCreditDebt, getRiskRead, getSectionData, type SeriesView } from "~/server/data";
-import { figureTone, toneOfSeverity } from "~/server/overview-signals";
 
 const BORROWERS = SEC_DEBT_COMPANIES.map((c) => c.ticker);
 const ISSUED_SINCE = "2025-01-01";
@@ -102,11 +101,10 @@ function scatterSeries(list: IssuedInstrument[]): ScatterSeries[] {
   }));
 }
 
-const pctStat = (label: string, v: number | null, note: string, tone?: Stat["tone"]): Stat => ({
+const pctStat = (label: string, v: number | null, note: string): Stat => ({
   label,
   value: v == null ? null : `${+v.toFixed(3)}%`,
   note,
-  tone,
 });
 
 function CreditPage() {
@@ -193,15 +191,10 @@ function CreditPage() {
             question="Are lenders getting nervous about the riskiest borrowers?"
             watchFor="the CCC spread rising faster than the broad junk index. The weakest borrowers are usually cut off first."
             stats={[
-              // Each spread is coloured by the alerts about its own series.
               latestChangeStat("CCC-rated, extra interest", byId.get("fred.BAMLH0A3HYC"), {
                 bps: true,
-                tone: toneOfSeverity(figureTone("fred.BAMLH0A3HYC", riskRead.signals)),
               }),
-              latestChangeStat("All junk-rated", byId.get("fred.BAMLH0A0HYM2"), {
-                bps: true,
-                tone: toneOfSeverity(figureTone("fred.BAMLH0A0HYM2", riskRead.signals)),
-              }),
+              latestChangeStat("All junk-rated", byId.get("fred.BAMLH0A0HYM2"), { bps: true }),
               {
                 label: "Credit alerts fired",
                 value: String(fired.length),
@@ -209,7 +202,6 @@ function CreditPage() {
                   firstFired && lastFired
                     ? `${critical} critical · ${warning} warning · ${formatDate(firstFired)} – ${formatDate(lastFired)}`
                     : "No warning or critical alert in the latest history",
-                tone: marketSignal === "context" ? undefined : marketSignal,
               },
             ]}
           />

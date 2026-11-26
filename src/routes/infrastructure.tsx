@@ -309,8 +309,7 @@ function InfrastructurePage() {
               aria-current={t.topic === topic ? "true" : undefined}
             >
               <span className="tile-label">{TOPIC_LABEL[t.topic].long}</span>
-              {/* The figure takes the card's own signal (supply, space, rent rules). */}
-              <span className={`tile-value tone-${t.signal}${t.value == null ? " awaiting" : ""}`}>
+              <span className={`tile-value${t.value == null ? " awaiting" : ""}`}>
                 {t.value ?? "Awaiting data"}
               </span>
               <span className="tile-metric">{t.metric}</span>

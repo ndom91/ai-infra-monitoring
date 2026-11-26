@@ -44,7 +44,7 @@ export function DivergenceChart({
     pointRadius: line.points.length < 40 ? 3 : 0,
     tension: 0,
   });
-  // The subject line is blue, its comparison violet.
+  // The subject line is violet, its comparison sand.
   const ca = seriesStyle(0).color;
   const cb = seriesStyle(1).color;
   return (

@@ -62,13 +62,16 @@ export function formatDateTime(iso: string) {
 
 // Series colours never use the signal hues (red, amber, green), so a line is
 // never mistaken for a status. Every colour clears 3:1 on --surface. Lines
-// keep their order, so the subject line (first) is always blue.
+// keep their order, so the subject line (first) is always violet, the brand
+// accent. Violet and sand differ in both hue and lightness, so a two-line
+// chart stays readable under red-green colour blindness. Sand is lighter and
+// yellower than --warning on purpose: a line must never pass for a status.
 export const PALETTE = [
-  "#8fb3ff", // blue (the subject line, or line 1)
-  "#c4a7ff", // violet (first comparison)
+  "#a08bff", // violet (accent): the subject line, or line 1
+  "#d9c39a", // sand: first comparison
   "#6fd0d6", // cyan
   "#f29ac2", // pink
-  "#d9c39a", // sand
+  "#8fb3ff", // blue
   "#f2f2f2", // white
   "#9a9aa0", // grey
   "#7d8db8", // slate
@@ -83,7 +86,7 @@ const DASH_LAPS: number[][] = [
 
 export function seriesStyle(index: number): { color: string; dash?: number[] } {
   const lap = Math.floor(index / PALETTE.length);
-  const color = PALETTE[index % PALETTE.length] ?? "#8fb3ff";
+  const color = PALETTE[index % PALETTE.length] ?? "#a08bff";
   return lap === 0 ? { color } : { color, dash: DASH_LAPS[(lap - 1) % DASH_LAPS.length] };
 }
 

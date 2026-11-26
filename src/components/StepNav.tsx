@@ -42,8 +42,7 @@ export function StepNav({ steps }: { steps: StepTile[] }) {
             <span className="step-figure awaiting">Awaiting data</span>
           ) : (
             <>
-              {/* Takes the step's status colour: red when Elevated, amber on Watch. */}
-              <span className={`step-figure ${READ_CLASS[s.status]}`}>{s.figure}</span>
+              <span className="step-figure">{s.figure}</span>
               <span className="step-metric">{s.metric}</span>
             </>
           )}

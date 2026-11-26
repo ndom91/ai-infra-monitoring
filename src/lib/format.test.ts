@@ -24,10 +24,11 @@ describe("seriesStyle", () => {
     expect(second.dash).not.toEqual(first.dash);
   });
 
-  it("draws the subject line blue and never uses a signal hue", () => {
-    expect(seriesStyle(0).color).toBe("#8fb3ff");
+  it("draws the subject line violet, then sand, and never uses a signal hue", () => {
+    expect(seriesStyle(0).color).toBe("#a08bff");
+    expect(seriesStyle(1).color).toBe("#d9c39a");
     // --critical, --warning and --good stay status-only.
-    for (const signal of ["#ff5d4f", "#f5a524", "#3ccf8e"]) {
+    for (const signal of ["#e07a6e", "#dd9a5c", "#74c49a"]) {
       expect(PALETTE).not.toContain(signal);
     }
   });

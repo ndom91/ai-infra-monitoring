@@ -1,7 +1,6 @@
 // Alert wording comes from the current rule config, not the copy stored with
 // each event, so rewording a rule also updates alerts that already fired. The
-// stored evidence stays untouched as the audit record. Each alert also gets
-// its rule's input series from the same config.
+// stored evidence stays untouched as the audit record.
 // Bundled at build time: the YAML file is not deployed next to the server.
 import * as v from "valibot";
 import { parse } from "yaml";
@@ -15,8 +14,6 @@ const WordingSchema = v.object({
       id: v.string(),
       description: v.string(),
       severity: v.picklist(SEVERITIES),
-      // Change and level rules: the series they read.
-      series: v.optional(v.string()),
       // Breadth rules only: the rules they count.
       rules: v.optional(v.array(v.string())),
       min_rules: v.optional(v.number()),
@@ -26,7 +23,6 @@ const WordingSchema = v.object({
 
 const RULES = v.parse(WordingSchema, parse(rawConfig)).rules;
 const DESCRIPTIONS = new Map(RULES.map((r) => [r.id, r.description]));
-const SERIES = new Map(RULES.map((r) => [r.id, r.series ?? null]));
 
 // One line per rule for the Alerts page: what it watches, in the config's own
 // plain words, and how many of its member rules a breadth rule needs.
@@ -56,8 +52,6 @@ export function withCurrentWording<T extends StoredAlert>(alerts: T[]) {
     const description = current ?? (typeof stored === "string" ? stored : a.message);
     const message =
       current && typeof stored === "string" ? a.message.replace(stored, current) : a.message;
-    // The rule's input series travels with the alert, so a figure can tell
-    // whether an alert is about it (see figureTone).
-    return { ...a, description, message, ruleSeries: SERIES.get(a.ruleId) ?? null };
+    return { ...a, description, message };
   });
 }

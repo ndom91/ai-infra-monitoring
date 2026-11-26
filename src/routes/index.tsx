@@ -14,7 +14,6 @@ import { formatDate, formatValue } from "~/lib/format";
 import { pageHead } from "~/lib/seo";
 import type { Point } from "~/metrics/changes";
 import { getOverviewData } from "~/server/overview";
-import { figureTone, toneOfSeverity } from "~/server/overview-signals";
 import { Route as RootRoute } from "./__root";
 
 const DIVERGENCE_INFO: Record<string, Explainer> = {
@@ -76,12 +75,7 @@ function MoreLink({ children, sections }: { children: ReactNode; sections?: Reac
 function Home() {
   const { story, divergences, riskRead, steps, freshness } = Route.useLoaderData();
   const lastUpdated = RootRoute.useLoaderData();
-  // A figure turns red or amber only when an alert in the history is about it.
-  const tone = (seriesId: string) => toneOfSeverity(figureTone(seriesId, riskRead.signals));
-  const figures = homeFigures(story, freshness, {
-    ccc: tone("fred.BAMLH0A3HYC"),
-    hy: tone("fred.BAMLH0A0HYM2"),
-  });
+  const figures = homeFigures(story, freshness);
 
   const ccc = story.credit.ccc.at(-1);
   const capex = story.capex.capexTtm.at(-1);
@@ -129,7 +123,9 @@ function Home() {
     <div className="story">
       <section className="story-hero">
         <div className="story-intro">
-          <h1>Is the AI build-out running ahead of itself?</h1>
+          <h1>
+            Is the AI build-out running <span className="hero-accent">ahead of itself?</span>
+          </h1>
           <p>
             Building AI data centers is one of the largest investment waves in modern history.
             Railways and fiber-optic networks changed the world too, and bankrupted many of the

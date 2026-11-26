@@ -18,15 +18,18 @@
   --reading: #c9c9cc; /* paragraphs */
   --muted: #9a9aa0; /* secondary text, inactive controls */
   --faint: #83838a; /* dates, sources, notes; lowest allowed text colour */
+  /* brand accent: only in the places listed under "Accent" below */
+  --accent: #a08bff; /* 7.2:1 on --bg, 5.8:1 on --accent-tint */
+  --accent-tint: #231f33; /* active pills, selected chips: 16% accent over --bg */
+  --accent-rule: #4e4579; /* link underlines: 45% accent over --bg */
   /* interaction */
-  --active-bg: #f2f2f2; /* active nav item, active range button */
-  --active-fg: #0b0b0c;
   --segment-bg: #2a2a2d; /* active segment in segmented controls */
-  --focus: #f2f2f2;
-  /* signals: status only, never decoration */
-  --critical: #ff5d4f;
-  --warning: #f5a524;
-  --good: #3ccf8e;
+  --focus: var(--accent);
+  /* signals: status only, never decoration. Muted, and kept apart from the
+     sand chart colour: --warning is darker and more orange than #d9c39a. */
+  --critical: #e07a6e;
+  --warning: #dd9a5c;
+  --good: #74c49a;
   /* charts */
   --chart-grid: #1f1f22;
   --chart-tick: #83838a;
@@ -64,7 +67,7 @@
 
 html {
   background: var(--bg);
-  -webkit-tap-highlight-color: color-mix(in srgb, var(--text) 12%, transparent);
+  -webkit-tap-highlight-color: color-mix(in srgb, var(--accent) 16%, transparent);
 }
 
 * {
@@ -86,9 +89,9 @@ button {
 }
 
 a {
-  color: var(--text);
+  color: var(--accent);
   text-decoration: underline;
-  text-decoration-color: var(--line);
+  text-decoration-color: var(--accent-rule);
   text-underline-offset: 3px;
 }
 
@@ -97,7 +100,7 @@ a {
 }
 
 a:hover {
-  text-decoration-color: var(--muted);
+  text-decoration-color: var(--accent);
 }
 
 /* Navigation-like links read as controls, not prose links. */
@@ -158,8 +161,8 @@ a:hover {
   top: 12px;
   left: 12px;
   padding: 8px 12px;
-  background: var(--active-bg);
-  color: var(--active-fg);
+  background: var(--accent);
+  color: var(--bg);
   font: 600 var(--fs-13) / var(--lh-13) var(--sans);
   transform: translateY(-160%);
   transition: transform 140ms ease;
@@ -206,7 +209,7 @@ h2 {
 
 .toolbar .t-ind {
   border-radius: 8px;
-  background: var(--active-bg);
+  background: var(--accent-tint);
 }
 
 .toolbar.has-indicator .toolbar-btn[aria-current] {
@@ -241,8 +244,8 @@ h2 {
 /* TanStack Link sets aria-current="page" on a link it finds active, so the
    selected state matches any value. */
 .toolbar-btn[aria-current] {
-  background: var(--active-bg);
-  color: var(--active-fg);
+  background: var(--accent-tint);
+  color: var(--accent);
   font-weight: 600;
 }
 
@@ -298,7 +301,19 @@ h2 {
   color: var(--text);
 }
 
+/* Accent bar before the name; decorative, so aria-hidden in the markup. */
+.brand-bar {
+  flex: none;
+  width: 4px;
+  height: 20px;
+  border-radius: 2px;
+  background: var(--accent);
+}
+
 .brand-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
   font-size: var(--fs-18);
   font-weight: 600;
   letter-spacing: -0.01em;
@@ -340,7 +355,7 @@ h2 {
 
 .nav .t-ind {
   border-radius: 8px;
-  background: var(--active-bg);
+  background: var(--accent-tint);
 }
 
 .nav a:not(.active):hover {
@@ -349,8 +364,8 @@ h2 {
 }
 
 .nav a.active {
-  color: var(--active-fg);
-  background: var(--active-bg);
+  color: var(--accent);
+  background: var(--accent-tint);
   font-weight: 600;
 }
 
@@ -475,8 +490,17 @@ h2 {
   font-weight: 600;
 }
 
-.stats td a {
+/* Series and offer names in tables are data labels, not prose links: they
+   stay white with a neutral underline. */
+.stats td a,
+.ladder-offer a {
   color: var(--text);
+  text-decoration-color: var(--line);
+}
+
+.stats td a:hover,
+.ladder-offer a:hover {
+  text-decoration-color: var(--muted);
 }
 
 .stats td.muted {
@@ -641,7 +665,7 @@ h2 {
   padding: 0;
   border: 0;
   background: none;
-  color: var(--text);
+  color: var(--accent);
   cursor: pointer;
   font: inherit;
   font-size: var(--fs-13);
@@ -649,7 +673,7 @@ h2 {
 }
 
 .t-acc-head:hover {
-  color: var(--text);
+  color: var(--accent);
 }
 
 .t-acc-panel {
@@ -1292,6 +1316,11 @@ code {
   margin: 0 0 20px;
 }
 
+/* The homepage question's closing phrase. */
+.story-intro h1 .hero-accent {
+  color: var(--accent);
+}
+
 .story-intro p {
   color: var(--reading);
   font-size: var(--fs-17);
@@ -1621,20 +1650,6 @@ code {
   letter-spacing: 0;
 }
 
-/* Figures turn red or amber only when a status rule or alert says so. Good
-   news stays white: green belongs to dots and labels, never to a figure. */
-.tone-worsening,
-.tile-value.tone-worsening,
-.step-figure.elevated {
-  color: var(--critical);
-}
-
-.tone-mixed,
-.tile-value.tone-mixed,
-.step-figure.watch {
-  color: var(--warning);
-}
-
 .stat-note {
   grid-area: note;
   margin: 2px 0 0;
@@ -1723,7 +1738,7 @@ code {
 }
 
 .chapter-list a[aria-current] .chapter-list-num {
-  color: var(--text);
+  color: var(--accent);
   font-weight: 500;
 }
 
@@ -1788,9 +1803,9 @@ code {
 }
 
 .chip[aria-current] {
-  background: var(--segment-bg);
+  background: var(--accent-tint);
   border-color: var(--line);
-  color: var(--text);
+  color: var(--accent);
 }
 
 /* Phones only: a swipeable chip row at the first per-company chapter. */
@@ -1843,7 +1858,7 @@ code {
 }
 
 .chapter-num {
-  color: var(--text);
+  color: var(--accent);
   font-family: var(--mono);
   font-weight: 500;
   font-variant-numeric: tabular-nums;
@@ -1856,7 +1871,7 @@ code {
 
 .chapter-eyebrow-label {
   margin-left: 6px;
-  color: var(--text);
+  color: var(--accent);
   font: 500 var(--fs-13) / var(--lh-13) var(--sans);
 }
 
@@ -2081,6 +2096,8 @@ code {
 
 .scorecard-read .eyebrow {
   margin: 0 0 6px;
+  color: var(--accent);
+  font-weight: 600;
 }
 
 .scorecard-read h2 {
@@ -2150,7 +2167,7 @@ code {
 }
 
 .tile[aria-current] .tile-label {
-  color: var(--text);
+  color: var(--accent);
 }
 
 .tile-value {
@@ -2899,8 +2916,8 @@ code {
 
 .hero-read-eyebrow {
   margin: 0;
-  color: var(--muted);
-  font: 500 var(--fs-13) / var(--lh-13) var(--sans);
+  color: var(--accent);
+  font: 600 var(--fs-13) / var(--lh-13) var(--sans);
 }
 
 .hero-read-updated {
@@ -3032,7 +3049,7 @@ code {
 }
 
 .step-num {
-  color: var(--faint);
+  color: var(--accent);
   font: 500 var(--fs-12) var(--mono);
   font-variant-numeric: tabular-nums;
 }
@@ -3165,18 +3182,10 @@ code {
   gap: 4px 0;
 }
 
-.more-sections a {
-  color: var(--muted);
-}
-
 .more-sections a + a::before {
   content: "·";
   margin: 0 8px;
   color: var(--faint);
-}
-
-.more-sections a:hover {
-  color: var(--text);
 }
 
 .strain-grid {
@@ -3304,6 +3313,10 @@ code {
   display: block;
   height: 100%;
   background: var(--ladder-bar);
+}
+
+.ladder-bar.cheapest {
+  background: var(--accent);
 }
 
 .ladder-price {

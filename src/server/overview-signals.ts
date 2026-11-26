@@ -1,12 +1,6 @@
-import { matchesSeries } from "~/alerts/match";
-import type { Signal } from "~/domain/chapterSignals";
-
 export type OverviewAlert = {
   ruleId: string;
   seriesId: string | null;
-  // The rule's input series pattern from data/alerts.config.yaml; absent for
-  // rules that count other rules (breadth) rather than read a series.
-  ruleSeries?: string | null;
   triggeredAt: string;
   severity: "info" | "warning" | "critical";
   message: string;
@@ -71,37 +65,6 @@ export function riskReadFromAlerts(alerts: OverviewAlert[]): RiskRead {
     detail: "No alert rules have fired in the latest alert history.",
     signals,
   };
-}
-
-// ---- Tone of a single figure ----
-
-const SEVERITY_RANK = { critical: 2, warning: 1, info: 0 } as const;
-
-// The highest severity among the given alerts that are about this series:
-// the alert fired on it, or its rule reads it. A rule that counts other rules
-// (the borrowing-cost cluster) names no series, so it colours no figure; it
-// shows in the chapter status instead. Info alerts never colour a figure.
-export function figureTone(
-  seriesId: string,
-  alerts: OverviewAlert[],
-): "critical" | "warning" | null {
-  let best: "critical" | "warning" | null = null;
-  for (const a of alerts) {
-    if (a.severity === "info") continue;
-    const about =
-      a.seriesId === seriesId || (a.ruleSeries != null && matchesSeries(a.ruleSeries, seriesId));
-    if (about && (best == null || SEVERITY_RANK[a.severity] > SEVERITY_RANK[best])) {
-      best = a.severity;
-    }
-  }
-  return best;
-}
-
-// The figure tone a severity paints: red for critical, amber for warning.
-export function toneOfSeverity(severity: "critical" | "warning" | null): Signal | undefined {
-  if (severity === "critical") return "worsening";
-  if (severity === "warning") return "mixed";
-  return undefined;
 }
 
 // ---- Per-step status on the homepage ----

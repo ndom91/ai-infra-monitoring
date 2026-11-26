@@ -5,7 +5,6 @@
 
 import { formatDate, formatMonthYear, formatValue } from "~/lib/format";
 import { changeOver, type Point, valueAtOrBefore } from "~/metrics/changes";
-import type { Signal } from "./chapterSignals";
 import { type Freshness, freshnessSuffix } from "./freshness";
 
 export type Story = { headline: string; body: string[] };
@@ -266,8 +265,7 @@ export function constructionStory(construction: Point[], preleased: Point[]): St
 
 // ---- Homepage chapter figures ----
 
-// `tone` colours the figure red or amber; only an alert or status rule sets it.
-export type Figure = { label: string; value: string; note: string; tone?: Signal };
+export type Figure = { label: string; value: string; note: string };
 
 type HomeSeries = {
   credit: { hy: Point[]; ccc: Point[] };
@@ -306,15 +304,8 @@ const upDown = (change: number) => `${change >= 0 ? "up" : "down"} ${pct(change)
 export function homeFigures(
   s: HomeSeries,
   fresh: HomeFreshness = {},
-  // From the alert history (figureTone); the other figures have no rule.
-  tones: Partial<Record<"ccc" | "hy", Signal>> = {},
 ): Record<"borrow" | "build" | "rent" | "fill", Figure[]> {
-  const spread = (
-    label: string,
-    pts: Point[],
-    state: Freshness | undefined,
-    tone: Signal | undefined,
-  ): Figure[] => {
+  const spread = (label: string, pts: Point[], state: Freshness | undefined): Figure[] => {
     const last = pts.at(-1);
     if (!last) return [];
     // Only compare with a real point within 3 weeks of a year earlier.
@@ -325,7 +316,6 @@ export function homeFigures(
         label,
         value: formatValue(last.value, "%"),
         note: `${formatDate(last.periodEnd)}${move}${freshnessSuffix(state)}`,
-        tone,
       },
     ];
   };
@@ -418,8 +408,8 @@ export function homeFigures(
 
   return {
     borrow: [
-      ...spread("Riskiest companies (CCC-rated)", s.credit.ccc, fresh.ccc, tones.ccc),
-      ...spread("All junk-rated", s.credit.hy, fresh.hy, tones.hy),
+      ...spread("Riskiest companies (CCC-rated)", s.credit.ccc, fresh.ccc),
+      ...spread("All junk-rated", s.credit.hy, fresh.hy),
     ],
     build,
     rent,

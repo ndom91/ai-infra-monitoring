@@ -1,4 +1,3 @@
-import type { Signal } from "~/domain/chapterSignals";
 import { freshnessSuffix } from "~/domain/freshness";
 import { formatDate, formatDelta, formatValue } from "~/lib/format";
 import type { SeriesView } from "~/server/data";
@@ -9,7 +8,6 @@ export type Stat = {
   value: string | null;
   // Period, change, and "calculated" where it applies.
   note: string;
-  tone?: Signal;
   // Shown instead of "Awaiting data" when the value is null for a known
   // reason, e.g. "Not tracked".
   placeholder?: string;
@@ -21,11 +19,7 @@ export function StatList({ stats }: { stats: Stat[] }) {
       {stats.map((s) => (
         <div key={s.label} className="stat-row">
           <dt className="stat-label">{s.label}</dt>
-          <dd
-            className={`stat-value${s.tone ? ` tone-${s.tone}` : ""}${
-              s.value == null ? " awaiting" : ""
-            }`}
-          >
+          <dd className={`stat-value${s.value == null ? " awaiting" : ""}`}>
             {s.value ?? s.placeholder ?? "Awaiting data"}
           </dd>
           <dd className="stat-note">{s.note}</dd>
@@ -43,7 +37,7 @@ export const freshnessNote = (s: Pick<SeriesView, "freshness">) => freshnessSuff
 export function latestChangeStat(
   label: string,
   s: SeriesView | undefined,
-  opts: { bps?: boolean; tone?: Signal } = {},
+  opts: { bps?: boolean } = {},
 ): Stat {
   if (!s?.latest) return { label, value: null, note: "No data collected yet" };
   const y1 = s.changes?.y1;
@@ -56,6 +50,5 @@ export function latestChangeStat(
     label,
     value: formatValue(s.latest.value, s.unit),
     note: `${formatDate(s.latest.periodEnd)} · ${change}${freshnessNote(s)}`,
-    tone: opts.tone,
   };
 }

@@ -98,7 +98,6 @@ function latestStat(
   s: SeriesView | undefined,
   note: string,
   opts: {
-    tone?: Stat["tone"];
     missing?: string;
     placeholder?: string;
     format?: (v: number) => string;
@@ -117,7 +116,6 @@ function latestStat(
     label,
     value: format(s.latest.value),
     note: `${formatPeriod(s.latest.periodEnd, s.cadence)} · ${note}${freshnessNote(s)}`,
-    tone: opts.tone,
   };
 }
 
@@ -244,7 +242,6 @@ function FundamentalsPage() {
   };
   const chapters = [peers, cash, orders, customers, insiders, depreciation];
   const total = chapters.length;
-  const cashTone = cash.signal === "context" ? undefined : cash.signal;
 
   const picker = (variant: "rail" | "row") => (
     <EntityPicker companies={SEC_COMPANIES} active={company} variant={variant} label="Company" />
@@ -280,7 +277,6 @@ function FundamentalsPage() {
                 capexOcf,
                 "12 months · calculated",
                 {
-                  tone: cashTone,
                   missing: "Not calculated: needs positive 12-month operating cash flow",
                 },
               ),
@@ -372,7 +368,6 @@ function FundamentalsPage() {
             watchFor="free cash flow staying negative while debt and leases grow faster than cash from operations."
             stats={[
               latestStat("Capex ÷ operating cash flow", capexOcf, "12 months · calculated", {
-                tone: cashTone,
                 missing: "Not calculated: needs positive 12-month operating cash flow",
               }),
               latestStat(
