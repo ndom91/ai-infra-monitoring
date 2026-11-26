@@ -327,7 +327,7 @@ h2 {
   gap: 24px;
   border-bottom: 1px solid var(--line);
   padding-bottom: 14px;
-  margin-bottom: 26px;
+  margin-bottom: 48px;
   flex-wrap: wrap;
 }
 
@@ -1097,7 +1097,7 @@ code {
 
   .topbar {
     gap: 12px;
-    margin-bottom: 18px;
+    margin-bottom: 28px;
   }
 
   .block,
@@ -1896,11 +1896,12 @@ code {
   min-width: 0;
 }
 
-/* Its 4 px top margin plus the head's 18 px padding clears the pill on the rule. */
+/* Its top margin plus the head's 18 px padding leaves clear space under
+   the pill on the rule. */
 .chapter-head-stats {
   flex: 1 1 300px;
   max-width: 380px;
-  margin-top: 4px;
+  margin-top: 20px;
   padding: 4px 0 4px 28px;
   border-left: 1px solid var(--line);
 }
