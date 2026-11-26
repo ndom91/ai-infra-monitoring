@@ -26,7 +26,7 @@ export const Route = createRootRoute({
         content: "Tracking the balance sheet behind the AI build-out.",
       },
       { name: "robots", content: "index, follow" },
-      { name: "theme-color", content: "#0e1113" },
+      { name: "theme-color", content: "#0b0b0c" },
       { property: "og:title", content: "Artificial Liabilities | AI Infrastructure Risk Research" },
       {
         property: "og:description",
@@ -93,9 +93,7 @@ function RootComponent() {
         <header className="topbar">
           <Link to="/" className="brand">
             <span className="kicker">Tracking the balance sheet behind the AI build-out</span>
-            <span className="brand-name">
-              Artificial Liabilities<span className="accent">.</span>
-            </span>
+            <span className="brand-name">Artificial Liabilities</span>
           </Link>
           <SiteNav />
         </header>

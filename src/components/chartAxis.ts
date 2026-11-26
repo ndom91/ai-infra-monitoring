@@ -1,5 +1,6 @@
-export const TICK = "#86969a";
-export const GRID = "#252d2f";
+import { GRID, TICK } from "./chartTheme";
+
+export { GRID, TICK };
 
 // One time axis for every chart, so charts side by side read the same.
 // Labels never rotate and auto-skip keeps a real gap between neighbours, which

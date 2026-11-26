@@ -17,6 +17,7 @@ import { formatTick, formatValue, seriesStyle } from "~/lib/format";
 import { ChartLegend } from "./ChartLegend";
 import { GRID, TICK, timeAxis } from "./chartAxis";
 import { chartData, flagStepChanges, type GapPoint, hasGap, wrapText } from "./chartGaps";
+import { HOLLOW } from "./chartTheme";
 import { isDerivedKind, sortTooltipDescending } from "./chartTooltip";
 
 Chart.register(TimeScale, LinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
@@ -89,7 +90,7 @@ export function TimeChart({
           ? 3.5
           : 0,
       pointBackgroundColor: (ctx: { raw: unknown }) =>
-        isDerivedKind((ctx.raw as GapPoint | undefined)?.kind) ? "#0e1113" : color,
+        isDerivedKind((ctx.raw as GapPoint | undefined)?.kind) ? HOLLOW : color,
       pointHoverRadius: 4,
       stepped: stepped ? ("before" as const) : false,
       tension: 0,
