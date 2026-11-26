@@ -1,5 +1,6 @@
 import type { RiskRead } from "~/server/overview-signals";
 import { READ_CLASS } from "./RiskRead";
+import { isPlainClick, useScrollToChapter } from "./scrollToChapter";
 
 export type StepTile = {
   id: string;
@@ -13,10 +14,20 @@ export type StepTile = {
 
 // The four steps of the money trail; each tile jumps to its chapter.
 export function StepNav({ steps }: { steps: StepTile[] }) {
+  const scrollToChapter = useScrollToChapter();
   return (
     <nav className="step-nav" aria-label="Steps">
       {steps.map((s, i) => (
-        <a key={s.id} href={`#${s.id}`} className="step-tile">
+        <a
+          key={s.id}
+          href={`#${s.id}`}
+          className="step-tile"
+          onClick={(e) => {
+            if (!isPlainClick(e)) return;
+            e.preventDefault();
+            scrollToChapter(s.id);
+          }}
+        >
           <span className="step-top">
             <span className="step-num">{String(i + 1).padStart(2, "0")}</span>
             {i < steps.length - 1 ? (

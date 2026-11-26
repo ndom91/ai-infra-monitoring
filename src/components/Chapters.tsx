@@ -5,6 +5,7 @@ import { pickActiveChapter } from "./activeChapter";
 import { Chevron, Disclosure } from "./Disclosure";
 import { SignalDot, SignalLegend } from "./SignalDot";
 import { type Stat, StatList } from "./StatList";
+import { isPlainClick, useScrollToChapter } from "./scrollToChapter";
 import { useSlidingIndicator } from "./useSlidingIndicator";
 
 export type ChapterDef = {
@@ -159,6 +160,7 @@ function ChapterList({
 }) {
   // The highlight slides to the chapter in view as the page scrolls.
   const { bar, indicator } = useSlidingIndicator<HTMLDivElement>(active);
+  const scrollToChapter = useScrollToChapter();
   return (
     // The indicator sits beside the list, not in it: an <ol> holds only <li>.
     <div ref={bar} className="chapter-list-wrap">
@@ -169,7 +171,13 @@ function ChapterList({
             <a
               href={`#${c.slug}`}
               aria-current={c.slug === active ? "location" : undefined}
-              onClick={() => onPick?.(c.slug)}
+              onClick={(e) => {
+                if (!isPlainClick(e)) return;
+                e.preventDefault();
+                // The phone sheet scrolls once it has closed; see ChapterBar.
+                if (onPick) onPick(c.slug);
+                else scrollToChapter(c.slug);
+              }}
             >
               <span className="chapter-list-num">{pad(i + 1)}</span>
               <span className="chapter-list-text">
@@ -245,6 +253,7 @@ function MobileChapterBar({
   const sheet = useRef<HTMLDivElement>(null);
   // The chapter chosen in the sheet, so focus can follow the reader there.
   const picked = useRef<string | null>(null);
+  const scrollToChapter = useScrollToChapter();
   const pathname = useLocation({ select: (l) => l.pathname });
   const index = Math.max(
     0,
@@ -303,11 +312,13 @@ function MobileChapterBar({
       body.style.overflow = before[1] ?? "";
       const slug = picked.current;
       picked.current = null;
+      // Scroll only now: the page cannot scroll while the sheet holds it.
+      if (slug) scrollToChapter(slug);
       // After a pick, focus belongs to the chapter, not the bar above it.
       const target = slug ? document.getElementById(slug) : opener.current;
       target?.focus({ preventScroll: true });
     };
-  }, [open]);
+  }, [open, scrollToChapter]);
 
   return (
     <div className="chapter-bar">
