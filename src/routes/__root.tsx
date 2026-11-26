@@ -142,6 +142,8 @@ function SiteNav() {
           to={n.to}
           activeOptions={{ exact: n.to === "/", includeSearch: false }}
           activeProps={{ className: "active" }}
+          // Reserves the bold width; see .nav a::after.
+          data-label={n.label}
         >
           {n.label}
         </Link>

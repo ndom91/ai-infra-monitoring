@@ -92,6 +92,10 @@ a {
   text-underline-offset: 3px;
 }
 
+a {
+  transition: text-decoration-color var(--hover-dur) ease;
+}
+
 a:hover {
   text-decoration-color: var(--muted);
 }
@@ -217,11 +221,16 @@ h2 {
   border-radius: 8px;
   padding: 6px 12px;
   touch-action: manipulation;
-  transition: color var(--tabs-dur) var(--tabs-ease);
+  transition:
+    color var(--tabs-dur) var(--tabs-ease),
+    background-color var(--hover-dur) ease,
+    scale var(--press-dur) ease;
   font: 500 var(--fs-13) / var(--lh-13) var(--sans);
   display: inline-flex;
   align-items: center;
   min-height: 34px;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .toolbar-btn:not([aria-current]):hover {
@@ -311,11 +320,16 @@ h2 {
   border-radius: 8px;
   font-size: var(--fs-13);
   touch-action: manipulation;
-  transition: color var(--tabs-dur) var(--tabs-ease);
+  transition:
+    color var(--tabs-dur) var(--tabs-ease),
+    background-color var(--hover-dur) ease,
+    scale var(--press-dur) ease;
   font-weight: 500;
   display: inline-flex;
   align-items: center;
   min-height: 34px;
+  flex-direction: column;
+  justify-content: center;
 }
 
 /* Inside the link: the phone strip scrolls and would clip a ring drawn
@@ -545,6 +559,54 @@ h2 {
   --panel-translate-y: 100px;
   --panel-blur: 2px;
   --panel-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --hover-dur: 150ms;
+  --press-dur: 100ms;
+}
+
+/* ---- Interaction polish ----
+   Controls ease into their hover colour and give a small squeeze when
+   pressed. The squeeze is motion, so it is skipped for reduced motion. */
+@media (prefers-reduced-motion: no-preference) {
+  .nav a:not(.active):active,
+  .toolbar-btn:not([aria-current]):active,
+  .segment:not([aria-current]):active,
+  .chip:active,
+  .infotip-btn:active {
+    scale: 0.96;
+  }
+
+  .step-tile:hover .step-arrow {
+    translate: 3px 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --hover-dur: 0ms;
+    --press-dur: 0ms;
+  }
+}
+
+.step-tile:hover .step-arrow {
+  stroke: var(--text);
+}
+
+.chart-legend-item:hover {
+  color: var(--text);
+}
+
+/* The active nav item and range button turn bold. Each reserves its bold
+   width up front from a hidden copy of its label, so the weight change never
+   resizes it: a resize would snap the sliding pill instead of sliding it. */
+.nav a:not(.nav-github)::after,
+.toolbar-btn::after {
+  content: attr(data-label);
+  height: 0;
+  overflow: hidden;
+  visibility: hidden;
+  font-weight: 600;
+  pointer-events: none;
+  user-select: none;
 }
 
 /* ---- Sliding indicators (useSlidingIndicator) ----
@@ -1056,8 +1118,9 @@ code {
   place-items: center;
   padding: 0;
   transition:
-    color 120ms ease,
-    border-color 120ms ease;
+    color var(--hover-dur) ease,
+    background-color var(--hover-dur) ease,
+    scale var(--press-dur) ease;
 }
 
 .infotip-btn:hover,
@@ -1335,6 +1398,9 @@ code {
   font: var(--fs-12) / var(--lh-12) var(--sans);
   text-align: left;
   cursor: pointer;
+  transition:
+    color var(--hover-dur) ease,
+    opacity var(--hover-dur) ease;
 }
 
 .chart-legend-item[aria-pressed="false"] {
@@ -1616,6 +1682,7 @@ code {
   padding: 8px 10px;
   border-radius: 8px;
   color: var(--reading);
+  transition: background-color var(--hover-dur) ease;
 }
 
 .chapter-list a:hover {
@@ -1694,6 +1761,9 @@ code {
   color: var(--reading);
   font: var(--fs-12) var(--sans);
   touch-action: manipulation;
+  transition:
+    border-color var(--hover-dur) ease,
+    scale var(--press-dur) ease;
 }
 
 .chip:hover {
@@ -2021,6 +2091,7 @@ code {
   background: var(--bg);
   color: var(--reading);
   touch-action: manipulation;
+  transition: background-color var(--hover-dur) ease;
 }
 
 /* The group clips to its rounded corners, so rings sit inside each tile. */
@@ -2111,6 +2182,7 @@ code {
   font-size: var(--fs-14);
   touch-action: manipulation;
   font-weight: 500;
+  transition: color var(--hover-dur) ease;
 }
 
 .topic-tab:hover {
@@ -2175,7 +2247,10 @@ code {
   color: var(--muted);
   font-size: var(--fs-13);
   touch-action: manipulation;
-  transition: color var(--tabs-dur) var(--tabs-ease);
+  transition:
+    color var(--tabs-dur) var(--tabs-ease),
+    background-color var(--hover-dur) ease,
+    scale var(--press-dur) ease;
   font-weight: 500;
 }
 
@@ -2907,6 +2982,7 @@ code {
   padding: 16px 18px 18px;
   background: var(--bg);
   color: var(--text);
+  transition: background-color var(--hover-dur) ease;
 }
 
 .step-tile:hover {
@@ -2935,6 +3011,9 @@ code {
   stroke-width: 1.5;
   stroke-linecap: round;
   stroke-linejoin: round;
+  transition:
+    translate var(--hover-dur) ease,
+    stroke var(--hover-dur) ease;
 }
 
 .step-verb {

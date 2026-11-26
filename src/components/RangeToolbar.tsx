@@ -16,6 +16,8 @@ export function RangeToolbar({ active }: { active: RangeKey }) {
           search={(prev: Record<string, unknown>) => ({ ...prev, range: k })}
           aria-current={k === active ? "true" : undefined}
           className="toolbar-btn"
+          // Reserves the bold width; see .toolbar-btn::after.
+          data-label={RANGES[k].label}
         >
           {RANGES[k].label}
         </Link>
