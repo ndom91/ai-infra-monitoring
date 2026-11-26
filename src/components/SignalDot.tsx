@@ -1,6 +1,6 @@
 import { SIGNAL_LABELS, type Signal } from "~/domain/chapterSignals";
 
-// A 6 px dot plus a small uppercase label. With `labelHidden` the label is
+// A 7 px dot plus a sentence-case label. With `labelHidden` the label is
 // kept for screen readers only, for compact lists that sit next to a legend.
 // `label` replaces the default wording where the colour means something else,
 // such as a run status.

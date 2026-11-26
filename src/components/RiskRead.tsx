@@ -4,6 +4,13 @@ import type { RiskRead as RiskReadData } from "~/server/overview-signals";
 
 const DOT_LABEL = { critical: "Critical", warning: "Warning", info: "Info" } as const;
 
+// Status class of each overall read; the dot and step tiles share it.
+export const READ_CLASS: Record<RiskReadData["label"], string> = {
+  Elevated: "elevated",
+  Watch: "watch",
+  "No recent warnings": "quiet",
+};
+
 // The homepage "Current read": label, detail, up to three signals.
 export function RiskRead({ read, updated }: { read: RiskReadData; updated?: string | null }) {
   return (
@@ -12,7 +19,10 @@ export function RiskRead({ read, updated }: { read: RiskReadData; updated?: stri
         <p className="hero-read-eyebrow">Current read</p>
         {updated ? <span className="hero-read-updated">Updated {formatDate(updated)}</span> : null}
       </div>
-      <h2 id="hero-read-title">{read.label}</h2>
+      <h2 id="hero-read-title">
+        <span className={`hero-read-dot ${READ_CLASS[read.label]}`} aria-hidden="true" />
+        {read.label}
+      </h2>
       <p className="hero-read-detail">{read.detail}</p>
       {read.signals.length > 0 ? (
         <ul className="hero-signals">

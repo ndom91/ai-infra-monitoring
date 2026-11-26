@@ -1,4 +1,5 @@
 import type { RiskRead } from "~/server/overview-signals";
+import { READ_CLASS } from "./RiskRead";
 
 export type StepTile = {
   id: string;
@@ -8,12 +9,6 @@ export type StepTile = {
   figure: string | null;
   metric: string;
   status: RiskRead["label"];
-};
-
-const STATUS_CLASS: Record<RiskRead["label"], string> = {
-  Elevated: "elevated",
-  Watch: "watch",
-  "No recent warnings": "quiet",
 };
 
 // The four steps of the money trail; each tile jumps to its chapter.
@@ -40,7 +35,7 @@ export function StepNav({ steps }: { steps: StepTile[] }) {
               <span className="step-metric">{s.metric}</span>
             </>
           )}
-          <span className={`step-status ${STATUS_CLASS[s.status]}`}>
+          <span className={`step-status ${READ_CLASS[s.status]}`}>
             <span className="step-status-dot" aria-hidden="true" />
             {s.status}
           </span>

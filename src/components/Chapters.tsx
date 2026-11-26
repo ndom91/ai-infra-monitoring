@@ -43,11 +43,9 @@ export function ChapterHeader({
         <p className="chapter-eyebrow">
           <span className="chapter-num">{pad(index)}</span>
           <span className="chapter-total">/{pad(total)}</span>
-          <span className="chapter-eyebrow-label">
-            {" "}
-            {chapter.label}
-            {meta ? <span className="chapter-eyebrow-meta"> · {meta}</span> : null}
-          </span>
+          {/* Spaces keep the read-aloud text apart; CSS sets the visual gaps. */}{" "}
+          <span className="chapter-eyebrow-label">{chapter.label}</span>
+          {meta ? <span className="chapter-eyebrow-meta"> {meta}</span> : null}
         </p>
         <h2>{question}</h2>
         {watchFor ? (
