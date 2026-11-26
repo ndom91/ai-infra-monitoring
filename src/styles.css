@@ -18,7 +18,10 @@
   --reading: #c9c9cc; /* paragraphs */
   --muted: #9a9aa0; /* secondary text, inactive controls */
   --faint: #83838a; /* dates, sources, notes; lowest allowed text colour */
-  /* brand accent: only in the places listed under "Accent" below */
+  /* brand accent: brand bar, homepage h1 phrase, active nav and range
+     pills, selected chips and tile labels, "Current read", step and chapter
+     numbers, chapter names, links, disclosure triggers, focus, skip link,
+     cheapest ladder bar, scrollbar thumbs and text selection */
   --accent: #a08bff; /* 7.2:1 on --bg, 5.8:1 on --accent-tint */
   --accent-tint: #231f33; /* active pills, selected chips: 16% accent over --bg */
   --accent-rule: #4e4579; /* link underlines: 45% accent over --bg */
@@ -68,6 +71,44 @@
 html {
   background: var(--bg);
   -webkit-tap-highlight-color: color-mix(in srgb, var(--accent) 16%, transparent);
+  /* Inherited, so every scroll area (page, rail, sheet, popovers, wide
+     tables) gets the same thin accent-tint thumb on a clear track. */
+  scrollbar-color: var(--accent-tint) transparent;
+}
+
+/* Thin everywhere; the phone strips that hide theirs keep scrollbar-width:
+   none, which wins over this zero-specificity default. */
+:where(*) {
+  scrollbar-width: thin;
+}
+
+/* Safari ignores scrollbar-color, so it gets the same look the old way,
+   plus a brighter thumb on hover. */
+@supports not (scrollbar-color: auto) {
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    border: 2px solid transparent;
+    border-radius: 999px;
+    background: var(--accent-tint) padding-box;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: var(--accent-rule);
+  }
+}
+
+/* White text on the accent rule clears 8:1; the tint would barely show. */
+::selection {
+  background: var(--accent-rule);
+  color: var(--text);
 }
 
 * {
@@ -2795,6 +2836,10 @@ code {
     border-bottom: 1px solid var(--line);
     overflow-x: auto;
     scrollbar-width: none;
+  }
+
+  .topic-tabs::-webkit-scrollbar {
+    display: none;
   }
 
   /* The tab strip scrolls and its underline is the container's own edge, so
