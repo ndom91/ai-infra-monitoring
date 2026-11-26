@@ -27,12 +27,15 @@ export function chipName(entity: string) {
   return (memory > 0 ? words.slice(0, memory) : words).join(" ");
 }
 
+// The cohort for rental series with no GPU named (such as a FRED price index).
+export const UNNAMED_COHORT = "Other";
+
 // Series ids look like "<provider>.<cohort>.<region>.<pricetype>"; the
 // entity is the GPU cohort.
 export function rentalCohorts<T extends Pick<RentalSeries, "entity">>(series: T[]): Cohort<T>[] {
   const map = new Map<string, T[]>();
   for (const s of series) {
-    const key = s.entity ?? "Other";
+    const key = s.entity ?? UNNAMED_COHORT;
     map.set(key, [...(map.get(key) ?? []), s]);
   }
   return [...map]

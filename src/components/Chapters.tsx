@@ -64,6 +64,10 @@ function StatusMark({ status }: { status: ChapterStatus }) {
   );
 }
 
+// The figure stack holds at most three; more crowds the header. Put the
+// figures that matter most first, since extras are dropped.
+const MAX_HEAD_STATS = 3;
+
 export function ChapterHeader({
   index,
   total,
@@ -115,7 +119,7 @@ export function ChapterHeader({
       </div>
       {stats.length > 0 ? (
         <div className="chapter-head-stats">
-          <StatList stats={stats} />
+          <StatList stats={stats.slice(0, MAX_HEAD_STATS)} />
         </div>
       ) : null}
     </header>

@@ -24,6 +24,7 @@ import {
   priceRange,
   priceSpread,
   rentalCohorts,
+  UNNAMED_COHORT,
 } from "~/domain/market";
 import { PAGE_PARAMS } from "~/domain/page-params";
 import { parseRange, type RangeKey } from "~/domain/ranges";
@@ -156,9 +157,10 @@ function MarketPage() {
 
   const h100 = datacenter.find((c) => cohortCode(c) === "h100");
   const listStats: Stat[] = [
-    ...datacenter.map((c) =>
-      latestChangeStat(`Nvidia ${c.chip} on AWS`, findOffer(c, "aws", "ondemand")),
-    ),
+    // The unnamed cohort is not a GPU, so it has no AWS price to show.
+    ...datacenter
+      .filter((c) => c.entity !== UNNAMED_COHORT)
+      .map((c) => latestChangeStat(`Nvidia ${c.chip} on AWS`, findOffer(c, "aws", "ondemand"))),
     latestChangeStat("Nvidia H100 on Azure", h100 && findOffer(h100, "azure", "ondemand")),
   ];
 
