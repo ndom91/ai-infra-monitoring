@@ -1,43 +1,35 @@
 import { describe, expect, it } from "vitest";
 import {
-  CATEGORICAL,
-  EMPHASIS,
   formatDate,
   formatDateTime,
   formatDelta,
   formatTick,
   formatValue,
-  paletteFor,
+  PALETTE,
   seriesStyle,
 } from "./format";
 
 describe("seriesStyle", () => {
   it("gives the first lap solid palette colours in order", () => {
-    expect(seriesStyle(0)).toEqual({ color: CATEGORICAL[0] });
-    expect(seriesStyle(CATEGORICAL.length - 1)).toEqual({ color: CATEGORICAL.at(-1) });
-    expect(seriesStyle(1, "emphasis")).toEqual({ color: EMPHASIS[1] });
+    expect(seriesStyle(0)).toEqual({ color: PALETTE[0] });
+    expect(seriesStyle(PALETTE.length - 1)).toEqual({ color: PALETTE.at(-1) });
   });
 
   it("repeats colours dashed after the palette ends", () => {
-    const first = seriesStyle(CATEGORICAL.length);
-    expect(first.color).toBe(CATEGORICAL[0]);
+    const first = seriesStyle(PALETTE.length);
+    expect(first.color).toBe(PALETTE[0]);
     expect(first.dash).toBeDefined();
-    const second = seriesStyle(CATEGORICAL.length * 2);
+    const second = seriesStyle(PALETTE.length * 2);
     expect(second.dash).toBeDefined();
     expect(second.dash).not.toEqual(first.dash);
   });
 
-  it("starts both palettes with the white subject colour", () => {
-    expect(EMPHASIS[0]).toBe("#f2f2f2");
-    expect(CATEGORICAL[0]).toBe("#f2f2f2");
-  });
-});
-
-describe("paletteFor", () => {
-  it("emphasises up to three lines and goes categorical from four", () => {
-    expect(paletteFor(1)).toBe("emphasis");
-    expect(paletteFor(3)).toBe("emphasis");
-    expect(paletteFor(4)).toBe("categorical");
+  it("draws the subject line blue and never uses a signal hue", () => {
+    expect(seriesStyle(0).color).toBe("#8fb3ff");
+    // --critical, --warning and --good stay status-only.
+    for (const signal of ["#ff5d4f", "#f5a524", "#3ccf8e"]) {
+      expect(PALETTE).not.toContain(signal);
+    }
   });
 });
 

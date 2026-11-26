@@ -62,6 +62,4 @@ export async function loadAlertConfig(path = ALERT_CONFIG_PATH) {
 }
 
 // `series` may end in `*` to match every series with that prefix.
-export function matchesSeries(pattern: string, id: string) {
-  return pattern.endsWith("*") ? id.startsWith(pattern.slice(0, -1)) : pattern === id;
-}
+export { matchesSeries } from "./match";

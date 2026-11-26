@@ -113,6 +113,23 @@ describe("shared figure helpers", () => {
     expect(capexToOcf([p("2026-06-30", 10)], [p("2026-03-31", 4)])).toBeNull();
   });
 
+  it("colours only the borrow figures it is given a tone for", () => {
+    const f = homeFigures(
+      {
+        credit: { hy: [p("2026-11-20", 3.7)], ccc: [p("2026-11-20", 14)] },
+        capex: { capexTtm: [p("2026-09-30", 6.91e11)], fcfTtm: [] },
+        neocloud: { capexTtm: [], ocfTtm: [] },
+        rental: { aws: [] },
+        resale: { index: [] },
+        buildings: { vacancy: [], construction: [], preleased: [] },
+      },
+      {},
+      { hy: "mixed" },
+    );
+    expect(f.borrow.map((r) => r.tone)).toEqual([undefined, "mixed"]);
+    expect(f.build[0]?.tone).toBeUndefined();
+  });
+
   it("builds chapter figures and leaves out rows without data", () => {
     const f = homeFigures({
       credit: { hy: [], ccc: [p("2025-11-20", 9.2), p("2026-11-20", 14.02)] },

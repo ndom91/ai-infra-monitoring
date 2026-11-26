@@ -1,6 +1,5 @@
 import type { Explainer } from "~/domain/explainers";
 import type { Cadence } from "~/domain/types";
-import type { PaletteMode } from "~/lib/format";
 import type { SeriesView } from "~/server/data";
 import { InfoTip } from "./InfoTip";
 import { SeriesStats } from "./SeriesStats";
@@ -23,8 +22,6 @@ type Props = {
   // Bare numbers on the y-axis, for long units such as an index base.
   bareTicks?: boolean;
   height?: number;
-  // Overrides the automatic choice; see TimeChart.
-  palette?: PaletteMode;
 };
 
 export function ChartBlock({
@@ -39,7 +36,6 @@ export function ChartBlock({
   stats = true,
   bareTicks,
   height,
-  palette,
 }: Props) {
   const withData = series.filter((s) => s.points.length > 0);
   const units = new Set(series.map((s) => s.unit));
@@ -66,7 +62,6 @@ export function ChartBlock({
             }))}
             bareTicks={bareTicks}
             height={height}
-            palette={palette}
             ariaLabel={title}
           />
         ) : (

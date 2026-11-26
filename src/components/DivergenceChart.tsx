@@ -2,7 +2,7 @@ import "chartjs-adapter-date-fns";
 import type { Chart } from "chart.js";
 import { useRef } from "react";
 import { Line } from "react-chartjs-2";
-import { EMPHASIS, formatTick, formatValue } from "~/lib/format";
+import { formatTick, formatValue, seriesStyle } from "~/lib/format";
 import type { DivergenceLine } from "~/server/overview";
 import { ChartLegend } from "./ChartLegend";
 import { GRID, timeAxis } from "./chartAxis";
@@ -44,8 +44,9 @@ export function DivergenceChart({
     pointRadius: line.points.length < 40 ? 3 : 0,
     tension: 0,
   });
-  // The first line is the subject; the second is its comparison.
-  const [ca = "", cb = ""] = EMPHASIS;
+  // The subject line is blue, its comparison violet.
+  const ca = seriesStyle(0).color;
+  const cb = seriesStyle(1).color;
   return (
     <>
       <div className="chart" style={{ height: 200 }}>

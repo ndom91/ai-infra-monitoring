@@ -1,5 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { groupAlertSignals, riskReadFromAlerts, stepOfAlert, stepReads } from "./overview-signals";
+import {
+  figureTone,
+  groupAlertSignals,
+  type OverviewAlert,
+  riskReadFromAlerts,
+  stepOfAlert,
+  stepReads,
+  toneOfSeverity,
+} from "./overview-signals";
 
 const warning = {
   ruleId: "gpu-price-fall",
@@ -82,5 +90,54 @@ describe("step reads", () => {
         rule.id,
       ).not.toBeNull();
     }
+  });
+});
+
+describe("figureTone", () => {
+  const CCC = "fred.BAMLH0A3HYC";
+  const HY = "fred.BAMLH0A0HYM2";
+  const alert = (a: Partial<OverviewAlert>): OverviewAlert => ({
+    ruleId: "r",
+    seriesId: null,
+    triggeredAt: "2026-11-24",
+    severity: "warning",
+    message: "m",
+    ...a,
+  });
+  // The shape of the alert history on 26 Nov 2026: the cluster rule fired
+  // (critical, no series), plus one warning each on CCC and all junk-rated.
+  const today = [
+    alert({ ruleId: "multi_indicator_deterioration", severity: "critical", ruleSeries: null }),
+    alert({ ruleId: "ccc_oas_widening", seriesId: CCC, ruleSeries: CCC }),
+    alert({ ruleId: "hy_oas_widening", seriesId: HY, ruleSeries: HY }),
+  ];
+
+  it("takes the warnings about each spread, not the cluster rule that names no series", () => {
+    expect(figureTone(CCC, today)).toBe("warning");
+    expect(figureTone(HY, today)).toBe("warning");
+    expect(figureTone("fred.BAMLC0A4CBBB", today)).toBeNull();
+  });
+
+  it("returns the highest severity about the series", () => {
+    const alerts = [
+      alert({ seriesId: HY, severity: "warning" }),
+      alert({ seriesId: HY, severity: "critical" }),
+    ];
+    expect(figureTone(HY, alerts)).toBe("critical");
+  });
+
+  it("counts an alert whose rule reads the series, even without a series id", () => {
+    expect(figureTone("aws.h100.us-east-1", [alert({ ruleSeries: "aws.*" })])).toBe("warning");
+    expect(figureTone("azure.h100", [alert({ ruleSeries: "aws.*" })])).toBeNull();
+  });
+
+  it("never colours a figure for info alerts", () => {
+    expect(figureTone(HY, [alert({ seriesId: HY, severity: "info" })])).toBeNull();
+  });
+
+  it("maps severities to figure tones, leaving calm figures untoned", () => {
+    expect(toneOfSeverity("critical")).toBe("worsening");
+    expect(toneOfSeverity("warning")).toBe("mixed");
+    expect(toneOfSeverity(null)).toBeUndefined();
   });
 });

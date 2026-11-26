@@ -95,7 +95,6 @@ function CohortCharts({ cohorts, subtitle }: { cohorts: Cohort<SeriesView>[]; su
           subtitle={subtitle}
           series={c.series}
           labelOf={offerLabel}
-          palette="categorical"
           stepped
           stats={false}
         />

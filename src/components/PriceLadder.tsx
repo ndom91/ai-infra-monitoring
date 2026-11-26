@@ -1,5 +1,5 @@
 import type { LadderRow } from "~/domain/market";
-import { formatDate } from "~/lib/format";
+import { formatDate, seriesStyle } from "~/lib/format";
 import { ExternalLink } from "./ExternalLink";
 import { FreshnessBadge } from "./FreshnessBadge";
 
@@ -49,8 +49,12 @@ export function PriceLadder({ title, rows }: { title: string; rows: LadderRow[] 
                   <td className="ladder-bar-cell">
                     <span className="ladder-track" aria-hidden="true">
                       <span
-                        className={`ladder-bar${i === 0 ? " cheapest" : ""}`}
-                        style={{ width: `${dearest > 0 ? (r.price / dearest) * 100 : 0}%` }}
+                        className="ladder-bar"
+                        style={{
+                          width: `${dearest > 0 ? (r.price / dearest) * 100 : 0}%`,
+                          // The cheapest seller takes the first series colour.
+                          ...(i === 0 && { background: seriesStyle(0).color }),
+                        }}
                       />
                     </span>
                   </td>

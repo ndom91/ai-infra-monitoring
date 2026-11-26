@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { Chapter, ChapterCharts, type ChapterDef, ChapterHeader } from "~/components/Chapters";
 import { DivergenceChart } from "~/components/DivergenceChart";
 import { InfoTip } from "~/components/InfoTip";
-import { RiskRead } from "~/components/RiskRead";
+import { RiskRead, readStatus } from "~/components/RiskRead";
 import { StepNav, type StepTile } from "~/components/StepNav";
 import { StoryChart } from "~/components/StoryChart";
 import { TimeChart } from "~/components/TimeChart";
@@ -14,6 +14,7 @@ import { formatDate, formatValue } from "~/lib/format";
 import { pageHead } from "~/lib/seo";
 import type { Point } from "~/metrics/changes";
 import { getOverviewData } from "~/server/overview";
+import { figureTone, toneOfSeverity } from "~/server/overview-signals";
 import { Route as RootRoute } from "./__root";
 
 const DIVERGENCE_INFO: Record<string, Explainer> = {
@@ -75,7 +76,12 @@ function MoreLink({ children, sections }: { children: ReactNode; sections?: Reac
 function Home() {
   const { story, divergences, riskRead, steps, freshness } = Route.useLoaderData();
   const lastUpdated = RootRoute.useLoaderData();
-  const figures = homeFigures(story, freshness);
+  // A figure turns red or amber only when an alert in the history is about it.
+  const tone = (seriesId: string) => toneOfSeverity(figureTone(seriesId, riskRead.signals));
+  const figures = homeFigures(story, freshness, {
+    ccc: tone("fred.BAMLH0A3HYC"),
+    hy: tone("fred.BAMLH0A0HYM2"),
+  });
 
   const ccc = story.credit.ccc.at(-1);
   const capex = story.capex.capexTtm.at(-1);
@@ -148,6 +154,7 @@ function Home() {
             index={1}
             total={TOTAL}
             chapter={CHAPTERS.borrow}
+            status={readStatus(steps.borrow)}
             meta="Daily · FRED"
             question="Is money getting more expensive for the riskiest borrowers?"
             watchFor="spreads widening for the weakest borrowers first. They are usually the first to be cut off."
@@ -203,6 +210,7 @@ function Home() {
             index={2}
             total={TOTAL}
             chapter={CHAPTERS.build}
+            status={readStatus(steps.build)}
             meta="Quarterly · SEC"
             question="Is the spending still paid for out of cash?"
             watchFor="capex running ahead of the cash the business brings in, which leaves lenders to fill the gap."
@@ -289,6 +297,7 @@ function Home() {
             index={3}
             total={TOTAL}
             chapter={CHAPTERS.rent}
+            status={readStatus(steps.rent)}
             meta="Weekly and monthly"
             question="Is the price of computing holding up?"
             watchFor="rental and resale prices falling together. Rental prices are what data centers earn; used-chip values are what lenders can recover."
@@ -344,6 +353,7 @@ function Home() {
             index={4}
             total={TOTAL}
             chapter={CHAPTERS.fill}
+            status={readStatus(steps.fill)}
             meta="Half-yearly · CBRE"
             question="Are finished data centers finding tenants?"
             watchFor="vacancy rising from its low while construction is still climbing, or less new space being leased in advance."

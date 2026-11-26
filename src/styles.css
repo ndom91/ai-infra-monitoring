@@ -1621,16 +1621,18 @@ code {
   letter-spacing: 0;
 }
 
-.tone-worsening {
+/* Figures turn red or amber only when a status rule or alert says so. Good
+   news stays white: green belongs to dots and labels, never to a figure. */
+.tone-worsening,
+.tile-value.tone-worsening,
+.step-figure.elevated {
   color: var(--critical);
 }
 
-.tone-mixed {
+.tone-mixed,
+.tile-value.tone-mixed,
+.step-figure.watch {
   color: var(--warning);
-}
-
-.tone-reassuring {
-  color: var(--good);
 }
 
 .stat-note {
@@ -1860,6 +1862,23 @@ code {
 
 .chapter-eyebrow-meta {
   margin-left: 4px;
+}
+
+/* Only worsening or mixed chapters show one, in the signal colour. */
+.chapter-eyebrow-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 4px;
+  font: 500 var(--fs-12) / var(--lh-12) var(--sans);
+}
+
+.chapter-eyebrow-dot {
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: currentColor;
 }
 
 .chapter-head h2 {
@@ -3285,10 +3304,6 @@ code {
   display: block;
   height: 100%;
   background: var(--ladder-bar);
-}
-
-.ladder-bar.cheapest {
-  background: var(--text);
 }
 
 .ladder-price {

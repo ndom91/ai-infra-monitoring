@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { formatDate } from "~/lib/format";
 import type { RiskRead as RiskReadData } from "~/server/overview-signals";
+import type { ChapterStatus } from "./Chapters";
 
 const DOT_LABEL = { critical: "Critical", warning: "Warning", info: "Info" } as const;
 
@@ -10,6 +11,13 @@ export const READ_CLASS: Record<RiskReadData["label"], string> = {
   Watch: "watch",
   "No recent warnings": "quiet",
 };
+
+// The chapter eyebrow status for a read: only Elevated and Watch show one.
+export function readStatus(label: RiskReadData["label"]): ChapterStatus | null {
+  if (label === "Elevated") return { tone: "worsening", label };
+  if (label === "Watch") return { tone: "mixed", label };
+  return null;
+}
 
 // The homepage "Current read": label, detail, up to three signals.
 export function RiskRead({ read, updated }: { read: RiskReadData; updated?: string | null }) {

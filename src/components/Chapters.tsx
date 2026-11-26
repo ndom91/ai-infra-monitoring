@@ -1,6 +1,6 @@
 import { useLocation } from "@tanstack/react-router";
 import { type ReactNode, useEffect, useRef, useState } from "react";
-import type { Signal } from "~/domain/chapterSignals";
+import { SIGNAL_LABELS, type Signal } from "~/domain/chapterSignals";
 import { pickActiveChapter } from "./activeChapter";
 import { Chevron, Disclosure } from "./Disclosure";
 import { SignalDot, SignalLegend } from "./SignalDot";
@@ -17,6 +17,15 @@ export type ChapterDef = {
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
+// A warning shown after the eyebrow's cadence text.
+export type ChapterStatus = { tone: "worsening" | "mixed"; label: string };
+
+// Only worsening and mixed chapters carry a status; calm ones stay quiet.
+const statusOf = (signal: Signal): ChapterStatus | null =>
+  signal === "worsening" || signal === "mixed"
+    ? { tone: signal, label: SIGNAL_LABELS[signal] }
+    : null;
+
 export function ChapterHeader({
   index,
   total,
@@ -26,10 +35,13 @@ export function ChapterHeader({
   watchFor,
   lede,
   stats = [],
+  status = statusOf(chapter.signal),
 }: {
   index: number;
   total: number;
   chapter: ChapterDef;
+  // Defaults to the chapter's own signal; the homepage passes its step status.
+  status?: ChapterStatus | null;
   // "Daily · FRED"; desktop eyebrow only.
   meta?: string;
   question: string;
@@ -47,6 +59,13 @@ export function ChapterHeader({
           {/* Spaces keep the read-aloud text apart; CSS sets the visual gaps. */}{" "}
           <span className="chapter-eyebrow-label">{chapter.label}</span>
           {meta ? <span className="chapter-eyebrow-meta"> {meta}</span> : null}
+          {status ? (
+            <span className={`chapter-eyebrow-status sig-${status.tone}`}>
+              {" "}
+              <span className="chapter-eyebrow-dot" aria-hidden="true" />
+              {status.label}
+            </span>
+          ) : null}
         </p>
         <h2>{question}</h2>
         {watchFor ? (

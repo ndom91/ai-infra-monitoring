@@ -61,29 +61,18 @@ export function formatDateTime(iso: string) {
 }
 
 // Series colours never use the signal hues (red, amber, green), so a line is
-// never mistaken for a status. Every colour clears 3:1 on --surface.
-
-// Emphasis, for one to three lines: the first is the subject in white, the
-// rest are comparisons in fading greys.
-export const EMPHASIS = ["#f2f2f2", "#8a8a92", "#66666d"];
-
-// Categorical, for four or more lines of equal weight.
-export const CATEGORICAL = [
-  "#f2f2f2",
-  "#8fb3ff",
-  "#c4a7ff",
-  "#6fd0d6",
-  "#f29ac2",
-  "#d9c39a",
-  "#9a9aa0",
-  "#7d8db8",
+// never mistaken for a status. Every colour clears 3:1 on --surface. Lines
+// keep their order, so the subject line (first) is always blue.
+export const PALETTE = [
+  "#8fb3ff", // blue (the subject line, or line 1)
+  "#c4a7ff", // violet (first comparison)
+  "#6fd0d6", // cyan
+  "#f29ac2", // pink
+  "#d9c39a", // sand
+  "#f2f2f2", // white
+  "#9a9aa0", // grey
+  "#7d8db8", // slate
 ];
-
-export type PaletteMode = "emphasis" | "categorical";
-
-export function paletteFor(lineCount: number): PaletteMode {
-  return lineCount >= 4 ? "categorical" : "emphasis";
-}
 
 // Past the end of the palette colours repeat, so each further lap gets a
 // dash pattern to keep every line distinguishable from its twin.
@@ -92,13 +81,9 @@ const DASH_LAPS: number[][] = [
   [2, 3],
 ];
 
-export function seriesStyle(
-  index: number,
-  mode: PaletteMode = "categorical",
-): { color: string; dash?: number[] } {
-  const palette = mode === "emphasis" ? EMPHASIS : CATEGORICAL;
-  const lap = Math.floor(index / palette.length);
-  const color = palette[index % palette.length] ?? "#f2f2f2";
+export function seriesStyle(index: number): { color: string; dash?: number[] } {
+  const lap = Math.floor(index / PALETTE.length);
+  const color = PALETTE[index % PALETTE.length] ?? "#8fb3ff";
   return lap === 0 ? { color } : { color, dash: DASH_LAPS[(lap - 1) % DASH_LAPS.length] };
 }
 
