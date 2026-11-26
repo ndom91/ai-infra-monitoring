@@ -13,11 +13,11 @@ import {
 import { type CSSProperties, useRef } from "react";
 import { Line } from "react-chartjs-2";
 import type { Cadence } from "~/domain/types";
-import { formatTick, formatValue, seriesStyle } from "~/lib/format";
+import { formatTick, formatValue, type PaletteMode, paletteFor, seriesStyle } from "~/lib/format";
 import { ChartLegend } from "./ChartLegend";
 import { GRID, TICK, timeAxis } from "./chartAxis";
 import { chartData, flagStepChanges, type GapPoint, hasGap, wrapText } from "./chartGaps";
-import { HOLLOW } from "./chartTheme";
+import { HOLLOW, LINE_WIDTH } from "./chartTheme";
 import { isDerivedKind, sortTooltipDescending } from "./chartTooltip";
 
 Chart.register(TimeScale, LinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
@@ -43,6 +43,9 @@ type Props = {
   // Coarsest tick unit worth showing; quarterly data should never get day ticks.
   minUnit?: "day" | "month";
   bareTicks?: boolean;
+  // Emphasis (subject first, comparisons in grey) or categorical colours.
+  // Defaults to categorical from four lines up.
+  palette?: PaletteMode;
   // The chart's accessible name; a canvas has no text of its own.
   ariaLabel: string;
 };
@@ -61,11 +64,12 @@ export function TimeChart({
   rebase,
   minUnit = "day",
   bareTicks,
+  palette = paletteFor(lines.length),
   ariaLabel,
 }: Props) {
   const chartRef = useRef<Chart<"line"> | null>(null);
   const datasets = lines.map((line, i) => {
-    const style = seriesStyle(i);
+    const style = seriesStyle(i, palette);
     const color = line.color ?? style.color;
     const dash = line.color ? undefined : style.dash;
     const base = line.points[0]?.value;
@@ -80,7 +84,7 @@ export function TimeChart({
       dash,
       borderColor: color,
       backgroundColor: color,
-      borderWidth: 1.6,
+      borderWidth: LINE_WIDTH,
       borderDash: dash ?? [],
       // Derived/estimated points are drawn hollow so they are never
       // mistaken for reported figures.

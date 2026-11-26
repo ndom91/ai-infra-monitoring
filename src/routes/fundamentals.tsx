@@ -294,6 +294,7 @@ function FundamentalsPage() {
               subtitle="12-month capex ÷ 12-month operating cash flow · calculated"
               series={acrossGroup("hyperscaler", "capex_ocf_ttm")}
               labelOf={tickerLabel}
+              palette="categorical"
             />
             <ChartBlock
               title="Neoclouds: spending vs cash coming in"
@@ -301,6 +302,7 @@ function FundamentalsPage() {
               subtitle="Blank where cash flow was negative · calculated"
               series={acrossGroup("neocloud", "capex_ocf_ttm")}
               labelOf={tickerLabel}
+              palette="categorical"
             />
           </ChapterCharts>
           <ChapterMore summary="Show 4 more peer charts: neocloud debt, order-book conversion, supplier payment days, supplier inventory days, and latest filings">
@@ -311,6 +313,7 @@ function FundamentalsPage() {
                 subtitle="(Debt + finance leases) ÷ 12-month operating cash flow · calculated"
                 series={acrossGroup("neocloud", "debt_to_ocf")}
                 labelOf={tickerLabel}
+                palette="categorical"
               />
               <ChartBlock
                 title="How fast the order book turns into revenue"
@@ -318,6 +321,7 @@ function FundamentalsPage() {
                 subtitle="12-month revenue ÷ order book (RPO) a year earlier · calculated"
                 series={BACKLOG_PEERS.flatMap((t) => byId.get(`derived.${t}.rpo_conversion`) ?? [])}
                 labelOf={tickerLabel}
+                palette="categorical"
               />
               <ChartBlock
                 title="Suppliers: how long customers take to pay"
@@ -325,6 +329,7 @@ function FundamentalsPage() {
                 subtitle="Days sales outstanding: receivables ÷ quarterly revenue × 91 · calculated"
                 series={acrossGroup("supplier", "dso")}
                 labelOf={tickerLabel}
+                palette="categorical"
               />
               <ChartBlock
                 title="Suppliers: how long stock sits unsold"
@@ -332,6 +337,7 @@ function FundamentalsPage() {
                 subtitle="Inventory days: inventory ÷ quarterly cost of revenue × 91 · calculated"
                 series={acrossGroup("supplier", "inventory_days")}
                 labelOf={tickerLabel}
+                palette="categorical"
               />
             </ChapterCharts>
             <FilingEvents events={filingEvents.slice(0, FILING_EVENTS_SHOWN)} />
@@ -625,6 +631,7 @@ function FundamentalsPage() {
               series={lives}
               stepped
               labelOf={tickerLabel}
+              palette="categorical"
               emptyReason="Changes are added by hand from company filings, with citations."
             />
           </ChapterCharts>
@@ -646,6 +653,7 @@ function FundamentalsPage() {
                   series={manual("depreciation").filter((s) => !LIFE_SERIES.test(s.id))}
                   stepped
                   labelOf={tickerLabel}
+                  palette="categorical"
                   emptyReason="Changes are added by hand from company filings, with citations."
                 />
               </ChapterCharts>

@@ -5,7 +5,7 @@ import { Scatter } from "react-chartjs-2";
 import { formatDate } from "~/lib/format";
 import { ChartLegend } from "./ChartLegend";
 import { GRID, TICK, timeAxis } from "./chartAxis";
-import { HOLLOW } from "./chartTheme";
+import { HOLLOW, LINE_WIDTH } from "./chartTheme";
 
 Chart.register(TimeScale, LinearScale, PointElement, Tooltip, Legend);
 
@@ -35,7 +35,7 @@ export function ScatterChart({
     data: s.points.map((p) => ({ x: Date.parse(p.date), y: p.value })),
     borderColor: s.color,
     backgroundColor: s.hollow ? HOLLOW : s.color,
-    borderWidth: s.hollow ? 1.6 : 0,
+    borderWidth: s.hollow ? LINE_WIDTH : 0,
     pointRadius: 5,
     pointHoverRadius: 6,
   }));

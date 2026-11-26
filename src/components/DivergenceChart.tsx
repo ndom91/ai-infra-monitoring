@@ -2,10 +2,11 @@ import "chartjs-adapter-date-fns";
 import type { Chart } from "chart.js";
 import { useRef } from "react";
 import { Line } from "react-chartjs-2";
-import { formatTick, formatValue, PALETTE } from "~/lib/format";
+import { EMPHASIS, formatTick, formatValue } from "~/lib/format";
 import type { DivergenceLine } from "~/server/overview";
 import { ChartLegend } from "./ChartLegend";
 import { GRID, timeAxis } from "./chartAxis";
+import { LINE_WIDTH } from "./chartTheme";
 import { sortTooltipDescending } from "./chartTooltip";
 // Registers the chart.js components shared with TimeChart.
 import "./TimeChart";
@@ -39,12 +40,12 @@ export function DivergenceChart({
     data: line.points.map((p) => ({ x: Date.parse(p.periodEnd), y: p.value })),
     borderColor: color,
     backgroundColor: color,
-    borderWidth: 1.6,
+    borderWidth: LINE_WIDTH,
     pointRadius: line.points.length < 40 ? 3 : 0,
     tension: 0,
   });
-  const ca = PALETTE[0] ?? "#b5e1cd";
-  const cb = PALETTE[1] ?? "#f5c69c";
+  // The first line is the subject; the second is its comparison.
+  const [ca = "", cb = ""] = EMPHASIS;
   return (
     <>
       <div className="chart" style={{ height: 200 }}>

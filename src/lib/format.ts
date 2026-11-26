@@ -60,24 +60,30 @@ export function formatDateTime(iso: string) {
   return `${formatDate(d.toISOString())}, ${time} UTC`;
 }
 
-// The first seven are the original palette and keep their order, so existing
-// charts do not change colour. The rest were picked to sit at least as far
-// from every other colour as the original pairs do, and all clear 3:1
-// against the chart background.
-export const PALETTE = [
-  "#b5e1cd",
-  "#f5c69c",
-  "#9cc3f5",
-  "#ffa49e",
-  "#c9b5f0",
-  "#e8dc9a",
-  "#91a0a4",
-  "#e58fc0",
-  "#5fc7d6",
-  "#a8d86a",
-  "#c48552",
-  "#7b8cf0",
+// Series colours never use the signal hues (red, amber, green), so a line is
+// never mistaken for a status. Every colour clears 3:1 on --surface.
+
+// Emphasis, for one to three lines: the first is the subject in white, the
+// rest are comparisons in fading greys.
+export const EMPHASIS = ["#f2f2f2", "#8a8a92", "#66666d"];
+
+// Categorical, for four or more lines of equal weight.
+export const CATEGORICAL = [
+  "#f2f2f2",
+  "#8fb3ff",
+  "#c4a7ff",
+  "#6fd0d6",
+  "#f29ac2",
+  "#d9c39a",
+  "#9a9aa0",
+  "#7d8db8",
 ];
+
+export type PaletteMode = "emphasis" | "categorical";
+
+export function paletteFor(lineCount: number): PaletteMode {
+  return lineCount >= 4 ? "categorical" : "emphasis";
+}
 
 // Past the end of the palette colours repeat, so each further lap gets a
 // dash pattern to keep every line distinguishable from its twin.
@@ -86,9 +92,13 @@ const DASH_LAPS: number[][] = [
   [2, 3],
 ];
 
-export function seriesStyle(index: number): { color: string; dash?: number[] } {
-  const lap = Math.floor(index / PALETTE.length);
-  const color = PALETTE[index % PALETTE.length] ?? "#b5e1cd";
+export function seriesStyle(
+  index: number,
+  mode: PaletteMode = "categorical",
+): { color: string; dash?: number[] } {
+  const palette = mode === "emphasis" ? EMPHASIS : CATEGORICAL;
+  const lap = Math.floor(index / palette.length);
+  const color = palette[index % palette.length] ?? "#f2f2f2";
   return lap === 0 ? { color } : { color, dash: DASH_LAPS[(lap - 1) % DASH_LAPS.length] };
 }
 
