@@ -1668,6 +1668,19 @@ code {
   font: 500 var(--fs-13) / var(--lh-13) var(--sans);
 }
 
+.chapter-list-wrap {
+  position: relative;
+}
+
+.chapter-list-wrap .t-ind {
+  border-radius: 8px;
+  background: var(--raised);
+}
+
+.chapter-list-wrap.has-indicator .chapter-list a[aria-current] {
+  background: none;
+}
+
 .chapter-list {
   list-style: none;
   margin: 0;
@@ -1683,6 +1696,8 @@ code {
   border-radius: 8px;
   color: var(--reading);
   transition: background-color var(--hover-dur) ease;
+  position: relative;
+  z-index: 1;
 }
 
 .chapter-list a:hover {

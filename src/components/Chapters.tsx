@@ -5,6 +5,7 @@ import { pickActiveChapter } from "./activeChapter";
 import { Chevron, Disclosure } from "./Disclosure";
 import { SignalDot, SignalLegend } from "./SignalDot";
 import { type Stat, StatList } from "./StatList";
+import { useSlidingIndicator } from "./useSlidingIndicator";
 
 export type ChapterDef = {
   slug: string;
@@ -137,25 +138,31 @@ function ChapterList({
   active: string;
   onPick?: (slug: string) => void;
 }) {
+  // The highlight slides to the chapter in view as the page scrolls.
+  const { bar, indicator } = useSlidingIndicator<HTMLDivElement>(active);
   return (
-    <ol className="chapter-list">
-      {chapters.map((c, i) => (
-        <li key={c.slug}>
-          <a
-            href={`#${c.slug}`}
-            aria-current={c.slug === active ? "location" : undefined}
-            onClick={() => onPick?.(c.slug)}
-          >
-            <span className="chapter-list-num">{pad(i + 1)}</span>
-            <span className="chapter-list-text">
-              <span className="chapter-list-label">{c.label}</span>
-              <span className="chapter-list-sub">{c.sub}</span>
-            </span>
-            <SignalDot signal={c.signal} labelHidden />
-          </a>
-        </li>
-      ))}
-    </ol>
+    // The indicator sits beside the list, not in it: an <ol> holds only <li>.
+    <div ref={bar} className="chapter-list-wrap">
+      <span ref={indicator} className="t-ind" aria-hidden="true" />
+      <ol className="chapter-list">
+        {chapters.map((c, i) => (
+          <li key={c.slug}>
+            <a
+              href={`#${c.slug}`}
+              aria-current={c.slug === active ? "location" : undefined}
+              onClick={() => onPick?.(c.slug)}
+            >
+              <span className="chapter-list-num">{pad(i + 1)}</span>
+              <span className="chapter-list-text">
+                <span className="chapter-list-label">{c.label}</span>
+                <span className="chapter-list-sub">{c.sub}</span>
+              </span>
+              <SignalDot signal={c.signal} labelHidden />
+            </a>
+          </li>
+        ))}
+      </ol>
+    </div>
   );
 }
 
